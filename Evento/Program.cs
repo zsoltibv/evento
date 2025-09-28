@@ -1,6 +1,7 @@
 using Evento;
 using Evento.Endpoints;
 using Evento.Models;
+using Evento.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +23,9 @@ var connectionString = builder.Configuration.GetConnectionString("Database");
 builder.Services.AddDbContext<EventoDbContext>(options =>
     options.UseNpgsql(connectionString));
 
+//Register Services
+builder.Services.AddScoped<ITokenService, TokenService>();
+
 //Register Identity
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     {
@@ -42,12 +46,12 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
         ValidateAudience = true,
-        ValidAudience = builder.Configuration["Jwt:Audience"],
+        ValidAudience = builder.Configuration["JWT:Audience"],
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
-            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SigningKey"]!)),
+            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"]!)),
     };
 });
 
