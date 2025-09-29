@@ -14,6 +14,7 @@ export class NavbarComponent {
 
   constructor() {
     this.items = [
+      { label: 'Home', routerLink: '/home' },
       { label: 'Login', routerLink: '/login' },
       { label: 'Register', routerLink: '/register' },
     ];

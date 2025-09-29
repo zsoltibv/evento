@@ -1,39 +1,31 @@
-<div class="login-container">
-  <div class="inner-login-container md:px-0 px-4">
-    <h2>Login</h2>
+<div class="login-container md:px-0 px-4">
+  <h2>Login</h2>
 
-    <div class="form-container flex flex-column gap-3">
-      <div class="p-field flex flex-column gap-2">
-        <label for="email">Email</label>
-        <input
-          id="email"
-          type="text"
-          pInputText
-          [(ngModel)]="email"
-          placeholder="Enter your email"
-        />
-      </div>
-
-      <div class="p-field flex flex-column gap-2">
-        <label for="password">Password</label>
-        <p-password
-          id="password"
-          [(ngModel)]="password"
-          placeholder="Enter your password"
-          [toggleMask]="true"
-          [feedback]="false"
-          fluid
-        ></p-password>
-      </div>
+  <div class="form-container flex flex-column gap-3">
+    <div class="p-field flex flex-column gap-2">
+      <label for="email">Email</label>
+      <input id="email" type="text" pInputText [(ngModel)]="email" placeholder="Enter your email" />
     </div>
 
-    <p-button
-      fluid
-      type="button"
-      label="Login"
-      class="mt-4"
-      [disabled]="!isValid()"
-      (click)="onSubmit()"
-    ></p-button>
+    <div class="p-field flex flex-column gap-2">
+      <label for="password">Password</label>
+      <p-password
+        id="password"
+        [(ngModel)]="password"
+        placeholder="Enter your password"
+        [toggleMask]="true"
+        [feedback]="false"
+        fluid
+      ></p-password>
+    </div>
   </div>
+
+  <p-button
+    fluid
+    type="button"
+    label="Login"
+    class="mt-4"
+    [disabled]="!isValid()"
+    (click)="onSubmit()"
+  ></p-button>
 </div>

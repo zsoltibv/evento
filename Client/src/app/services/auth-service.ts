@@ -25,6 +25,25 @@ export class AuthService {
       });
   }
 
+  register(username: string, email: string, password: string, confirmPassword: string) {
+    this.http
+      .post<LoginResponse>(`${environment.apiBaseUrl}/api/auth/register`, {
+        username,
+        email,
+        password,
+        confirmPassword,
+      })
+      .subscribe({
+        next: (response) => {
+          localStorage.setItem('jwt', response.token);
+          this.jwtToken.set(response.token);
+        },
+        error: (err) => {
+          console.error('Register failed', err);
+        },
+      });
+  }
+
   logout() {
     localStorage.removeItem('jwt');
     this.jwtToken.set(null);

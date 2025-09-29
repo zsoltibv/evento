@@ -1,1 +1,54 @@
-<p>register-component works!</p>
+<div class="register-container md:px-0 px-4">
+  <h2>Register</h2>
+
+  <div class="form-container flex flex-column gap-3">
+    <div class="p-field flex flex-column gap-2">
+      <label for="username">Username</label>
+      <input
+        id="username"
+        type="text"
+        pInputText
+        [(ngModel)]="username"
+        placeholder="Enter your username"
+      />
+    </div>
+
+    <div class="p-field flex flex-column gap-2">
+      <label for="email">Email</label>
+      <input id="email" type="text" pInputText [(ngModel)]="email" placeholder="Enter your email" />
+    </div>
+
+    <div class="p-field flex flex-column gap-2">
+      <label for="password">Password</label>
+      <p-password
+        id="password"
+        [(ngModel)]="password"
+        [toggleMask]="true"
+        [feedback]="false"
+        placeholder="Enter password"
+        fluid
+      ></p-password>
+    </div>
+
+    <div class="p-field flex flex-column gap-2">
+      <label for="confirmPassword">Confirm Password</label>
+      <p-password
+        id="confirmPassword"
+        [(ngModel)]="confirmPassword"
+        [toggleMask]="true"
+        [feedback]="false"
+        placeholder="Confirm password"
+        fluid
+      ></p-password>
+    </div>
+  </div>
+
+  <p-button
+    fluid
+    type="button"
+    label="Register"
+    class="mt-4"
+    [disabled]="!isValid()"
+    (click)="onSubmit()"
+  ></p-button>
+</div>

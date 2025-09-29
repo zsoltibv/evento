@@ -1,11 +1,53 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { AuthService } from '../../../services/auth-service';
+import { FormsModule } from '@angular/forms';
+import { InputTextModule } from 'primeng/inputtext';
+import { PasswordModule } from 'primeng/password';
+import { ButtonModule } from 'primeng/button';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register-component',
-  imports: [],
+  imports: [FormsModule, InputTextModule, PasswordModule, ButtonModule],
   templateUrl: './register-component.html',
-  styleUrl: './register-component.scss'
+  styleUrl: './register-component.scss',
 })
 export class RegisterComponent {
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
+  username = signal('');
+  email = signal('');
+  password = signal('');
+  confirmPassword = signal('');
+
+  isValid = computed(() => {
+    return (
+      this.username().trim() !== '' &&
+      this.email().trim() !== '' &&
+      this.password().trim() !== '' &&
+      this.password() === this.confirmPassword()
+    );
+  });
+
+  async onSubmit() {
+    if (!this.isValid()) {
+      console.warn('Form is invalid');
+      return;
+    }
+
+    try {
+      const response = await this.authService.register(
+        this.username(),
+        this.email(),
+        this.password(),
+        this.confirmPassword()
+      );
+      this.router.navigate(['/login']);
+      console.log('Register successful:', response);
+      // TODO: navigate to homepage
+    } catch (err: any) {
+      console.error('Register failed', err);
+    }
+  }
 }
