@@ -26,6 +26,18 @@ builder.Services.AddDbContext<EventoDbContext>(options =>
 //Register Services
 builder.Services.AddScoped<ITokenService, TokenService>();
 
+// Add CORS service
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4200") // Angular dev server URL
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 //Register Identity
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     {
@@ -70,6 +82,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseCors();
 
 // Map Endpoints
 app.MapAuthEndpoints();

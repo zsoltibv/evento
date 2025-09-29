@@ -1,0 +1,17 @@
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.inner-login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 400px;
+}
+
+.full-width {
+  width: 100%;
+}
