@@ -100,9 +100,6 @@ namespace Evento.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("EventId")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -113,38 +110,16 @@ namespace Evento.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Bookings");
-                });
-
-            modelBuilder.Entity("Evento.Models.Event", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<int>("VenueId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.HasIndex("VenueId");
 
-                    b.ToTable("Events");
+                    b.ToTable("Bookings");
                 });
 
             modelBuilder.Entity("Evento.Models.Venue", b =>
@@ -161,6 +136,9 @@ namespace Evento.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<byte[]>("Image")
+                        .HasColumnType("bytea");
+
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("text");
@@ -172,6 +150,72 @@ namespace Evento.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Venues");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Capacity = 500,
+                            Description = "A large hall suitable for conferences and big events.",
+                            Location = "Downtown Center",
+                            Name = "Grand Conference Hall"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Capacity = 250,
+                            Description = "Perfect for weddings and receptions with a scenic riverside view.",
+                            Location = "Riverside Avenue 12",
+                            Name = "Riverside Banquet Hall"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Capacity = 150,
+                            Description = "An open-air venue with a panoramic city skyline view.",
+                            Location = "Highrise Tower, 20th Floor",
+                            Name = "Skyline Rooftop"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Capacity = 120,
+                            Description = "An outdoor garden pavilion ideal for summer parties and casual gatherings.",
+                            Location = "Greenwood Park",
+                            Name = "Greenwood Garden Pavilion"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Capacity = 350,
+                            Description = "Modern auditorium with advanced AV equipment for product launches and seminars.",
+                            Location = "Innovation District",
+                            Name = "TechHub Auditorium"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Capacity = 400,
+                            Description = "Classic ballroom with chandeliers and vintage decor, perfect for formal galas.",
+                            Location = "Old Town Square",
+                            Name = "Heritage Ballroom"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Capacity = 80,
+                            Description = "Secluded lakeside lodge for team-building events and weekend retreats.",
+                            Location = "Lakeview Road 45",
+                            Name = "Lakeside Retreat"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Capacity = 200,
+                            Description = "Creative space surrounded by art, suitable for exhibitions and cultural events.",
+                            Location = "Cultural Avenue 10",
+                            Name = "City Art Gallery"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -202,13 +246,13 @@ namespace Evento.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "084aaf60-3a93-44ca-92f6-482ff8cff4be",
+                            Id = "a6c8ca39-0aca-49cf-85d9-aa9c50c3ffc6",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "e36fa86d-855d-4d1a-8584-98cc2370bc77",
+                            Id = "0d2ebe3f-39ba-49b2-a2fd-03bc53f93dbc",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -322,30 +366,19 @@ namespace Evento.Migrations
 
             modelBuilder.Entity("Evento.Models.Booking", b =>
                 {
-                    b.HasOne("Evento.Models.Event", "Event")
-                        .WithMany("Bookings")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Evento.Models.AppUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Event");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Evento.Models.Event", b =>
-                {
                     b.HasOne("Evento.Models.Venue", "Venue")
-                        .WithMany("Events")
+                        .WithMany("Bookings")
                         .HasForeignKey("VenueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
 
                     b.Navigation("Venue");
                 });
@@ -401,14 +434,9 @@ namespace Evento.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Evento.Models.Event", b =>
-                {
-                    b.Navigation("Bookings");
-                });
-
             modelBuilder.Entity("Evento.Models.Venue", b =>
                 {
-                    b.Navigation("Events");
+                    b.Navigation("Bookings");
                 });
 #pragma warning restore 612, 618
         }

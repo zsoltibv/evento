@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using Evento;
 using Evento.Endpoints;
 using Evento.Models;
+using Evento.Repository;
 using Evento.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -15,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi("v1", options => { options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); });
 
 // Register DB
 var connectionString = builder.Configuration.GetConnectionString("Database");
@@ -25,6 +27,11 @@ builder.Services.AddDbContext<EventoDbContext>(options =>
 
 //Register Services
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IVenueService, VenueService>();
+builder.Services.AddScoped<IBookingService, BookingService>();
+
+//Register Repositories
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 
 // Add CORS service
 builder.Services.AddCors(options =>
@@ -52,7 +59,9 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -64,10 +73,15 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(
             System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"]!)),
+        RoleClaimType = ClaimTypes.Role
     };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("User", policy =>
+        policy.RequireRole("User"))
+    .AddPolicy("Admin", policy =>
+        policy.RequireRole("Admin"));
 
 var app = builder.Build();
 
@@ -86,5 +100,7 @@ app.UseCors();
 
 // Map Endpoints
 app.MapAuthEndpoints();
+app.MapVenueEndpoints();
+app.MapBookingEndpoints();
 
 app.Run();

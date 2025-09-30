@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using Evento.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Evento.Services;
@@ -10,21 +11,27 @@ public class TokenService : ITokenService
 {
     private readonly IConfiguration _configuration;
     private readonly SymmetricSecurityKey _key;
+    private readonly UserManager<AppUser> _userManager;
 
-    public TokenService(IConfiguration config)
+    public TokenService(IConfiguration config, UserManager<AppUser> userManager)
     {
         _configuration = config;
+        _userManager = userManager;
         _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SigningKey"]!));
     }
 
-    public string CreateToken(AppUser user)
+    public async Task<string> CreateToken(AppUser user)
     {
+        var roles = await _userManager.GetRolesAsync(user);
+
         var claims = new List<Claim>
         {
+            new(JwtRegisteredClaimNames.Sub, user.Id),
             new(JwtRegisteredClaimNames.Email, user.Email!),
             new(JwtRegisteredClaimNames.GivenName, user.UserName!)
         };
 
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
         var credentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
 
         var tokenDescriptor = new SecurityTokenDescriptor

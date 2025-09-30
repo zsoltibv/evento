@@ -43,7 +43,7 @@ public static class AuthEndpoints
                     var roleResult = await userManager.AddToRoleAsync(appUser, "User");
                     return roleResult.Succeeded
                         ? Results.Ok(
-                            new NewUserDto(appUser.UserName, appUser.Email, tokenService.CreateToken(appUser))
+                            new NewUserDto(appUser.UserName, appUser.Email, await tokenService.CreateToken(appUser))
                         )
                         : Results.BadRequest(roleResult.Errors);
                 }
@@ -51,7 +51,9 @@ public static class AuthEndpoints
                 {
                     return Results.BadRequest(ex.Message);
                 }
-            });
+            })
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status400BadRequest);
 
         authGroup.MapPost("/login", async (LoginDto loginDto, IValidator<LoginDto> validator,
             UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService) =>
@@ -80,9 +82,12 @@ public static class AuthEndpoints
                     statusCode: StatusCodes.Status401Unauthorized);
             }
 
-            return Results.Ok(new NewUserDto(user.UserName!, user.Email!, tokenService.CreateToken(user)));
-        });
-
+            return Results.Ok(new NewUserDto(user.UserName!, user.Email!, await tokenService.CreateToken(user)));
+        })
+        .Produces(StatusCodes.Status200OK)       
+        .Produces(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status401Unauthorized);
+        
         return app;
     }
 }
