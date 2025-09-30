@@ -1,10 +1,11 @@
+import { AuthService } from './../../../services/auth-service';
 import { Component, computed, inject, signal } from '@angular/core';
-import { AuthService } from '../../../services/auth-service';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { Router } from '@angular/router';
+import { LoginResponse } from '../../../models/LoginResponse';
 
 @Component({
   selector: 'app-register-component',
@@ -43,9 +44,8 @@ export class RegisterComponent {
         this.password(),
         this.confirmPassword()
       );
-      this.router.navigate(['/login']);
       console.log('Register successful:', response);
-      // TODO: navigate to homepage
+      this.router.navigate(['/home']);
     } catch (err: any) {
       console.error('Register failed', err);
     }

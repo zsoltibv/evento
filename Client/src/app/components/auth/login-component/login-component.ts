@@ -27,6 +27,7 @@ export class LoginComponent {
   async onSubmit() {
     if (!this.isValid()) {
       console.warn('Form is invalid');
+      return;
     }
 
     try {
