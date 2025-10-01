@@ -1,4 +1,6 @@
-﻿namespace Evento.Models;
+﻿using Evento.Enums;
+
+namespace Evento.Models;
 
 public class Booking
 {

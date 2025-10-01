@@ -16,14 +16,14 @@ public static class VenueEndpoints
             .Produces(StatusCodes.Status401Unauthorized);
 
         venuesGroup.MapGet("/{id:int}", async (int id, IVenueService service) =>
-        {
-            var venue = await service.GetByIdAsync(id);
-            return venue is not null ? Results.Ok(venue.ToDto()) : Results.NotFound();
-        })
+            {
+                var venue = await service.GetByIdAsync(id);
+                return venue is not null ? Results.Ok(venue.ToDto()) : Results.NotFound();
+            })
             .RequireAuthorization()
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
-            .Produces(StatusCodes.Status401Unauthorized);;
+            .Produces(StatusCodes.Status401Unauthorized);
 
         return app;
     }

@@ -1,4 +1,5 @@
 ﻿using Evento.Dto;
+using Evento.Extensions;
 using Evento.Models;
 using Evento.Services;
 using FluentValidation;
@@ -19,14 +20,6 @@ public static class AuthEndpoints
             {
                 try
                 {
-                    var validationResult = await validator.ValidateAsync(registerDto);
-
-                    if (!validationResult.IsValid)
-                    {
-                        return Results.BadRequest(new ErrorResponse("Validation failed",
-                            validationResult.ToDictionary()));
-                    }
-
                     var appUser = new AppUser
                     {
                         UserName = registerDto.Username,
@@ -52,20 +45,13 @@ public static class AuthEndpoints
                     return Results.BadRequest(ex.Message);
                 }
             })
+            .WithValidation<RegisterDto>()
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
 
         authGroup.MapPost("/login", async (LoginDto loginDto, IValidator<LoginDto> validator,
             UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService) =>
         {
-            var validationResult = await validator.ValidateAsync(loginDto);
-
-            if (!validationResult.IsValid)
-            {
-                return Results.BadRequest(new ErrorResponse("Validation failed",
-                    validationResult.ToDictionary()));
-            }
-
             var user = await userManager.Users.FirstOrDefaultAsync(x => x.Email == loginDto.Email);
 
             if (user == null)
@@ -84,6 +70,7 @@ public static class AuthEndpoints
 
             return Results.Ok(new NewUserDto(user.UserName!, user.Email!, await tokenService.CreateToken(user)));
         })
+        .WithValidation<LoginDto>()
         .Produces(StatusCodes.Status200OK)       
         .Produces(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status401Unauthorized);

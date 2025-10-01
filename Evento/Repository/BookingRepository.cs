@@ -36,16 +36,9 @@ public class BookingRepository(EventoDbContext db) : IBookingRepository
         return booking;
     }
 
-    public async Task<Booking?> UpdateAsync(int id, Booking updatedBooking)
+    public async Task<Booking> UpdateAsync(Booking booking)
     {
-        var booking = await db.Bookings.FindAsync(id);
-        if (booking == null) return null;
-
-        booking.StartDate = updatedBooking.StartDate;
-        booking.EndDate = updatedBooking.EndDate;
-        booking.Status = updatedBooking.Status;
-        booking.VenueId = updatedBooking.VenueId;
-
+        db.Update(booking);
         await db.SaveChangesAsync();
         return booking;
     }

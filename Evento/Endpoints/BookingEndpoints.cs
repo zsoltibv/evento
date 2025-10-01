@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Evento.Dto;
+using Evento.Extensions;
 using Evento.Services;
 
 namespace Evento.Endpoints;
@@ -10,36 +11,34 @@ public static class BookingEndpoints
     {
         var bookingsGroup = app.MapGroup("/api/bookings");
 
-        bookingsGroup.MapGet("/", async (IBookingService service) =>
-                Results.Ok(await service.GetAllAsync()))
-            .RequireAuthorization("Admin")
-            .Produces(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status401Unauthorized)
-            .Produces(StatusCodes.Status403Forbidden);
-
-        bookingsGroup.MapGet("/my", async (IBookingService service, ClaimsPrincipal user) =>
+        bookingsGroup.MapGet("/", async (IBookingService service, ClaimsPrincipal user) =>
             {
-                var userId = user.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+                var userId = user.GetUserId();
 
-                var bookings = await service.GetByUserAsync(userId);
-                return Results.Ok(bookings);
+                return user switch
+                {
+                    _ when user.IsAdmin() => Results.Ok(await service.GetAllAsync()),
+                    _ when user.IsUser() => Results.Ok(await service.GetByUserAsync(userId)),
+                    _ => Results.Forbid()
+                };
             })
-            .RequireAuthorization("User")
+            .RequireAuthorization()
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status403Forbidden);
 
         bookingsGroup.MapGet("/{id:int}", async (int id, IBookingService service, ClaimsPrincipal user) =>
             {
-                var userId = user.FindFirst(ClaimTypes.NameIdentifier)!.Value;
-                var isAdmin = user.IsInRole("Admin");
-
+                var userId = user.GetUserId();
                 var booking = await service.GetByIdAsync(id);
 
-                if (booking == null) return Results.NotFound();
-                if (!isAdmin && booking.UserId != userId) return Results.Forbid();
-
-                return Results.Ok(booking);
+                return booking switch
+                {
+                    null => Results.NotFound(),
+                    _ when user.IsAdmin() => Results.Ok(booking),
+                    _ when booking.UserId == userId => Results.Ok(booking),
+                    _ => Results.Forbid()
+                };
             })
             .RequireAuthorization()
             .Produces(StatusCodes.Status200OK)
@@ -49,12 +48,13 @@ public static class BookingEndpoints
 
         bookingsGroup.MapPost("/", async (CreateBookingDto createDto, IBookingService service, ClaimsPrincipal user) =>
             {
-                var userId = user.FindFirst(ClaimTypes.NameIdentifier)!.Value;
-
+                var userId = user.GetUserId();
                 var created = await service.CreateAsync(userId, createDto);
+
                 return Results.Created($"/api/bookings/{created.Id}", created);
             })
-            .RequireAuthorization("User")
+            .WithValidation<CreateBookingDto>()
+            .RequireAuthorization(AppRoles.User)
             .Produces(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status403Forbidden);
@@ -62,28 +62,40 @@ public static class BookingEndpoints
         bookingsGroup.MapPut("/{id:int}",
                 async (int id, UpdateBookingDto updateDto, IBookingService service, ClaimsPrincipal user) =>
                 {
-                    var userId = user.FindFirst(ClaimTypes.NameIdentifier)!.Value;
-                    var isAdmin = user.IsInRole("Admin");
+                    var userId = user.GetUserId();
+                    var booking = await service.GetByIdAsync(id);
 
-                    if (!await service.ExistsAsync(id)) return Results.NotFound();
-
-                    var updated = await service.UpdateAsync(id, updateDto, userId, isAdmin);
-                    return updated == null ? Results.Forbid() : Results.Ok(updated);
+                    return booking switch
+                    {
+                        null => Results.NotFound(),
+                        _ when !user.IsAdmin() && booking.UserId != userId => Results.Forbid(),
+                        _ => Results.Ok(await service.UpdateAsync(id, updateDto))
+                    };
                 })
+            .WithValidation<UpdateBookingDto>()
             .RequireAuthorization()
             .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status403Forbidden);
 
         bookingsGroup.MapDelete("/{id:int}", async (int id, IBookingService service, ClaimsPrincipal user) =>
             {
-                var userId = user.FindFirst(ClaimTypes.NameIdentifier)!.Value;
-                var isAdmin = user.IsInRole("Admin");
+                var userId  = user.GetUserId();
+                var booking = await service.GetByIdAsync(id);
 
-                if (!await service.ExistsAsync(id)) return Results.NotFound();
+                if (booking is null)
+                {
+                    return Results.NotFound();
+                }
 
-                var deleted = await service.DeleteAsync(id, userId, isAdmin);
-                return deleted ? Results.NoContent() : Results.Forbid();
+                if (!user.IsAdmin() && booking.UserId != userId)
+                {
+                    return Results.Forbid();
+                }
+
+                await service.DeleteAsync(booking.Id);
+                return Results.NoContent();
             })
             .RequireAuthorization()
             .Produces(StatusCodes.Status204NoContent)

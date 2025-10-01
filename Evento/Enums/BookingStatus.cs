@@ -1,8 +1,8 @@
-﻿namespace Evento;
+﻿namespace Evento.Enums;
 
 public enum BookingStatus
 {
     Pending = 0,
-    Confirmed = 1,
+    Approved = 1,
     Cancelled = 2
 }

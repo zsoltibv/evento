@@ -1,4 +1,5 @@
 ﻿using Evento.Dto;
+using Evento.Enums;
 using Evento.Extensions;
 using Evento.Models;
 using Evento.Repository;
@@ -30,9 +31,9 @@ public class BookingService(IBookingRepository repo) : IBookingService
         var booking = new Booking
         {
             UserId = userId,
-            StartDate = createDto.StartDate,
-            EndDate = createDto.EndDate,
-            VenueId = createDto.VenueId,
+            StartDate = createDto.StartDate!.Value,
+            EndDate = createDto.EndDate!.Value,
+            VenueId = createDto.VenueId!.Value,
             BookingDate = DateTime.UtcNow,
             Status = BookingStatus.Pending
         };
@@ -41,35 +42,22 @@ public class BookingService(IBookingRepository repo) : IBookingService
         return created.ToDto();
     }
 
-    public async Task<BookingDto?> UpdateAsync(int id, UpdateBookingDto updateDto, string userId, bool isAdmin)
+    public async Task<BookingDto?> UpdateAsync(int id, UpdateBookingDto updateDto)
     {
         var booking = await repo.GetByIdAsync(id);
-        if (booking == null) return null;
+        if (booking is null)
+        {
+            return null;
+        }
 
-        if (!isAdmin && booking.UserId != userId) return null;
+        booking.StartDate = updateDto.StartDate!.Value;
+        booking.EndDate = updateDto.EndDate!.Value;
+        booking.VenueId = updateDto.VenueId!.Value;
+        booking.Status = updateDto.Status!.Value;
 
-        booking.StartDate = updateDto.StartDate;
-        booking.EndDate = updateDto.EndDate;
-        booking.VenueId = updateDto.VenueId;
-        booking.Status = updateDto.Status;
-
-        var updated = await repo.UpdateAsync(id, booking);
-        return updated?.ToDto();
+        var updated = await repo.UpdateAsync(booking);
+        return updated.ToDto();
     }
 
-    public async Task<bool> DeleteAsync(int id, string userId, bool isAdmin)
-    {
-        var booking = await repo.GetByIdAsync(id);
-        if (booking == null) return false;
-
-        if (!isAdmin && booking.UserId != userId) return false;
-
-        return await repo.DeleteAsync(id);
-    }
-    
-    public async Task<bool> ExistsAsync(int id)
-    {
-        var booking = await repo.GetByIdAsync(id);
-        return booking != null;
-    }
+    public async Task<bool> DeleteAsync(int id) => await repo.DeleteAsync(id);
 }

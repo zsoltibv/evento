@@ -1,10 +1,11 @@
 ﻿using Evento.Dto;
+using Evento.Models;
 
 namespace Evento.Extensions;
 
 public static class BookingExtensions
 {
-    public static BookingDto ToDto(this Models.Booking booking)
+    public static BookingDto ToDto(this Booking booking)
         => new(
             booking.Id,
             booking.UserId,
@@ -15,6 +16,6 @@ public static class BookingExtensions
             booking.VenueId
         );
     
-    public static IEnumerable<BookingDto> ToDto(this IEnumerable<Models.Booking> bookings)
+    public static IEnumerable<BookingDto> ToDto(this IEnumerable<Booking> bookings)
         => bookings.Select(b => b.ToDto());
 }
