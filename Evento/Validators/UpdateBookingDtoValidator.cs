@@ -1,11 +1,12 @@
 ﻿using Evento.Dto;
+using Evento.Services;
 using FluentValidation;
 
 namespace Evento.Validators;
 
 internal sealed class UpdateBookingDtoValidator : AbstractValidator<UpdateBookingDto>
 {
-    public UpdateBookingDtoValidator()
+    public UpdateBookingDtoValidator(IVenueService venueService)
     {
         RuleFor(x => x.StartDate)
             .NotNull().WithMessage("Start date is required")
@@ -18,7 +19,9 @@ internal sealed class UpdateBookingDtoValidator : AbstractValidator<UpdateBookin
             .GreaterThan(DateTime.Now).WithMessage("End date must be in the future");
 
         RuleFor(x => x.VenueId)
-            .NotNull().WithMessage("Venue id is required");
+            .NotNull().WithMessage("Venue id is required")
+            .MustAsync(async (venueId, ct) => await venueService.ExistsAsync(venueId!.Value))
+            .WithMessage("Venue doesn't exist");
 
         RuleFor(x => x.Status)
             .NotNull().WithMessage("Status is required")
