@@ -18,7 +18,7 @@ public static class VenueEndpoints
         venuesGroup.MapGet("/{id:int}", async (int id, IVenueService service) =>
             {
                 var venue = await service.GetByIdAsync(id);
-                return venue is not null ? Results.Ok(venue.ToDto()) : Results.NotFound();
+                return venue is not null ? Results.Ok(venue.ToDtoWithBookings()) : Results.NotFound();
             })
             .RequireAuthorization()
             .Produces(StatusCodes.Status200OK)

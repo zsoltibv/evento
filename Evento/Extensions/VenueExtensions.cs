@@ -12,7 +12,18 @@ public static class VenueExtensions
             venue.Description,
             venue.Location,
             venue.Capacity,
-            venue.Image 
+            venue.Image
+        );
+
+    public static VenueWithBookingsDto ToDtoWithBookings(this Venue venue)
+        => new(
+            venue.Id,
+            venue.Name,
+            venue.Description,
+            venue.Location,
+            venue.Capacity,
+            venue.Image,
+            venue.Bookings.ToDto()
         );
 
     public static IEnumerable<VenueDto> ToDto(this IEnumerable<Venue> venues)
