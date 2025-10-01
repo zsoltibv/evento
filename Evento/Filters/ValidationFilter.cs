@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Evento.Errors;
+using FluentValidation;
 
 namespace Evento.Filters;
 
@@ -10,13 +11,20 @@ public class ValidationFilter<T>(IValidator<T> validator) : IEndpointFilter wher
         {
             return await next(context);
         }
-        
-        var result = await validator.ValidateAsync(dto);
-        if (!result.IsValid)
-        {
-            return Results.BadRequest(new { Errors = result.ToDictionary() });
-        }
 
-        return await next(context);
+        var result = await validator.ValidateAsync(dto);
+        if (result.IsValid)
+        {
+            return await next(context);
+        }
+        
+        var errors = result.Errors
+            .Select(failure => new ErrorResponse(
+                Code: failure.ErrorCode,
+                Description: failure.ErrorMessage
+            ))
+            .ToArray();
+
+        return Results.BadRequest(errors);
     }
 }

@@ -3,18 +3,19 @@ using Evento.Enums;
 using Evento.Extensions;
 using Evento.Models;
 using Evento.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace Evento.Services;
 
 public class BookingService(IBookingRepository repo) : IBookingService
 {
-    public async Task<List<BookingDto>> GetAllAsync()
+    public async Task<IEnumerable<BookingDto>> GetAllAsync()
     {
         var bookings = await repo.GetAllAsync();
         return bookings.Select(b => b.ToDto()).ToList();
     }
 
-    public async Task<List<BookingDto>> GetByUserAsync(string userId)
+    public async Task<IEnumerable<BookingDto>> GetByUserAsync(string userId)
     {
         var bookings = await repo.GetByUserAsync(userId);
         return bookings.Select(b => b.ToDto()).ToList();
@@ -60,4 +61,28 @@ public class BookingService(IBookingRepository repo) : IBookingService
     }
 
     public async Task<bool> DeleteAsync(int id) => await repo.DeleteAsync(id);
+
+    public async Task<bool> AnyOverlappingApprovedBookingsAsync(int id, int venueId, DateTime start,
+        DateTime end)
+    {
+        return await repo.GetAll()
+            .AnyAsync(b =>
+                b.Id != id &&
+                b.VenueId == venueId &&
+                b.Status == BookingStatus.Approved &&
+                b.StartDate < end &&
+                b.EndDate > start
+            );
+    }
+
+    public async Task<bool> UserHasOverlappingApprovedOrPendingBookingsAsync(string userId, int venueId, DateTime start,
+        DateTime end)
+    {
+        return await repo.GetByUser(userId)
+            .Where(b => b.VenueId == venueId &&
+                        (b.Status == BookingStatus.Pending || b.Status == BookingStatus.Approved) &&
+                        b.StartDate < end &&
+                        b.EndDate > start)
+            .AnyAsync();
+    }
 }

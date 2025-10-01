@@ -1,4 +1,5 @@
 ﻿using Evento.Dto;
+using Evento.Errors;
 using Evento.Extensions;
 using Evento.Models;
 using Evento.Services;
@@ -15,66 +16,65 @@ public static class AuthEndpoints
         var authGroup = app.MapGroup("/api/auth");
 
         authGroup.MapPost("/register",
-            async (RegisterDto registerDto, UserManager<AppUser> userManager, IValidator<RegisterDto> validator,
-                ITokenService tokenService) =>
-            {
-                try
+                async (RegisterDto registerDto, UserManager<AppUser> userManager, IValidator<RegisterDto> validator,
+                    ITokenService tokenService) =>
                 {
-                    var appUser = new AppUser
+                    try
                     {
-                        UserName = registerDto.Username,
-                        Email = registerDto.Email,
-                    };
+                        var appUser = new AppUser
+                        {
+                            UserName = registerDto.Username,
+                            Email = registerDto.Email,
+                        };
 
-                    var createUser = await userManager.CreateAsync(appUser, registerDto.Password);
+                        var createUser = await userManager.CreateAsync(appUser, registerDto.Password);
 
-                    if (!createUser.Succeeded)
-                    {
-                        return Results.BadRequest(createUser.Errors);
+                        if (!createUser.Succeeded)
+                        {
+                            return Results.BadRequest(createUser.Errors);
+                        }
+
+                        var roleResult = await userManager.AddToRoleAsync(appUser, "User");
+                        return roleResult.Succeeded
+                            ? Results.Ok(
+                                new NewUserDto(appUser.UserName, appUser.Email, await tokenService.CreateToken(appUser))
+                            )
+                            : Results.BadRequest(roleResult.Errors);
                     }
-
-                    var roleResult = await userManager.AddToRoleAsync(appUser, "User");
-                    return roleResult.Succeeded
-                        ? Results.Ok(
-                            new NewUserDto(appUser.UserName, appUser.Email, await tokenService.CreateToken(appUser))
-                        )
-                        : Results.BadRequest(roleResult.Errors);
-                }
-                catch (Exception ex)
-                {
-                    return Results.BadRequest(ex.Message);
-                }
-            })
+                    catch (Exception ex)
+                    {
+                        return Results.BadRequest(ex.Message);
+                    }
+                })
             .WithValidation<RegisterDto>()
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
 
         authGroup.MapPost("/login", async (LoginDto loginDto, IValidator<LoginDto> validator,
-            UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService) =>
-        {
-            var user = await userManager.Users.FirstOrDefaultAsync(x => x.Email == loginDto.Email);
-
-            if (user == null)
+                UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService) =>
             {
-                return Results.Json(new ErrorResponse("Invalid email"),
-                    statusCode: StatusCodes.Status401Unauthorized);
-            }
+                var user = await userManager.Users.FirstOrDefaultAsync(x => x.Email == loginDto.Email);
 
-            var result = await signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+                if (user == null)
+                {
+                    return Results.Json(AuthErrors.EmailInvalid, statusCode: StatusCodes.Status401Unauthorized);
+                }
 
-            if (!result.Succeeded)
-            {
-                return Results.Json(new ErrorResponse("Email not found and/or password is incorrect"),
-                    statusCode: StatusCodes.Status401Unauthorized);
-            }
+                var result = await signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
-            return Results.Ok(new NewUserDto(user.UserName!, user.Email!, await tokenService.CreateToken(user)));
-        })
-        .WithValidation<LoginDto>()
-        .Produces(StatusCodes.Status200OK)       
-        .Produces(StatusCodes.Status400BadRequest)
-        .Produces(StatusCodes.Status401Unauthorized);
-        
+                if (!result.Succeeded)
+                {
+                    return Results.Json(AuthErrors.EmailOrPasswordIncorrect,
+                        statusCode: StatusCodes.Status401Unauthorized);
+                }
+
+                return Results.Ok(new NewUserDto(user.UserName!, user.Email!, await tokenService.CreateToken(user)));
+            })
+            .WithValidation<LoginDto>()
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status400BadRequest)
+            .Produces(StatusCodes.Status401Unauthorized);
+
         return app;
     }
 }

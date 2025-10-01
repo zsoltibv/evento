@@ -1,4 +1,6 @@
 ﻿using Evento.Dto;
+using Evento.Errors;
+using Evento.Extensions;
 using FluentValidation;
 
 namespace Evento.Validators;
@@ -8,9 +10,11 @@ internal sealed class LoginDtoValidator : AbstractValidator<LoginDto>
     public LoginDtoValidator()
     {
         RuleFor(x => x.Email)
-            .NotEmpty().WithMessage("Email is required");
+            .NotEmpty()
+            .WithError(AuthErrors.EmailIsEmpty);
         
         RuleFor(x => x.Password)
-            .NotEmpty().WithMessage("Password is required");
+            .NotEmpty()
+            .WithError(AuthErrors.PasswordIsEmpty);
     }
 }

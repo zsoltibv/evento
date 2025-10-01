@@ -1,5 +1,7 @@
 ﻿using System.Security.Claims;
 using Evento.Dto;
+using Evento.Enums;
+using Evento.Errors;
 using Evento.Extensions;
 using Evento.Services;
 
@@ -49,8 +51,17 @@ public static class BookingEndpoints
         bookingsGroup.MapPost("/", async (CreateBookingDto createDto, IBookingService service, ClaimsPrincipal user) =>
             {
                 var userId = user.GetUserId();
-                var created = await service.CreateAsync(userId, createDto);
 
+                var hasOverlap = await service.UserHasOverlappingApprovedOrPendingBookingsAsync(userId,
+                    createDto.VenueId!.Value, createDto.StartDate!.Value, createDto.EndDate!.Value);
+
+                if (hasOverlap)
+                {
+                    return Results.Json(BookingErrors.OverlappingUserApprovedOrPendingBooking,
+                        statusCode: StatusCodes.Status400BadRequest);
+                }
+
+                var created = await service.CreateAsync(userId, createDto);
                 return Results.Created($"/api/bookings/{created.Id}", created);
             })
             .WithValidation<CreateBookingDto>()
@@ -64,13 +75,37 @@ public static class BookingEndpoints
                 {
                     var userId = user.GetUserId();
                     var booking = await service.GetByIdAsync(id);
-
-                    return booking switch
+                    
+                    if (booking is null)
                     {
-                        null => Results.NotFound(),
-                        _ when !user.IsAdmin() && booking.UserId != userId => Results.Forbid(),
-                        _ => Results.Ok(await service.UpdateAsync(id, updateDto))
-                    };
+                        return Results.NotFound();
+                    }
+
+                    if (!user.IsAdmin() && updateDto.Status == BookingStatus.Approved)
+                    {
+                        return Results.Json(BookingErrors.UserCannotApproveBooking,
+                            statusCode: StatusCodes.Status403Forbidden);
+                    }
+
+                    if (!user.IsAdmin() && booking.UserId != userId)
+                    {
+                        return Results.Forbid();
+                    }
+                    
+                    var hasOverlap = false;
+                    if (updateDto.Status == BookingStatus.Approved)
+                    {
+                        hasOverlap = await service.AnyOverlappingApprovedBookingsAsync(
+                            id, updateDto.VenueId!.Value, updateDto.StartDate!.Value, updateDto.EndDate!.Value);
+                    }
+
+                    if (hasOverlap)
+                    {
+                        return Results.Json(BookingErrors.OverlappingAnyApprovedBooking,
+                            statusCode: StatusCodes.Status400BadRequest);
+                    }
+
+                    return Results.Ok(await service.UpdateAsync(id, updateDto));
                 })
             .WithValidation<UpdateBookingDto>()
             .RequireAuthorization()
@@ -81,7 +116,7 @@ public static class BookingEndpoints
 
         bookingsGroup.MapDelete("/{id:int}", async (int id, IBookingService service, ClaimsPrincipal user) =>
             {
-                var userId  = user.GetUserId();
+                var userId = user.GetUserId();
                 var booking = await service.GetByIdAsync(id);
 
                 if (booking is null)

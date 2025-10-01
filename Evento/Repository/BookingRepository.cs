@@ -5,19 +5,21 @@ namespace Evento.Repository;
 
 public class BookingRepository(EventoDbContext db) : IBookingRepository
 {
-    public async Task<List<Booking>> GetAllAsync()
+    public async Task<IEnumerable<Booking>> GetAllAsync()
     {
         return await db.Bookings
             .Include(b => b.User)
             .Include(b => b.Venue)
+            .AsNoTracking()
             .ToListAsync();
     }
 
-    public async Task<List<Booking>> GetByUserAsync(string userId)
+    public async Task<IEnumerable<Booking>> GetByUserAsync(string userId)
     {
         return await db.Bookings
             .Include(b => b.Venue)
             .Where(b => b.UserId == userId)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -26,6 +28,7 @@ public class BookingRepository(EventoDbContext db) : IBookingRepository
         return await db.Bookings
             .Include(b => b.User)
             .Include(b => b.Venue)
+            .AsNoTracking()
             .FirstOrDefaultAsync(b => b.Id == id);
     }
 
@@ -52,4 +55,7 @@ public class BookingRepository(EventoDbContext db) : IBookingRepository
         await db.SaveChangesAsync();
         return true;
     }
+
+    public IQueryable<Booking> GetAll() => db.Bookings;
+    public IQueryable<Booking> GetByUser(string userId) => db.Bookings.Where(b => b.UserId == userId);
 }
