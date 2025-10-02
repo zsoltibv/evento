@@ -1,7 +1,6 @@
 ﻿using Evento.Application.Common;
 using Evento.Application.Common.Dto;
 using Evento.Domain.Models;
-using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
@@ -9,18 +8,11 @@ namespace Evento.Application.Auth.Register;
 
 public class RegisterCommandHandler(
     UserManager<AppUser> userManager,
-    ITokenService tokenService,
-    IValidator<RegisterDto> validator)
+    ITokenService tokenService)
     : ICommandHandler<RegisterCommand>
 {
     public async Task<IResult> Handle(RegisterCommand command)
     {
-        var validation = await validator.ValidateAsync(command.Dto);
-        if (!validation.IsValid)
-        {
-            return Results.BadRequest(validation.Errors);
-        }
-
         var appUser = new AppUser
         {
             UserName = command.Dto.Username,

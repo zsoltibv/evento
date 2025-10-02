@@ -36,7 +36,8 @@ public class EventoDbContext(DbContextOptions<EventoDbContext> options) : Identi
                 Id = 1,
                 Name = "Grand Conference Hall",
                 Description = "A large hall suitable for conferences and big events.",
-                Image = null,
+                ImageUrl =
+                    "https://multigrandhotel.com/wp-content/uploads/2014/09/multi_grand_hotel_conference_hall4.jpg",
                 Location = "Downtown Center",
                 Capacity = 500
             },
@@ -45,7 +46,7 @@ public class EventoDbContext(DbContextOptions<EventoDbContext> options) : Identi
                 Id = 2,
                 Name = "Riverside Banquet Hall",
                 Description = "Perfect for weddings and receptions with a scenic riverside view.",
-                Image = null,
+                ImageUrl = "https://media.eventective.com/3318884_lg.jpg",
                 Location = "Riverside Avenue 12",
                 Capacity = 250
             },
@@ -54,7 +55,7 @@ public class EventoDbContext(DbContextOptions<EventoDbContext> options) : Identi
                 Id = 3,
                 Name = "Skyline Rooftop",
                 Description = "An open-air venue with a panoramic city skyline view.",
-                Image = null,
+                ImageUrl = "https://m.dining-out.co.za/ftp/Gallery/10134-15603-32305.jpg",
                 Location = "Highrise Tower, 20th Floor",
                 Capacity = 150
             },
@@ -63,7 +64,8 @@ public class EventoDbContext(DbContextOptions<EventoDbContext> options) : Identi
                 Id = 4,
                 Name = "Greenwood Garden Pavilion",
                 Description = "An outdoor garden pavilion ideal for summer parties and casual gatherings.",
-                Image = null,
+                ImageUrl =
+                    "https://greenwoodgardens.org/wp-content/uploads/2025/07/Greenwood-Gardens-Summerhouse-1024x682.jpg",
                 Location = "Greenwood Park",
                 Capacity = 120
             },
@@ -72,7 +74,8 @@ public class EventoDbContext(DbContextOptions<EventoDbContext> options) : Identi
                 Id = 5,
                 Name = "TechHub Auditorium",
                 Description = "Modern auditorium with advanced AV equipment for product launches and seminars.",
-                Image = null,
+                ImageUrl =
+                    "https://cdn.prod.website-files.com/645be0c3de94f82b7aad951a/66daefb089ead127c970d434_Featured-image.jpg",
                 Location = "Innovation District",
                 Capacity = 350
             },
@@ -81,7 +84,8 @@ public class EventoDbContext(DbContextOptions<EventoDbContext> options) : Identi
                 Id = 6,
                 Name = "Heritage Ballroom",
                 Description = "Classic ballroom with chandeliers and vintage decor, perfect for formal galas.",
-                Image = null,
+                ImageUrl =
+                    "https://partyslate.imgix.net/photos/2100171/photo-7b28f213-a198-4d44-9a12-fa6cc10debf1.jpg?ixlib=js-2.3.2&auto=compress%2Cformat&bg=fff&cs=srgb",
                 Location = "Old Town Square",
                 Capacity = 400
             },
@@ -90,7 +94,8 @@ public class EventoDbContext(DbContextOptions<EventoDbContext> options) : Identi
                 Id = 7,
                 Name = "Lakeside Retreat",
                 Description = "Secluded lakeside lodge for team-building events and weekend retreats.",
-                Image = null,
+                ImageUrl =
+                    "https://cf.bstatic.com/xdata/images/hotel/max1024x768/658805805.jpg?k=6299550817216d7fa8c5f978ec3cf24cf1e78485471833a9a092f3d34d2c99b2&o=&hp=1",
                 Location = "Lakeview Road 45",
                 Capacity = 80
             },
@@ -99,7 +104,8 @@ public class EventoDbContext(DbContextOptions<EventoDbContext> options) : Identi
                 Id = 8,
                 Name = "City Art Gallery",
                 Description = "Creative space surrounded by art, suitable for exhibitions and cultural events.",
-                Image = null,
+                ImageUrl =
+                    "https://www.thecityofldn.com/wp-content/uploads/2023/05/visitors-at-guildhall-art-gallery-visitthecity.jpg",
                 Location = "Cultural Avenue 10",
                 Capacity = 200
             }

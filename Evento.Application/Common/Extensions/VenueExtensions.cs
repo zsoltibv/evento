@@ -12,7 +12,7 @@ public static class VenueExtensions
             venue.Description,
             venue.Location,
             venue.Capacity,
-            venue.Image
+            venue.ImageUrl
         );
 
     public static VenueWithBookingsDto ToDtoWithBookings(this Venue venue)
@@ -22,7 +22,7 @@ public static class VenueExtensions
             venue.Description,
             venue.Location,
             venue.Capacity,
-            venue.Image,
+            venue.ImageUrl,
             venue.Bookings.ToDto()
         );
 
