@@ -3,7 +3,7 @@ using Evento.Errors;
 using Evento.Extensions;
 using FluentValidation;
 
-namespace Evento.Validators;
+namespace Evento.Application.Auth.Login;
 
 internal sealed class LoginDtoValidator : AbstractValidator<LoginDto>
 {

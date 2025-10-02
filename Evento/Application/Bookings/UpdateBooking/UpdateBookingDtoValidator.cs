@@ -4,7 +4,7 @@ using Evento.Extensions;
 using Evento.Services;
 using FluentValidation;
 
-namespace Evento.Validators;
+namespace Evento.Application.Bookings.UpdateBooking;
 
 internal sealed class UpdateBookingDtoValidator : AbstractValidator<UpdateBookingDto>
 {

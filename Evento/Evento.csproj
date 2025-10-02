@@ -19,6 +19,11 @@
         <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="9.0.9" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
         <PackageReference Include="Scalar.AspNetCore" Version="2.8.6" />
+        <PackageReference Include="Scrutor" Version="6.1.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Application\Bookings\" />
     </ItemGroup>
 
 </Project>

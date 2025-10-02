@@ -3,7 +3,7 @@ using Evento.Errors;
 using Evento.Extensions;
 using FluentValidation;
 
-namespace Evento.Validators;
+namespace Evento.Application.Auth.Register;
 
 internal sealed class RegisterDtoValidator : AbstractValidator<RegisterDto>
 {

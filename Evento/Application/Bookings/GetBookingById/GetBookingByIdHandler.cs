@@ -1,0 +1,19 @@
+﻿using Evento.Common;
+using Evento.Services;
+
+namespace Evento.Application.Bookings.GetBookingById;
+
+public class GetBookingByIdHandler(IBookingService service) : IQueryHandler<GetBookingByIdQuery>
+{
+    public async Task<IResult> Handle(GetBookingByIdQuery query)
+    {
+        var booking = await service.GetByIdAsync(query.BookingId);
+        if (booking is null)
+            return Results.NotFound();
+
+        if (query.IsAdmin || booking.UserId == query.UserId)
+            return Results.Ok(booking);
+
+        return Results.Forbid();
+    }
+}

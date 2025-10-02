@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Evento;
+using Evento.Common;
 using Evento.Endpoints;
 using Evento.Models;
 using Evento.Repository;
@@ -32,6 +33,17 @@ builder.Services.AddScoped<IBookingService, BookingService>();
 
 //Register Repositories
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+
+//Register Handlers and Queries
+builder.Services.Scan(scan => scan
+    .FromAssemblyOf<Program>()
+    .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>)))
+    .AsImplementedInterfaces()
+    .WithScopedLifetime()
+    .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<>)))
+    .AsImplementedInterfaces()
+    .WithScopedLifetime()
+);
 
 // Add CORS service
 builder.Services.AddCors(options =>

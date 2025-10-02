@@ -1,9 +1,12 @@
 ﻿using System.Security.Claims;
+using Evento.Application.Bookings.CreateBooking;
+using Evento.Application.Bookings.DeleteBooking;
+using Evento.Application.Bookings.GetBookingById;
+using Evento.Application.Bookings.GetBookings;
+using Evento.Application.Bookings.UpdateBooking;
+using Evento.Common;
 using Evento.Dto;
-using Evento.Enums;
-using Evento.Errors;
 using Evento.Extensions;
-using Evento.Services;
 
 namespace Evento.Endpoints;
 
@@ -13,34 +16,37 @@ public static class BookingEndpoints
     {
         var bookingsGroup = app.MapGroup("/api/bookings");
 
-        bookingsGroup.MapGet("/", async (IBookingService service, ClaimsPrincipal user) =>
+        bookingsGroup.MapGet("/", async (
+                IQueryHandler<GetBookingsQuery> handler,
+                ClaimsPrincipal user
+            ) =>
             {
-                var userId = user.GetUserId();
+                var query = new GetBookingsQuery(
+                    user.GetUserId(),
+                    user.IsAdmin(),
+                    user.IsUser()
+                );
 
-                return user switch
-                {
-                    _ when user.IsAdmin() => Results.Ok(await service.GetAllAsync()),
-                    _ when user.IsUser() => Results.Ok(await service.GetByUserAsync(userId)),
-                    _ => Results.Forbid()
-                };
+                return await handler.Handle(query);
             })
             .RequireAuthorization()
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status403Forbidden);
 
-        bookingsGroup.MapGet("/{id:int}", async (int id, IBookingService service, ClaimsPrincipal user) =>
+        bookingsGroup.MapGet("/{id:int}", async (
+                int id,
+                IQueryHandler<GetBookingByIdQuery> handler,
+                ClaimsPrincipal user
+            ) =>
             {
-                var userId = user.GetUserId();
-                var booking = await service.GetByIdAsync(id);
+                var query = new GetBookingByIdQuery(
+                    BookingId: id,
+                    UserId: user.GetUserId(),
+                    IsAdmin: user.IsAdmin()
+                );
 
-                return booking switch
-                {
-                    null => Results.NotFound(),
-                    _ when user.IsAdmin() => Results.Ok(booking),
-                    _ when booking.UserId == userId => Results.Ok(booking),
-                    _ => Results.Forbid()
-                };
+                return await handler.Handle(query);
             })
             .RequireAuthorization()
             .Produces(StatusCodes.Status200OK)
@@ -48,21 +54,14 @@ public static class BookingEndpoints
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status403Forbidden);
 
-        bookingsGroup.MapPost("/", async (CreateBookingDto createDto, IBookingService service, ClaimsPrincipal user) =>
+        bookingsGroup.MapPost("/", async (
+                CreateBookingDto dto,
+                ICommandHandler<CreateBookingCommand> handler,
+                ClaimsPrincipal user
+            ) =>
             {
-                var userId = user.GetUserId();
-
-                var hasOverlap = await service.UserHasOverlappingApprovedOrPendingBookingsAsync(userId,
-                    createDto.VenueId!.Value, createDto.StartDate!.Value, createDto.EndDate!.Value);
-
-                if (hasOverlap)
-                {
-                    return Results.Json(BookingErrors.OverlappingUserApprovedOrPendingBooking,
-                        statusCode: StatusCodes.Status400BadRequest);
-                }
-
-                var created = await service.CreateAsync(userId, createDto);
-                return Results.Created($"/api/bookings/{created.Id}", created);
+                var command = new CreateBookingCommand(dto, user.GetUserId());
+                return await handler.Handle(command);
             })
             .WithValidation<CreateBookingDto>()
             .RequireAuthorization(AppRoles.User)
@@ -70,43 +69,21 @@ public static class BookingEndpoints
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status403Forbidden);
 
-        bookingsGroup.MapPut("/{id:int}",
-                async (int id, UpdateBookingDto updateDto, IBookingService service, ClaimsPrincipal user) =>
-                {
-                    var userId = user.GetUserId();
-                    var booking = await service.GetByIdAsync(id);
-                    
-                    if (booking is null)
-                    {
-                        return Results.NotFound();
-                    }
+        bookingsGroup.MapPut("/{id:int}", async (
+                int id,
+                UpdateBookingDto dto,
+                ICommandHandler<UpdateBookingCommand> handler,
+                ClaimsPrincipal user) =>
+            {
+                var command = new UpdateBookingCommand(
+                    id,
+                    dto,
+                    user.GetUserId(),
+                    user.IsAdmin()
+                );
 
-                    if (!user.IsAdmin() && updateDto.Status == BookingStatus.Approved)
-                    {
-                        return Results.Json(BookingErrors.UserCannotApproveBooking,
-                            statusCode: StatusCodes.Status403Forbidden);
-                    }
-
-                    if (!user.IsAdmin() && booking.UserId != userId)
-                    {
-                        return Results.Forbid();
-                    }
-                    
-                    var hasOverlap = false;
-                    if (updateDto.Status == BookingStatus.Approved)
-                    {
-                        hasOverlap = await service.AnyOverlappingApprovedBookingsAsync(
-                            id, updateDto.VenueId!.Value, updateDto.StartDate!.Value, updateDto.EndDate!.Value);
-                    }
-
-                    if (hasOverlap)
-                    {
-                        return Results.Json(BookingErrors.OverlappingAnyApprovedBooking,
-                            statusCode: StatusCodes.Status400BadRequest);
-                    }
-
-                    return Results.Ok(await service.UpdateAsync(id, updateDto));
-                })
+                return await handler.Handle(command);
+            })
             .WithValidation<UpdateBookingDto>()
             .RequireAuthorization()
             .Produces(StatusCodes.Status200OK)
@@ -114,23 +91,19 @@ public static class BookingEndpoints
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status403Forbidden);
 
-        bookingsGroup.MapDelete("/{id:int}", async (int id, IBookingService service, ClaimsPrincipal user) =>
+        bookingsGroup.MapDelete("/{id:int}", async (
+                int id,
+                ICommandHandler<DeleteBookingCommand> handler,
+                ClaimsPrincipal user
+            ) =>
             {
-                var userId = user.GetUserId();
-                var booking = await service.GetByIdAsync(id);
+                var command = new DeleteBookingCommand(
+                    id,
+                    user.GetUserId(),
+                    user.IsAdmin()
+                );
 
-                if (booking is null)
-                {
-                    return Results.NotFound();
-                }
-
-                if (!user.IsAdmin() && booking.UserId != userId)
-                {
-                    return Results.Forbid();
-                }
-
-                await service.DeleteAsync(booking.Id);
-                return Results.NoContent();
+                return await handler.Handle(command);
             })
             .RequireAuthorization()
             .Produces(StatusCodes.Status204NoContent)
