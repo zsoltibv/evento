@@ -1,4 +1,4 @@
-﻿using Evento.Domain.Common;
+﻿using Evento.Application.Common;
 
 namespace Evento.Application.Venues.GetVenues;
 

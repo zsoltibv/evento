@@ -1,5 +1,5 @@
-﻿using Evento.Application.Common.Extensions;
-using Evento.Domain.Common;
+﻿using Evento.Application.Common;
+using Evento.Application.Common.Extensions;
 using Microsoft.AspNetCore.Http;
 
 namespace Evento.Application.Venues.GetVenues;

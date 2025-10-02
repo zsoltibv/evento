@@ -5,9 +5,9 @@ using Evento.Application.Bookings.DeleteBooking;
 using Evento.Application.Bookings.GetBookingById;
 using Evento.Application.Bookings.GetBookings;
 using Evento.Application.Bookings.UpdateBooking;
+using Evento.Application.Common;
 using Evento.Application.Common.Dto;
-using Evento.Domain.Common;
-using Evento.Infrastructure.Helpers;
+using Evento.Endpoints.Helpers;
 
 namespace Evento.Endpoints.Endpoints;
 

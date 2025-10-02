@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using Evento.Application;
 
-namespace Evento.Infrastructure.Helpers;
+namespace Evento.Endpoints.Helpers;
 
 public static class ClaimsPrincipalExtensions
 {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace Evento.Domain.Common;
+namespace Evento.Application.Common;
 
 public interface ICommandHandler<TCommand>
 {

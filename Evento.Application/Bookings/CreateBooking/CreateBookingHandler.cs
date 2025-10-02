@@ -1,5 +1,5 @@
-﻿using Evento.Application.Common.Errors;
-using Evento.Domain.Common;
+﻿using Evento.Application.Common;
+using Evento.Application.Common.Errors;
 using Microsoft.AspNetCore.Http;
 
 namespace Evento.Application.Bookings.CreateBooking;

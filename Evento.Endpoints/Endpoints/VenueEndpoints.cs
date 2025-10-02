@@ -1,6 +1,6 @@
-﻿using Evento.Application.Venues.GetVenueById;
+﻿using Evento.Application.Common;
+using Evento.Application.Venues.GetVenueById;
 using Evento.Application.Venues.GetVenues;
-using Evento.Domain.Common;
 
 namespace Evento.Endpoints.Endpoints;
 

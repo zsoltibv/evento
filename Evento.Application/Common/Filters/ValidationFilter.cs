@@ -2,7 +2,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 
-namespace Evento.Infrastructure.Filters;
+namespace Evento.Application.Common.Filters;
 
 public class ValidationFilter<T>(IValidator<T> validator) : IEndpointFilter where T : class
 {

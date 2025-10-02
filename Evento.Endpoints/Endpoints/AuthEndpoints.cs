@@ -1,7 +1,8 @@
 ﻿using Evento.Application.Auth.Login;
 using Evento.Application.Auth.Register;
+using Evento.Application.Common;
 using Evento.Application.Common.Dto;
-using Evento.Domain.Common;
+using Evento.Endpoints.Helpers;
 
 namespace Evento.Endpoints.Endpoints;
 

@@ -1,5 +1,5 @@
-﻿using Evento.Application.Common.Dto;
-using Evento.Domain.Common;
+﻿using Evento.Application.Common;
+using Evento.Application.Common.Dto;
 using Evento.Domain.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;

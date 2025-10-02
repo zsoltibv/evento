@@ -1,6 +1,7 @@
 ﻿using Evento.Application.Common.Dto;
-using ICommand = Evento.Domain.Common.ICommand;
+using Common_ICommand = Evento.Application.Common.ICommand;
+using ICommand = Evento.Application.Common.ICommand;
 
 namespace Evento.Application.Auth.Register;
 
-public record RegisterCommand(RegisterDto Dto) : ICommand;
+public record RegisterCommand(RegisterDto Dto) : Common_ICommand;

@@ -1,7 +1,6 @@
-﻿
-using Evento.Infrastructure.Filters;
+﻿using Evento.Application.Common.Filters;
 
-namespace Evento.Endpoints;
+namespace Evento.Endpoints.Helpers;
 
 public static class EndpointRouteBuilderExtensions
 {

@@ -1,4 +1,4 @@
-﻿using Evento.Domain.Common;
+﻿using Evento.Application.Common;
 using Microsoft.AspNetCore.Http;
 
 namespace Evento.Application.Bookings.GetBookingById;

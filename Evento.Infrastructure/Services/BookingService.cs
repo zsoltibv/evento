@@ -1,5 +1,4 @@
-﻿using Evento.Application;
-using Evento.Application.Bookings;
+﻿using Evento.Application.Bookings;
 using Evento.Application.Common.Dto;
 using Evento.Application.Common.Extensions;
 using Evento.Domain;
