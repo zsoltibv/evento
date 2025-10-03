@@ -1,0 +1,52 @@
+<div class="venue-hero" [style.backgroundImage]="'url(' + venue().imageUrl + ')'">
+  <div class="venue-overlay">
+    <h1 class="mb-2">{{ venue().name }}</h1>
+    <p>{{ venue().location }}</p>
+  </div>
+</div>
+
+@if(venue().description){
+<p-card class="mt-3">
+  <p>{{ venue().description }}</p>
+  <p><strong>Capacity:</strong> {{ venue().capacity }}</p>
+</p-card>
+}
+
+<div class="px-4">
+  <h2>Bookings</h2>
+
+  <p-card class="mb-4 flex">
+    <h3>Make a Reservation</h3>
+
+    <label for="startDate">Start Date</label>
+    <p-date-picker
+      selectionMode="range"
+      [disabledDates]="getDisabledDates()"
+      placeholder="Select booking dates"
+      class=""
+    ></p-date-picker>
+
+    <label for="startDate">End Date</label>
+    <p-date-picker
+      selectionMode="range"
+      [disabledDates]="getDisabledDates()"
+      placeholder="Select booking dates"
+    ></p-date-picker>
+
+    <button pButton label="Book Now" class="mt-3" (click)="submitBooking()"></button>
+  </p-card>
+
+  @for(booking of venue()?.bookings; track booking.id){
+  <p-card>
+    <div class="flex justify-between items-center">
+      <div>
+        <strong>Booking #{{ booking.id }}</strong
+        ><br />
+        From: {{ booking.startDate | date : 'shortDate' }}<br />
+        To: {{ booking.endDate | date : 'shortDate' }}
+      </div>
+      <p-tag [value]="booking.status" severity="info"></p-tag>
+    </div>
+  </p-card>
+  }
+</div>

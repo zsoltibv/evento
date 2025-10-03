@@ -1,1 +1,33 @@
-<p>homepage-component works!</p>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 w-full">
+  @for (venue of venues(); track venue.id) {
+  <p-card
+    header="{{ venue.name }}"
+    subheader="{{ venue.location }}"
+    class="flex flex-col min-h-16rem w-18rem relative"
+  >
+    <ng-template pTemplate="header">
+      <div
+        class="w-full"
+        style="
+              height: 12rem;
+              background-image: url('{{ venue.imageUrl }}');
+              background-size: cover;
+              background-position: center;
+              border-top-left-radius: 0.5rem;
+              border-top-right-radius: 0.5rem;
+            "
+      ></div>
+    </ng-template>
+
+    <div class="flex-1 p-2">
+      <p>{{ venue.description || 'No description available' }}</p>
+    </div>
+
+    <ng-template pTemplate="footer" class="absolute bottom-0 mt-auto">
+      <p-button label="See venue" class="w-full" (onClick)="goToVenue(venue)"></p-button>
+    </ng-template>
+  </p-card>
+  } @empty {
+  <p class="col-span-full text-center text-gray-500">No venues available.</p>
+  }
+</div>

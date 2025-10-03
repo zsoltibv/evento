@@ -10,10 +10,6 @@ export class AuthService {
   private api = inject(RestApiService);
 
   constructor() {
-    if (typeof localStorage == 'undefined') {
-      return;
-    }
-
     const storedToken = localStorage.getItem('jwt');
     if (storedToken) {
       this.jwtToken.set(storedToken);
