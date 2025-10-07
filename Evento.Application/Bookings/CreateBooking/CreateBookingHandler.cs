@@ -17,10 +17,7 @@ public class CreateBookingHandler(IBookingService service) : ICommandHandler<Cre
 
         if (hasOverlap)
         {
-            return Results.Json(
-                BookingErrors.OverlappingUserApprovedOrPendingBooking,
-                statusCode: StatusCodes.Status400BadRequest
-            );
+            return Results.BadRequest(BookingErrors.OverlappingUserApprovedOrPendingBooking);
         }
 
         var created = await service.CreateAsync(command.UserId, command.Dto);

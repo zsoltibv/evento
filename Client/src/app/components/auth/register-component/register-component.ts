@@ -45,7 +45,7 @@ export class RegisterComponent {
         this.confirmPassword()
       );
       console.log('Register successful:', response);
-      this.router.navigate(['/home']);
+      this.router.navigate(['/venues']);
     } catch (err: any) {
       console.error('Register failed', err);
     }

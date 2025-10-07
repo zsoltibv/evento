@@ -20,7 +20,7 @@ public class ValidationFilter<T>(IValidator<T> validator) : IEndpointFilter wher
         }
         
         var errors = result.Errors
-            .Select(failure => new ErrorResponse(
+            .Select(failure => new Error(
                 Code: failure.ErrorCode,
                 Description: failure.ErrorMessage
             ))

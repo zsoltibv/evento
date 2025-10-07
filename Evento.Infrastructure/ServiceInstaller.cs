@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Evento.Application;
 using Evento.Application.Bookings;
+using Evento.Application.VenueAdmin;
 using Evento.Application.Venues;
 using Evento.Domain;
 using Evento.Domain.Models;
@@ -29,6 +30,7 @@ public static class ServiceInstaller
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IVenueService, VenueService>();
         services.AddScoped<IBookingService, BookingService>();
+        services.AddScoped<IVenueAdminService, VenueAdminService>();
 
         // Register Repositories
         services.AddScoped<IBookingRepository, BookingRepository>();
@@ -69,7 +71,8 @@ public static class ServiceInstaller
         // Register Authorization policies
         services.AddAuthorizationBuilder()
             .AddPolicy("User", policy => policy.RequireRole("User"))
-            .AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+            .AddPolicy("Admin", policy => policy.RequireRole("Admin"))
+            .AddPolicy("VenueAdmin", policy => policy.RequireRole("VenueAdmin"));
 
         return services;
     }

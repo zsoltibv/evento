@@ -33,7 +33,7 @@ export class LoginComponent {
     try {
       const response = await this.authService.login(this.email(), this.password());
       console.log('Login successful', response);
-      this.router.navigate(['/home']);
+      this.router.navigate(['/venues']);
     } catch (err: any) {
       console.error('Login failed', err);
     }

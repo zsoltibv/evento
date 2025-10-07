@@ -13,12 +13,12 @@ public sealed class CreateBookingDtoValidator : AbstractValidator<CreateBookingD
         RuleFor(x => x.StartDate)
             .NotNull().WithError(BookingErrors.StartDateRequired)
             .LessThan(x => x.EndDate).WithError(BookingErrors.StartDateBeforeEndDate)
-            .GreaterThan(DateTime.Now).WithError(BookingErrors.StartDateInFuture);
+            .GreaterThan(DateTime.UtcNow.AddMinutes(-1)).WithError(BookingErrors.StartDateInFuture);
 
         RuleFor(x => x.EndDate)
             .NotNull().WithError(BookingErrors.EndDateRequired)
             .GreaterThan(x => x.StartDate).WithError(BookingErrors.EndDateAfterStartDate)
-            .GreaterThan(DateTime.Now).WithError(BookingErrors.EndDateInFuture);
+            .GreaterThan(DateTime.UtcNow.AddMinutes(-1)).WithError(BookingErrors.EndDateInFuture);
 
         RuleFor(x => x.VenueId)
             .NotNull().WithError(BookingErrors.VenueRequired)

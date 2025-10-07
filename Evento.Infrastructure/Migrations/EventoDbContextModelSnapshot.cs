@@ -74,6 +74,9 @@ namespace Evento.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<int?>("VenueId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -82,6 +85,8 @@ namespace Evento.Infrastructure.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("VenueId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -226,6 +231,21 @@ namespace Evento.Infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Evento.Domain.Models.VenueAdmin", b =>
+                {
+                    b.Property<int>("VenueId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.HasKey("VenueId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("VenueAdmins");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -254,15 +274,21 @@ namespace Evento.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "a5c8ffb6-2c7d-457e-839b-9da38ac8912b",
+                            Id = "0fa24c22-6da8-4d90-ad4b-46002d212ad5",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "e8967d67-14d6-4572-8042-7b24815b1f1a",
+                            Id = "594b2059-216b-4261-b00e-aebe9d4d6de9",
                             Name = "User",
                             NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = "7cde4c7c-8b00-4664-87a5-96ad513d248e",
+                            Name = "VenueAdmin",
+                            NormalizedName = "VENUE_ADMIN"
                         });
                 });
 
@@ -372,6 +398,13 @@ namespace Evento.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Evento.Domain.Models.AppUser", b =>
+                {
+                    b.HasOne("Evento.Domain.Models.Venue", null)
+                        .WithMany("VenueAdmins")
+                        .HasForeignKey("VenueId");
+                });
+
             modelBuilder.Entity("Evento.Domain.Models.Booking", b =>
                 {
                     b.HasOne("Evento.Domain.Models.AppUser", "User")
@@ -382,6 +415,25 @@ namespace Evento.Infrastructure.Migrations
 
                     b.HasOne("Evento.Domain.Models.Venue", "Venue")
                         .WithMany("Bookings")
+                        .HasForeignKey("VenueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+
+                    b.Navigation("Venue");
+                });
+
+            modelBuilder.Entity("Evento.Domain.Models.VenueAdmin", b =>
+                {
+                    b.HasOne("Evento.Domain.Models.AppUser", "User")
+                        .WithMany("VenueAdmins")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Evento.Domain.Models.Venue", "Venue")
+                        .WithMany()
                         .HasForeignKey("VenueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -442,9 +494,16 @@ namespace Evento.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Evento.Domain.Models.AppUser", b =>
+                {
+                    b.Navigation("VenueAdmins");
+                });
+
             modelBuilder.Entity("Evento.Domain.Models.Venue", b =>
                 {
                     b.Navigation("Bookings");
+
+                    b.Navigation("VenueAdmins");
                 });
 #pragma warning restore 612, 618
         }

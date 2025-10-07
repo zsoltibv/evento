@@ -36,8 +36,7 @@ public class UpdateBookingHandler(IBookingService service) : ICommandHandler<Upd
 
             if (overlap)
             {
-                return Results.Json(BookingErrors.OverlappingAnyApprovedBooking,
-                    statusCode: StatusCodes.Status400BadRequest);
+                return Results.BadRequest(BookingErrors.OverlappingAnyApprovedBooking);
             }
         }
 

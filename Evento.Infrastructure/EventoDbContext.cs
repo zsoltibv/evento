@@ -9,6 +9,7 @@ public class EventoDbContext(DbContextOptions<EventoDbContext> options) : Identi
 {
     public DbSet<Venue> Venues { get; set; }
     public DbSet<Booking> Bookings { get; set; }
+    public DbSet<VenueAdmin> VenueAdmins { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -25,6 +26,11 @@ public class EventoDbContext(DbContextOptions<EventoDbContext> options) : Identi
             {
                 Name = "User",
                 NormalizedName = "USER"
+            },
+            new()
+            {
+                Name = "VenueAdmin",
+                NormalizedName = "VENUE_ADMIN"
             }
         ];
         modelBuilder.Entity<IdentityRole>().HasData(roles);
@@ -111,5 +117,8 @@ public class EventoDbContext(DbContextOptions<EventoDbContext> options) : Identi
             }
         ];
         modelBuilder.Entity<Venue>().HasData(venues);
+        
+        modelBuilder.Entity<VenueAdmin>()
+            .HasKey(va => new { va.VenueId, va.UserId });
     }
 }

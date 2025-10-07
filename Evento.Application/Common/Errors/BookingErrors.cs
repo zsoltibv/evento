@@ -2,43 +2,43 @@
 
 public static class BookingErrors
 {
-    public static readonly ErrorResponse StartDateRequired =
+    public static readonly Error StartDateRequired =
         new("BookingErrors.StartDateRequired", "Start date is required.");
 
-    public static readonly ErrorResponse StartDateBeforeEndDate =
+    public static readonly Error StartDateBeforeEndDate =
         new("BookingErrors.StartDateBeforeEndDate", "Start date must be before end date.");
 
-    public static readonly ErrorResponse StartDateInFuture =
+    public static readonly Error StartDateInFuture =
         new("BookingErrors.StartDateInFuture", "Start date must be in the future.");
 
-    public static readonly ErrorResponse EndDateRequired =
+    public static readonly Error EndDateRequired =
         new("BookingErrors.EndDateRequired", "End date is required.");
 
-    public static readonly ErrorResponse EndDateAfterStartDate =
+    public static readonly Error EndDateAfterStartDate =
         new("BookingErrors.EndDateAfterStartDate", "End date must be after start date.");
 
-    public static readonly ErrorResponse EndDateInFuture =
+    public static readonly Error EndDateInFuture =
         new("BookingErrors.EndDateInFuture", "End date must be in the future.");
 
-    public static readonly ErrorResponse VenueRequired =
+    public static readonly Error VenueRequired =
         new("BookingErrors.VenueRequired", "Venue id is required.");
 
-    public static readonly ErrorResponse VenueNotFound =
+    public static readonly Error VenueNotFound =
         new("BookingErrors.VenueNotFound", "Venue doesn't exist.");
 
-    public static readonly ErrorResponse StatusRequired =
+    public static readonly Error StatusRequired =
         new("BookingErrors.StatusRequired", "Status is required.");
 
-    public static readonly ErrorResponse InvalidStatus =
+    public static readonly Error InvalidStatus =
         new("BookingErrors.InvalidStatus", "Invalid booking status.");
 
-    public static readonly ErrorResponse OverlappingAnyApprovedBooking =
+    public static readonly Error OverlappingAnyApprovedBooking =
         new("BookingErrors.OverlappingAnyApprovedBooking", "Booking is overlapping with an existing approved booking.");
 
-    public static readonly ErrorResponse OverlappingUserApprovedOrPendingBooking =
+    public static readonly Error OverlappingUserApprovedOrPendingBooking =
         new("BookingErrors.OverlappingUserApprovedOrPendingBooking",
             "Booking is overlapping with an existing approved and/or pending booking.");
 
-    public static readonly ErrorResponse UserCannotApproveBooking =
+    public static readonly Error UserCannotApproveBooking =
         new("BookingErrors.UserCannotApproveBooking", "User cannot approve booking.");
 }

@@ -17,7 +17,12 @@ export class NavbarComponent {
 
   protected menuItems = computed<MenuItem[]>(() => {
     const loggedIn = !!this.authService.jwtToken();
-    return loggedIn ? [{ label: 'Home', routerLink: '/home' }] : [];
+    return loggedIn
+      ? [
+          { label: 'Venues', routerLink: '/venues' },
+          { label: 'Bookings', routerLink: '/bookings' },
+        ]
+      : [];
   });
 
   protected isLoggedIn = computed(() => {
