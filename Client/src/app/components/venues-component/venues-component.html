@@ -1,0 +1,26 @@
+<div class="container mx-auto grid gap-4 px-4 md:py-6 py-4 w-full grid-cols-1 md:grid-cols-4">
+  @for (venue of venues(); track venue.id) {
+  <p-card
+    header="{{ venue.name }}"
+    subheader="{{ venue.location }}"
+    class="flex flex-col min-h-md max-w-xs rounded-lg overflow-hidden relative"
+  >
+    <ng-template pTemplate="header">
+      <div
+        class="w-full h-48 bg-center bg-cover rounded-t-lg"
+        [ngStyle]="{ 'background-image': 'url(' + venue.imageUrl + ')' }"
+      ></div>
+    </ng-template>
+
+    <div class="p-2 mb-3">
+      <p class="text-gray-300 line-clamp-2">
+        {{ venue.description || 'No description available' }}
+      </p>
+    </div>
+
+    <p-button label="See venue" class="w-full" (onClick)="goToVenue(venue)"></p-button>
+  </p-card>
+  } @empty {
+  <p class="text-center text-gray-500">No bookings available.</p>
+  }
+</div>
