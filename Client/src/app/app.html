@@ -1,3 +1,14 @@
-<app-navbar-component></app-navbar-component>
-<router-outlet></router-outlet>
-<p-toast></p-toast>
+<div [ngClass]="isAuthPage() ? 'flex flex-col h-screen ' : 'flex flex-col min-h-screen'">
+  <app-navbar-component
+    [ngClass]="{
+      'sticky top-0 z-50': !isAuthPage(),
+    }"
+  ></app-navbar-component>
+
+  <main class="flex-grow">
+    <router-outlet></router-outlet>
+  </main>
+
+  <p-toast />
+  <p-confirmdialog [position]="'center'" [draggable]="false" />
+</div>

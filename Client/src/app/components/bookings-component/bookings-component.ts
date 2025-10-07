@@ -3,20 +3,17 @@ import { BookingService } from '../../services/booking-service';
 import { Booking } from '../../models/Booking';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
-import { BookingDatePipe } from '../../pipe/booking-date-pipe';
-import { MessageService } from 'primeng/api';
+import { BookingCard } from '../booking-card/booking-card';
 
 @Component({
   selector: 'app-bookings-component',
-  imports: [BookingDatePipe, CardModule, ButtonModule],
+  imports: [CardModule, ButtonModule, BookingCard],
   standalone: true,
   templateUrl: './bookings-component.html',
   styleUrl: './bookings-component.scss',
 })
 export class BookingsComponent {
   private bookingService = inject(BookingService);
-  private messageService = inject(MessageService);
-
   bookings = signal<Booking[]>([]);
 
   async ngOnInit() {
@@ -28,23 +25,7 @@ export class BookingsComponent {
     this.bookings.set(data);
   }
 
-  async deleteBooking(id: number) {
-    try {
-      await this.bookingService.deleteBooking(id);
-      this.bookings.update((current) => current.filter((b) => b.id !== id));
-
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Deleted',
-        detail: `Booking #${id} was deleted successfully`,
-      });
-    } catch (error) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: `Failed to delete booking #${id}`,
-      });
-      console.error(error);
-    }
+  protected removeBooking(deletedId: number) {
+    this.bookings.set(this.bookings().filter((b) => b.id !== deletedId));
   }
 }

@@ -1,6 +1,7 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { LoginResponse } from '../models/LoginResponse';
 import { RestApiService } from './rest-api-service';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +16,17 @@ export class AuthService {
       this.jwtToken.set(storedToken);
     }
   }
+
+  readonly userId = computed(() => {
+    const token = this.jwtToken();
+    if (!token) return null;
+    try {
+      const payload = jwtDecode(token);
+      return payload.sub;
+    } catch {
+      return null;
+    }
+  });
 
   async login(email: string, password: string): Promise<LoginResponse> {
     const response = await this.api.post<LoginResponse>('/api/auth/login', { email, password });

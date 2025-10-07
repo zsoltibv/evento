@@ -11,7 +11,7 @@ import Aura from '@primeuix/themes/aura';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { errorInterceptor } from './interceptors/error-interceptor';
-import { MessageService } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,5 +27,6 @@ export const appConfig: ApplicationConfig = {
       },
     }),
     MessageService,
+    ConfirmationService,
   ],
 };

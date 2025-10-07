@@ -1,0 +1,37 @@
+<p-card class="md:px-3 md:py-2 py-2 px-2">
+  <h2 class="font-semibold md:text-2xl text-xl">Book Venue</h2>
+
+  <div class="form-container flex lg:flex-row flex-col gap-4 mt-4">
+    <div class="flex flex-col gap-2">
+      <label for="startDate">Start Date</label>
+      <div class="date-picker-container">
+        <p-date-picker
+          [disabledDates]="disabledDates()"
+          [minDate]="minDate()"
+          [showTime]="true"
+          [(ngModel)]="startDate"
+          [showIcon]="true"
+          placeholder="Select start date"
+        ></p-date-picker>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="startDate">End Date</label>
+      <div class="date-picker-container">
+        <p-date-picker
+          [disabledDates]="disabledDates()"
+          [minDate]="minDate()"
+          [showTime]="true"
+          [(ngModel)]="endDate"
+          [showIcon]="true"
+          placeholder="Select end date"
+        ></p-date-picker>
+      </div>
+    </div>
+
+    <div class="button-container mt-auto">
+      <button pButton label="Book Now" (click)="submitBooking()"></button>
+    </div>
+  </div>
+</p-card>
