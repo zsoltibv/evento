@@ -1,9 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
 import { BookingService } from '../../services/booking-service';
-import { Booking } from '../../models/Booking';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { BookingCard } from '../booking-card/booking-card';
+import { BookingStatusUpdate } from '../../models/BookingStatusUpdate';
+import { BookingWithVenueName } from '../../models/BookingWithVenueName';
 
 @Component({
   selector: 'app-bookings-component',
@@ -14,18 +15,20 @@ import { BookingCard } from '../booking-card/booking-card';
 })
 export class BookingsComponent {
   private bookingService = inject(BookingService);
-  bookings = signal<Booking[]>([]);
+  bookings = signal<BookingWithVenueName[]>([]);
 
   async ngOnInit() {
     this.loadBookings();
   }
 
-  async loadBookings() {
+  async loadBookings(): Promise<void> {
     const data = await this.bookingService.getBookings();
     this.bookings.set(data);
   }
 
-  protected removeBooking(deletedId: number) {
-    this.bookings.set(this.bookings().filter((b) => b.id !== deletedId));
+  protected onCancel(update: BookingStatusUpdate): void {
+    this.bookings.set(
+      this.bookings().map((b) => (b.id === update.id ? { ...b, status: update.status } : b))
+    );
   }
 }

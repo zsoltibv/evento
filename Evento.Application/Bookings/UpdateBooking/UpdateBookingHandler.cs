@@ -15,31 +15,32 @@ public class UpdateBookingHandler(IBookingService service) : ICommandHandler<Upd
             return Results.NotFound();
         }
 
-        if (command is { IsAdmin: false, Dto.Status: BookingStatus.Approved })
+        var statusString = command.Dto.Status;
+        if (command is { IsAdmin: false } && statusString.EqualsStatus(BookingStatus.Approved))
         {
             return Results.Json(BookingErrors.UserCannotApproveBooking,
                 statusCode: StatusCodes.Status403Forbidden);
         }
-
+        
         if (!command.IsAdmin && booking.UserId != command.UserId)
         {
             return Results.Forbid();
         }
-
-        if (command.Dto.Status == BookingStatus.Approved)
+        
+        if (statusString.EqualsStatus(BookingStatus.Approved))
         {
             var overlap = await service.AnyOverlappingApprovedBookingsAsync(
                 command.Id,
-                command.Dto.VenueId!.Value,
-                command.Dto.StartDate!.Value,
-                command.Dto.EndDate!.Value);
+                booking.VenueId,
+                booking.StartDate,
+                booking.EndDate);
 
             if (overlap)
             {
                 return Results.BadRequest(BookingErrors.OverlappingAnyApprovedBooking);
             }
         }
-
+        
         var updated = await service.UpdateAsync(command.Id, command.Dto);
         return Results.Ok(updated);
     }

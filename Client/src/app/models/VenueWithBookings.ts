@@ -1,4 +1,5 @@
 import { Booking } from './Booking';
+import { BookingWithVenueName } from './BookingWithVenueName';
 
 export interface VenueWithBookings {
   id: number;
@@ -7,5 +8,5 @@ export interface VenueWithBookings {
   location: string;
   capacity: number;
   imageUrl?: string;
-  bookings: Booking[];
+  bookings: BookingWithVenueName[];
 }

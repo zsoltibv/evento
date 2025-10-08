@@ -10,16 +10,16 @@ namespace Evento.Infrastructure.Services;
 
 public class BookingService(IBookingRepository repo) : IBookingService
 {
-    public async Task<IEnumerable<BookingDto>> GetAllAsync()
+    public async Task<IEnumerable<BookingWithVenueNameDto>> GetAllAsync()
     {
         var bookings = await repo.GetAllAsync();
-        return bookings.Select(b => b.ToDto()).ToList();
+        return bookings.Select(b => b.ToDtoWithVenueName()).ToList();
     }
 
-    public async Task<IEnumerable<BookingDto>> GetByUserAsync(string userId)
+    public async Task<IEnumerable<BookingWithVenueNameDto>> GetByUserAsync(string userId)
     {
         var bookings = await repo.GetByUserAsync(userId);
-        return bookings.Select(b => b.ToDto()).ToList();
+        return bookings.Select(b => b.ToDtoWithVenueName()).ToList();
     }
 
     public async Task<BookingDto?> GetByIdAsync(int id)
@@ -52,10 +52,25 @@ public class BookingService(IBookingRepository repo) : IBookingService
             return null;
         }
 
-        booking.StartDate = updateDto.StartDate!.Value;
-        booking.EndDate = updateDto.EndDate!.Value;
-        booking.VenueId = updateDto.VenueId!.Value;
-        booking.Status = updateDto.Status!.Value;
+        if (updateDto.StartDate.HasValue)
+        {
+            booking.StartDate = updateDto.StartDate.Value;
+        }
+
+        if (updateDto.EndDate.HasValue)
+        {
+            booking.EndDate = updateDto.EndDate.Value;
+        }
+
+        if (updateDto.VenueId.HasValue)
+        {
+            booking.VenueId = updateDto.VenueId.Value;
+        }
+
+        if (!string.IsNullOrWhiteSpace(updateDto.Status))
+        {
+            booking.Status = updateDto.Status.ToBookingStatus();
+        }
 
         var updated = await repo.UpdateAsync(booking);
         return updated.ToDto();

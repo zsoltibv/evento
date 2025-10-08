@@ -1,6 +1,6 @@
 import { BookingStatus } from '../components/enums/BookingStatus';
 
-export interface Booking {
+export interface BookingWithVenueName {
   id: number;
   userId: string;
   startDate: Date;
@@ -8,4 +8,5 @@ export interface Booking {
   bookingDate: Date;
   status: BookingStatus;
   venueId: number;
+  venueName: string;
 }

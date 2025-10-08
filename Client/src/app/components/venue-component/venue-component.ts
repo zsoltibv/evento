@@ -8,6 +8,8 @@ import { TagModule } from 'primeng/tag';
 import { Booking } from '../../models/Booking';
 import { BookingCard } from '../booking-card/booking-card';
 import { AddBookingCard } from '../add-booking-card/add-booking-card';
+import { BookingStatusUpdate } from '../../models/BookingStatusUpdate';
+import { BookingWithVenueName } from '../../models/BookingWithVenueName';
 
 @Component({
   selector: 'app-venue-component',
@@ -31,7 +33,7 @@ export class VenueComponent {
     this.loadVenueWithBookings();
   }
 
-  protected readonly userBookings = computed<Booking[]>(() => {
+  protected readonly userBookings = computed<BookingWithVenueName[]>(() => {
     const userId = this.authService.userId();
     return this.venue()?.bookings?.filter((b) => b.userId === userId) || [];
   });
@@ -41,7 +43,7 @@ export class VenueComponent {
     this.venue.set(result);
   }
 
-  protected removeBooking(deletedId: number) {
+  protected onCancel(booking: BookingStatusUpdate) {
     this.loadVenueWithBookings();
   }
 }

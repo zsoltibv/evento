@@ -29,13 +29,20 @@ export class AddBookingCard {
     const dates: Date[] = [];
 
     bookings.forEach((b: Booking) => {
-      let current = new Date(b.startDate);
+      const start = new Date(b.startDate);
       const end = new Date(b.endDate);
 
-      while (current <= end) {
-        const d = new Date(current);
-        d.setHours(0, 0, 0, 0);
-        dates.push(d);
+      const fullStart = new Date(start);
+      const fullEnd = new Date(end);
+
+      fullStart.setDate(fullStart.getDate() + 1);
+      fullStart.setHours(0, 0, 0, 0);
+
+      fullEnd.setHours(0, 0, 0, 0);
+      let current = fullStart;
+
+      while (current < fullEnd) {
+        dates.push(new Date(current));
         current.setDate(current.getDate() + 1);
       }
     });

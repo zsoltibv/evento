@@ -11,6 +11,7 @@ public class BookingRepository(EventoDbContext db) : IBookingRepository
         return await db.Bookings
             .Include(b => b.User)
             .Include(b => b.Venue)
+            .OrderByDescending(b => b.BookingDate)
             .AsNoTracking()
             .ToListAsync();
     }
@@ -20,6 +21,7 @@ public class BookingRepository(EventoDbContext db) : IBookingRepository
         return await db.Bookings
             .Include(b => b.Venue)
             .Where(b => b.UserId == userId)
+            .OrderByDescending(b => b.BookingDate)
             .AsNoTracking()
             .ToListAsync();
     }

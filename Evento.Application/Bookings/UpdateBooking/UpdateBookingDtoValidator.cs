@@ -2,6 +2,7 @@
 using Evento.Application.Common.Dto;
 using Evento.Application.Common.Errors;
 using Evento.Application.Venues;
+using Evento.Domain.Enums;
 using FluentValidation;
 
 namespace Evento.Application.Bookings.UpdateBooking;
@@ -10,23 +11,47 @@ public sealed class UpdateBookingDtoValidator : AbstractValidator<UpdateBookingD
 {
     public UpdateBookingDtoValidator(IVenueService venueService)
     {
-        RuleFor(x => x.StartDate)
-            .NotNull().WithError(BookingErrors.StartDateRequired)
-            .LessThan(x => x.EndDate).WithError(BookingErrors.StartDateBeforeEndDate)
-            .GreaterThan(DateTime.UtcNow.AddMinutes(-1)).WithError(BookingErrors.StartDateInFuture);
+        When(x => x.StartDate.HasValue && x.EndDate.HasValue, () =>
+        {
+            RuleFor(x => x.StartDate)
+                .LessThan(x => x.EndDate!.Value)
+                .WithError(BookingErrors.StartDateBeforeEndDate);
+        });
 
-        RuleFor(x => x.EndDate)
-            .NotNull().WithError(BookingErrors.EndDateRequired)
-            .GreaterThan(x => x.StartDate).WithError(BookingErrors.EndDateAfterStartDate)
-            .GreaterThan(DateTime.UtcNow.AddMinutes(-1)).WithError(BookingErrors.EndDateInFuture);
+        When(x => x.StartDate.HasValue, () =>
+        {
+            RuleFor(x => x.StartDate)
+                .GreaterThan(DateTime.UtcNow.AddMinutes(-1))
+                .WithError(BookingErrors.StartDateInFuture);
+        });
+        
+        When(x => x.EndDate.HasValue && x.StartDate.HasValue, () =>
+        {
+            RuleFor(x => x.EndDate)
+                .GreaterThan(x => x.StartDate!.Value)
+                .WithError(BookingErrors.EndDateAfterStartDate);
+        });
 
-        RuleFor(x => x.VenueId)
-            .NotNull().WithError(BookingErrors.VenueRequired)
-            .MustAsync(async (venueId, ct) => await venueService.ExistsAsync(venueId!.Value))
-            .WithError(BookingErrors.VenueNotFound);
+        When(x => x.EndDate.HasValue, () =>
+        {
+            RuleFor(x => x.EndDate)
+                .GreaterThan(DateTime.UtcNow.AddMinutes(-1))
+                .WithError(BookingErrors.EndDateInFuture);
+        });
+        
+        When(x => x.VenueId.HasValue, () =>
+        {
+            RuleFor(x => x.VenueId)
+                .MustAsync(async (venueId, ct) =>
+                    await venueService.ExistsAsync(venueId!.Value))
+                .WithError(BookingErrors.VenueNotFound);
+        });
 
-        RuleFor(x => x.Status)
-            .NotNull().WithError(BookingErrors.StatusRequired)
-            .IsInEnum().WithError(BookingErrors.InvalidStatus);
+        When(x => !string.IsNullOrWhiteSpace(x.Status), () =>
+        {
+            RuleFor(x => x.Status!)
+                .Must(status => status.TryToBookingStatus(out _))
+                .WithError(BookingErrors.InvalidStatus);
+        });
     }
 }

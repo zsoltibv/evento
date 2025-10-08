@@ -1,6 +1,12 @@
 ﻿namespace Evento.Application.Common.Dto;
 
-public class BookingWithVenueNameDto
-{
-    
-}
+public record BookingWithVenueNameDto(
+    int Id,
+    string UserId,
+    DateTime StartDate,
+    DateTime EndDate,
+    DateTime BookingDate,
+    string Status,
+    int VenueId,
+    string VenueName
+);

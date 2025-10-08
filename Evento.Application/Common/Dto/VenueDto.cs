@@ -16,5 +16,5 @@ public record VenueWithBookingsDto(
     string Location,
     int Capacity,
     string? ImageUrl,
-    IEnumerable<BookingDto> Bookings
+    IEnumerable<BookingWithVenueNameDto> Bookings
 );

@@ -23,7 +23,7 @@ public static class VenueExtensions
             venue.Location,
             venue.Capacity,
             venue.ImageUrl,
-            venue.Bookings.ToDto()
+            venue.Bookings.ToDtoWithVenueName()
         );
 
     public static IEnumerable<VenueDto> ToDto(this IEnumerable<Venue> venues)
