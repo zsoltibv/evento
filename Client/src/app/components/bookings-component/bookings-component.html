@@ -5,7 +5,7 @@
     @for(booking of bookings(); track booking.id){
     <app-booking-card [booking]="booking" (onCancel)="onCancel($event)" />
     } @empty {
-    <p class="text-center text-gray-500">No bookings available.</p>
+    <p class="text-gray-500">No bookings available.</p>
     }
   </div>
 </div>

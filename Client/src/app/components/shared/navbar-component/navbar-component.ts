@@ -22,21 +22,34 @@ export class NavbarComponent {
   private router = inject(Router);
 
   protected menuItems = computed<MenuItem[]>(() => {
-    const loggedIn = !!this.authService.jwtToken();
-    return loggedIn
-      ? [
-          { label: 'Venues', routerLink: '/venues' },
-          { label: 'Bookings', routerLink: '/bookings' },
-        ]
-      : [];
+    if (!this.authService.jwtToken()) return [];
+
+    if (this.authService.isUser()) {
+      return [
+        { label: 'Venues', routerLink: '/venues' },
+        { label: 'Bookings', routerLink: '/bookings' },
+      ];
+    }
+
+    if (this.authService.isAdmin()) {
+      return [{ label: 'Bookings', routerLink: '/bookings' }];
+    }
+
+    return [];
   });
 
   userMenuItems: MenuItem[] = [
+    { separator: true },
     {
-      separator: true,
+      label: 'My Bookings',
+      icon: 'pi pi-calendar',
+      routerLink: '/bookings',
     },
-    { label: 'My Bookings', routerLink: '/bookings' },
-    { label: 'Logout', command: () => this.logout() },
+    {
+      label: 'Logout',
+      icon: 'pi pi-sign-out',
+      command: () => this.logout(),
+    },
   ];
 
   protected isLoggedIn = computed(() => {
@@ -44,8 +57,6 @@ export class NavbarComponent {
   });
 
   protected user = computed<UserTokenInfo | null>(() => {
-    console.log(this.authService.userTokenInfo());
-
     return this.authService.userTokenInfo();
   });
 

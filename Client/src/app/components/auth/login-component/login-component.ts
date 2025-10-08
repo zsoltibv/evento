@@ -32,10 +32,25 @@ export class LoginComponent {
 
     try {
       const response = await this.authService.login(this.email(), this.password());
-      console.log('Login successful', response);
-      this.router.navigate(['/venues']);
+      this.redirectToMainPage();
     } catch (err: any) {
       console.error('Login failed', err);
+    }
+  }
+
+  private redirectToMainPage() {
+    const role = this.authService.userTokenInfo()?.roles[0] || '';
+
+    switch (role) {
+      case 'User':
+        this.router.navigate(['/venues']);
+        break;
+      case 'Admin':
+        this.router.navigate(['/bookings']);
+        break;
+      default:
+        this.router.navigate(['/login']);
+        break;
     }
   }
 }

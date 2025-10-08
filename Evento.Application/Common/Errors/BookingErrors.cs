@@ -39,6 +39,6 @@ public static class BookingErrors
         new("BookingErrors.OverlappingUserApprovedOrPendingBooking",
             "Booking is overlapping with an existing approved and/or pending booking.");
 
-    public static readonly Error UserCannotApproveBooking =
-        new("BookingErrors.UserCannotApproveBooking", "User cannot approve booking.");
+    public static readonly Error UserCannotApproveOrRejectBooking =
+        new("BookingErrors.UserCannotApproveOrRejectBooking", "User cannot approve/reject booking.");
 }

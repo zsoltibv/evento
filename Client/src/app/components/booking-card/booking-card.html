@@ -1,26 +1,43 @@
 <p-card class="flex flex-col h-full w-full rounded-lg shadow-md px-4">
-  <div class="flex flex-col gap-1.5">
-    <h2 class="font-semibold text-lg mb-2">Booking #{{ booking().id }}</h2>
+  <div class="flex justify-between md:items-center items-start md:flex-row flex-col">
     <div class="info text-gray-300">
+      <div class="title flex items-center gap-3 mb-3">
+        <h2 class="font-semibold text-xl">Booking #{{ booking().id }}</h2>
+        <p-chip
+          [label]="booking().status"
+          [ngClass]="getStatusClass(booking().status)"
+          class="text-white text-xs font-semibold"
+        ></p-chip>
+      </div>
       <p><strong>Venue:</strong> {{ booking().venueName }}</p>
       <p><strong>From:</strong> {{ booking().startDate | bookingDate }}</p>
       <p><strong>To:</strong> {{ booking().endDate | bookingDate }}</p>
-      <p><strong>Status:</strong> {{ booking().status }}</p>
     </div>
-  </div>
-
-  <div class="mt-4 flex gap-2">
-    <button pButton label="Edit"></button>
-    @if(booking().status == 'Pending'){
-    <button
-      pButton
-      label="Cancel"
-      (click)="confirmCancelBooking(booking().id)"
-      [outlined]="true"
-      severity="warn"
-    ></button>
-    }@else if(booking().status == 'Cancelled'){
-    <button pButton label="Reopen" (click)="reopenBooking(booking().id)" [outlined]="true"></button>
-    }
+    <div class="actions md:mt-0 mt-4 flex gap-2">
+      @if(this.authService.isAdmin()) { @if(showApproveButton()) {
+      <button pButton label="Approve" (click)="approveBooking(booking().id)"></button>
+      } @if (showRejectButton()) {
+      <button
+        pButton
+        label="Reject"
+        (click)="rejectBooking(booking().id)"
+        severity="secondary"
+      ></button>
+      } } @else if(this.authService.isUser()) { @if(showCancelButton()) {
+      <button
+        pButton
+        label="Cancel Booking"
+        (click)="confirmCancelBooking(booking().id)"
+        severity="secondary"
+      ></button>
+      } @if (showReopenButton()) {
+      <button
+        pButton
+        label="Reopen Booking"
+        (click)="reopenBooking(booking().id)"
+        severity="secondary"
+      ></button>
+      } }
+    </div>
   </div>
 </p-card>

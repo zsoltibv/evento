@@ -46,6 +46,10 @@ export class AuthService {
     }
   });
 
+  readonly isAdmin = computed(() => this.userTokenInfo()?.roles.includes('Admin') ?? false);
+
+  readonly isUser = computed(() => this.userTokenInfo()?.roles.includes('User') ?? false);
+
   async login(email: string, password: string): Promise<LoginResponse> {
     const response = await this.api.post<LoginResponse>('/api/auth/login', { email, password });
     localStorage.setItem('jwt', response.token);

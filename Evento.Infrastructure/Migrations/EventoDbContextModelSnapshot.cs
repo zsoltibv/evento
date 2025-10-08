@@ -89,6 +89,24 @@ namespace Evento.Infrastructure.Migrations
                     b.HasIndex("VenueId");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "00000000-0000-0000-0000-000000000001",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "60cfc200-83b0-4d8d-b0e6-2c1342853e5b",
+                            Email = "admin@example.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@EXAMPLE.COM",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFHyGmy5S7FqlhNIGv611nEstURUsgPNLUMtEmhHI3Fly1sQjEnqbCu+5UQdPi/sNw==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "3c408ece-6e12-4e79-a6fb-c9c998b4ff70",
+                            TwoFactorEnabled = false,
+                            UserName = "admin"
+                        });
                 });
 
             modelBuilder.Entity("Evento.Domain.Models.Booking", b =>
@@ -274,19 +292,19 @@ namespace Evento.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "0fa24c22-6da8-4d90-ad4b-46002d212ad5",
+                            Id = "1",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "594b2059-216b-4261-b00e-aebe9d4d6de9",
+                            Id = "2",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "7cde4c7c-8b00-4664-87a5-96ad513d248e",
+                            Id = "3",
                             Name = "VenueAdmin",
                             NormalizedName = "VENUE_ADMIN"
                         });
@@ -377,6 +395,13 @@ namespace Evento.Infrastructure.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "00000000-0000-0000-0000-000000000001",
+                            RoleId = "1"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>

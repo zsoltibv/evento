@@ -1,4 +1,5 @@
-import { Component, inject, input, output } from '@angular/core';
+import { AuthService } from './../../services/auth-service';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { BookingDatePipe } from '../../pipe/booking-date-pipe';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Booking } from '../../models/Booking';
@@ -10,10 +11,19 @@ import { BookingStatus } from '../enums/BookingStatus';
 import { UpdateBooking } from '../../models/UpdateBooking';
 import { BookingStatusUpdate } from '../../models/BookingStatusUpdate';
 import { BookingWithVenueName } from '../../models/BookingWithVenueName';
+import { ChipModule } from 'primeng/chip';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-booking-card',
-  imports: [BookingDatePipe, CardModule, ButtonModule, ConfirmDialogModule],
+  imports: [
+    BookingDatePipe,
+    CardModule,
+    ButtonModule,
+    ConfirmDialogModule,
+    ChipModule,
+    CommonModule,
+  ],
   templateUrl: './booking-card.html',
   styleUrl: './booking-card.scss',
 })
@@ -24,6 +34,38 @@ export class BookingCard {
   private messageService = inject(MessageService);
   private bookingService = inject(BookingService);
   private confirmationService = inject(ConfirmationService);
+  public authService = inject(AuthService);
+
+  protected readonly showCancelButton = computed(
+    () => this.authService.isUser() && this.booking()?.status === BookingStatus.Pending
+  );
+
+  protected readonly showReopenButton = computed(
+    () => this.authService.isUser() && this.booking()?.status === BookingStatus.Cancelled
+  );
+
+  protected readonly showApproveButton = computed(
+    () => this.authService.isAdmin() && this.booking()?.status === BookingStatus.Pending
+  );
+
+  protected readonly showRejectButton = computed(
+    () => this.authService.isAdmin() && this.booking()?.status === BookingStatus.Pending
+  );
+
+  getStatusClass(status: BookingStatus): string {
+    switch (status) {
+      case BookingStatus.Pending:
+        return 'bg-yellow-500';
+      case BookingStatus.Approved:
+        return 'bg-green-500';
+      case BookingStatus.Cancelled:
+        return 'bg-red-500';
+      case BookingStatus.Rejected:
+        return 'bg-red-500';
+      default:
+        return 'bg-gray-500';
+    }
+  }
 
   protected confirmCancelBooking(id: number) {
     this.confirmationService.confirm({
@@ -32,58 +74,80 @@ export class BookingCard {
       icon: 'pi pi-exclamation-triangle',
       rejectLabel: 'Cancel',
       accept: async () => await this.cancelBooking(id),
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-secondary p-button-outlined',
     });
   }
 
   async cancelBooking(id: number) {
-    try {
-      const updatedBooking: Partial<UpdateBooking> = {
-        status: BookingStatus.Cancelled,
-      };
+    const updatedBooking: Partial<UpdateBooking> = {
+      status: BookingStatus.Cancelled,
+    };
 
-      await this.bookingService.updateBooking(id, updatedBooking);
-      this.onCancel.emit({
-        id: id,
-        status: updatedBooking.status as BookingStatus,
-      } as BookingStatusUpdate);
+    await this.bookingService.updateBooking(id, updatedBooking);
+    this.onCancel.emit({
+      id: id,
+      status: updatedBooking.status as BookingStatus,
+    } as BookingStatusUpdate);
 
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Deleted',
-        detail: `Booking #${id} was cancelled successfully`,
-      });
-    } catch (error) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: `Failed to cancel booking #${id}`,
-      });
-    }
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Cancelled',
+      detail: `Booking #${id} was cancelled successfully`,
+    });
   }
 
   async reopenBooking(id: number) {
-    try {
-      const updatedBooking: Partial<UpdateBooking> = {
-        status: BookingStatus.Pending,
-      };
+    const updatedBooking: Partial<UpdateBooking> = {
+      status: BookingStatus.Pending,
+    };
 
-      await this.bookingService.updateBooking(id, updatedBooking);
-      this.onCancel.emit({
-        id: id,
-        status: updatedBooking.status as BookingStatus,
-      } as BookingStatusUpdate);
+    await this.bookingService.updateBooking(id, updatedBooking);
+    this.onCancel.emit({
+      id: id,
+      status: updatedBooking.status as BookingStatus,
+    } as BookingStatusUpdate);
 
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Reopened',
-        detail: `Booking #${id} was reopened successfully`,
-      });
-    } catch (error) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: `Failed to reopen booking #${id}`,
-      });
-    }
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Reopened',
+      detail: `Booking #${id} was reopened successfully`,
+    });
+  }
+
+  async approveBooking(id: number) {
+    const updatedBooking: Partial<UpdateBooking> = {
+      status: BookingStatus.Approved,
+    };
+
+    await this.bookingService.updateBooking(id, updatedBooking);
+    this.onCancel.emit({
+      id: id,
+      status: updatedBooking.status as BookingStatus,
+    } as BookingStatusUpdate);
+
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Approved',
+      detail: `Booking #${id} was approved successfully`,
+    });
+  }
+
+  async rejectBooking(id: number) {
+    const updatedBooking: Partial<UpdateBooking> = {
+      status: BookingStatus.Rejected,
+    };
+
+    await this.bookingService.updateBooking(id, updatedBooking);
+    this.onCancel.emit({
+      id: id,
+      status: updatedBooking.status as BookingStatus,
+    } as BookingStatusUpdate);
+
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Rejected',
+      detail: `Booking #${id} was rejected successfully`,
+    });
   }
 }

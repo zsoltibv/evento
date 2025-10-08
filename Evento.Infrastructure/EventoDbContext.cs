@@ -15,26 +15,55 @@ public class EventoDbContext(DbContextOptions<EventoDbContext> options) : Identi
     {
         base.OnModelCreating(modelBuilder);
 
-        List<IdentityRole> roles =
-        [
-            new()
-            {
-                Name = "Admin",
-                NormalizedName = "ADMIN"
-            },
-            new()
-            {
-                Name = "User",
-                NormalizedName = "USER"
-            },
-            new()
-            {
-                Name = "VenueAdmin",
-                NormalizedName = "VENUE_ADMIN"
-            }
-        ];
-        modelBuilder.Entity<IdentityRole>().HasData(roles);
+        SeedRoles(modelBuilder);
+        SeedAdminUser(modelBuilder);
+        SeedVenues(modelBuilder);
+        
+        modelBuilder.Entity<VenueAdmin>()
+            .HasKey(va => new { va.VenueId, va.UserId });
+    }
 
+    private static void SeedRoles(ModelBuilder modelBuilder)
+    {
+        var roles = new List<IdentityRole>
+        {
+            new() { Id = "1", Name = "Admin", NormalizedName = "ADMIN" },
+            new() { Id = "2", Name = "User", NormalizedName = "USER" },
+            new() { Id = "3", Name = "VenueAdmin", NormalizedName = "VENUE_ADMIN" }
+        };
+
+        modelBuilder.Entity<IdentityRole>().HasData(roles);
+    }
+
+    private static void SeedAdminUser(ModelBuilder modelBuilder)
+    {
+        const string adminId = "00000000-0000-0000-0000-000000000001";
+        var adminUser = new AppUser
+        {
+            Id = adminId,
+            UserName = "admin",
+            NormalizedUserName = "ADMIN",
+            Email = "admin@example.com",
+            NormalizedEmail = "ADMIN@EXAMPLE.COM",
+            EmailConfirmed = true,
+            SecurityStamp = Guid.NewGuid().ToString("D")
+        };
+
+        var passwordHasher = new PasswordHasher<AppUser>();
+        adminUser.PasswordHash = passwordHasher.HashPassword(adminUser, "Admin@123");
+
+        modelBuilder.Entity<AppUser>().HasData(adminUser);
+        modelBuilder.Entity<IdentityUserRole<string>>().HasData(
+            new IdentityUserRole<string>
+            {
+                UserId = adminId,
+                RoleId = "1" 
+            }
+        );
+    }
+
+    private static void SeedVenues(ModelBuilder modelBuilder)
+    {
         List<Venue> venues =
         [
             new()
@@ -116,9 +145,7 @@ public class EventoDbContext(DbContextOptions<EventoDbContext> options) : Identi
                 Capacity = 200
             }
         ];
-        modelBuilder.Entity<Venue>().HasData(venues);
         
-        modelBuilder.Entity<VenueAdmin>()
-            .HasKey(va => new { va.VenueId, va.UserId });
+        modelBuilder.Entity<Venue>().HasData(venues);
     }
 }
