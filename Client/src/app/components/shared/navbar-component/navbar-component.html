@@ -4,9 +4,26 @@
   </ng-template>
 
   <ng-template pTemplate="end">
-    @if(isLoggedIn()){
-    <button type="button" pButton label="Logout" icon="pi pi-sign-out" (click)="logout()"></button>
-    }@else{
+    @if(isLoggedIn()){ @if(user()){
+    <div class="user-menu" style="display: flex; align-items: center; gap: 0.5rem">
+      <p-avatar
+        [label]="user()?.username?.substring(0, 2)?.toUpperCase()"
+        shape="circle"
+        style="cursor: pointer"
+        (click)="toggleUserMenu($event)"
+      >
+      </p-avatar>
+
+      <p-menu #userMenu [popup]="true" [model]="userMenuItems">
+        <ng-template #start>
+          <span class="flex flex-col justify-center text-left py-2 px-3">
+            <span class="font-bold">{{ user()?.email }}</span>
+            <span class="text-sm">{{ user()?.roles }}</span>
+          </span>
+        </ng-template>
+      </p-menu>
+    </div>
+    } }@else{
     <div class="flex gap-2">
       <a routerLink="/login">
         <button type="button" pButton label="Login" icon="pi pi-sign-in"></button>

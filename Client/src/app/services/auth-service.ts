@@ -2,6 +2,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { LoginResponse } from '../models/LoginResponse';
 import { RestApiService } from './rest-api-service';
 import { jwtDecode } from 'jwt-decode';
+import { UserTokenInfo } from '../models/UserTokenInfo';
 
 @Injectable({
   providedIn: 'root',
@@ -23,6 +24,23 @@ export class AuthService {
     try {
       const payload = jwtDecode(token);
       return payload.sub;
+    } catch {
+      return null;
+    }
+  });
+
+  readonly userTokenInfo = computed<UserTokenInfo | null>(() => {
+    const token = this.jwtToken();
+    if (!token) return null;
+
+    try {
+      const payload: any = jwtDecode(token);
+      return {
+        id: payload.sub,
+        username: payload.given_name,
+        email: payload.email,
+        roles: payload.role ? [payload.role] : [],
+      };
     } catch {
       return null;
     }

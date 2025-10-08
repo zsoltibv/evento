@@ -1,17 +1,23 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, ViewChild } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { MenubarModule } from 'primeng/menubar';
 import { AuthService } from '../../../services/auth-service';
 import { ButtonModule } from 'primeng/button';
+import { AvatarModule } from 'primeng/avatar';
+import { UserTokenInfo } from '../../../models/UserTokenInfo';
+import { SelectModule } from 'primeng/select';
+import { Menu, MenuModule } from 'primeng/menu';
 
 @Component({
   selector: 'app-navbar-component',
-  imports: [MenubarModule, RouterModule, ButtonModule],
+  imports: [MenubarModule, RouterModule, ButtonModule, AvatarModule, SelectModule, MenuModule],
   templateUrl: './navbar-component.html',
   styleUrl: './navbar-component.scss',
 })
 export class NavbarComponent {
+  @ViewChild('userMenu') userMenu!: Menu;
+
   private authService = inject(AuthService);
   private router = inject(Router);
 
@@ -25,9 +31,27 @@ export class NavbarComponent {
       : [];
   });
 
+  userMenuItems: MenuItem[] = [
+    {
+      separator: true,
+    },
+    { label: 'My Bookings', routerLink: '/bookings' },
+    { label: 'Logout', command: () => this.logout() },
+  ];
+
   protected isLoggedIn = computed(() => {
     return !!this.authService.jwtToken();
   });
+
+  protected user = computed<UserTokenInfo | null>(() => {
+    console.log(this.authService.userTokenInfo());
+
+    return this.authService.userTokenInfo();
+  });
+
+  protected toggleUserMenu(event: Event) {
+    this.userMenu.toggle(event);
+  }
 
   protected logout() {
     this.authService.logout();

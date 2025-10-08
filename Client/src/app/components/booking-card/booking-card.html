@@ -10,23 +10,17 @@
   </div>
 
   <div class="mt-4 flex gap-2">
-    <button pButton label="Edit" severity="info"></button>
+    <button pButton label="Edit"></button>
     @if(booking().status == 'Pending'){
     <button
       pButton
       label="Cancel"
       (click)="confirmCancelBooking(booking().id)"
-      severity="danger"
       [outlined]="true"
+      severity="warn"
     ></button>
     }@else if(booking().status == 'Cancelled'){
-    <button
-      pButton
-      label="Reopen"
-      (click)="reopenBooking(booking().id)"
-      severity="success"
-      [outlined]="true"
-    ></button>
+    <button pButton label="Reopen" (click)="reopenBooking(booking().id)" [outlined]="true"></button>
     }
   </div>
 </p-card>
