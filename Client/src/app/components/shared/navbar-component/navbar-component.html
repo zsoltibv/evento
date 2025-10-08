@@ -14,7 +14,7 @@
       >
       </p-avatar>
 
-      <p-menu #userMenu [popup]="true" [model]="userMenuItems">
+      <p-menu #userMenu [popup]="true" [model]="userMenuItems" appendTo="body">
         <ng-template #start>
           <span class="flex flex-col justify-center text-left py-2 px-3">
             <span class="font-bold">{{ user()?.email }}</span>

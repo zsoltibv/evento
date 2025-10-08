@@ -8,6 +8,16 @@
           [ngClass]="getStatusClass(booking().status)"
           class="text-white text-xs font-semibold"
         ></p-chip>
+        @if(showEditButton()){
+        <button
+          pButton
+          type="button"
+          icon="pi pi-pencil"
+          class="p-button-text p-button-sm"
+          (click)="toggleEditDialog()"
+          title="Edit Booking"
+        ></button>
+        }
       </div>
       <p><strong>Venue:</strong> {{ booking().venueName }}</p>
       <p><strong>From:</strong> {{ booking().startDate | bookingDate }}</p>
@@ -41,3 +51,14 @@
     </div>
   </div>
 </p-card>
+
+<p-dialog
+  [(visible)]="showEditDialog"
+  header="Edit Booking"
+  [modal]="true"
+  [closable]="true"
+  [draggable]="false"
+  [style]="{ width: '500px' }"
+>
+  <!-- <app-add-booking-card /> -->
+</p-dialog>

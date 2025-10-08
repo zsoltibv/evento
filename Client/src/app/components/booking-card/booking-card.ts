@@ -1,5 +1,5 @@
 import { AuthService } from './../../services/auth-service';
-import { Component, computed, inject, input, output } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { BookingDatePipe } from '../../pipe/booking-date-pipe';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Booking } from '../../models/Booking';
@@ -13,6 +13,8 @@ import { BookingStatusUpdate } from '../../models/BookingStatusUpdate';
 import { BookingWithVenueName } from '../../models/BookingWithVenueName';
 import { ChipModule } from 'primeng/chip';
 import { CommonModule } from '@angular/common';
+import { DialogModule } from 'primeng/dialog';
+import { AddBookingCard } from '../add-booking-card/add-booking-card';
 
 @Component({
   selector: 'app-booking-card',
@@ -23,6 +25,8 @@ import { CommonModule } from '@angular/common';
     ConfirmDialogModule,
     ChipModule,
     CommonModule,
+    DialogModule,
+    AddBookingCard,
   ],
   templateUrl: './booking-card.html',
   styleUrl: './booking-card.scss',
@@ -35,6 +39,11 @@ export class BookingCard {
   private bookingService = inject(BookingService);
   private confirmationService = inject(ConfirmationService);
   public authService = inject(AuthService);
+
+  protected readonly showEditDialog = signal(false);
+  protected toggleEditDialog() {
+    this.showEditDialog.set(!this.showEditDialog());
+  }
 
   protected readonly showCancelButton = computed(
     () => this.authService.isUser() && this.booking()?.status === BookingStatus.Pending
@@ -50,6 +59,10 @@ export class BookingCard {
 
   protected readonly showRejectButton = computed(
     () => this.authService.isAdmin() && this.booking()?.status === BookingStatus.Pending
+  );
+
+  protected readonly showEditButton = computed(
+    () => this.authService.isUser() && this.booking()?.status === BookingStatus.Pending
   );
 
   getStatusClass(status: BookingStatus): string {
