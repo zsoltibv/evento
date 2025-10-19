@@ -22,14 +22,16 @@ export class VenueComponent {
   private authService = inject(AuthService);
 
   venue = signal<VenueWithBookings>({} as VenueWithBookings);
-  venueId = signal<number>(0);
+  slug = signal<string>('');
 
   ngOnInit() {
     this.activatedRoute.params.subscribe((params) => {
-      this.venueId.set(params['id']);
+      const slug = params['slug'];
+      if (slug) {
+        this.slug.set(slug);
+        this.loadVenueWithBookings();
+      }
     });
-
-    this.loadVenueWithBookings();
   }
 
   protected readonly userBookings = computed<BookingWithVenueName[]>(() => {
@@ -38,7 +40,7 @@ export class VenueComponent {
   });
 
   async loadVenueWithBookings() {
-    const result = await this.venueService.getVenueWithBookings(this.venueId());
+    const result = await this.venueService.getVenueWithBookingsBySlug(this.slug());
     this.venue.set(result);
   }
 

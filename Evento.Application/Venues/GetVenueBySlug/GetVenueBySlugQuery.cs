@@ -1,6 +1,5 @@
-﻿namespace Evento.Application.Venues.GetVenueBySlug;
+﻿using Evento.Application.Common;
 
-public class GetVenueBySlugQuery
-{
-    
-}
+namespace Evento.Application.Venues.GetVenueBySlug;
+
+public record GetVenueBySlugQuery(string Slug) : IQuery;

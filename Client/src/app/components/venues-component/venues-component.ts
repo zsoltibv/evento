@@ -28,7 +28,7 @@ export class VenuesComponent {
   }
 
   protected goToVenue(venue: Venue) {
-    this.router.navigate(['/venue', venue.id]);
+    this.router.navigate(['/venue', venue.slug]);
   }
 
   getBackgroundImage(url: string) {

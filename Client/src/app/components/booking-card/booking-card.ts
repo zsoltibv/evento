@@ -14,7 +14,6 @@ import { ChipModule } from 'primeng/chip';
 import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
 import { AddOrEditBookingCard } from '../add-or-edit-booking-card/add-or-edit-booking-card';
-import { Booking } from '../../models/Booking';
 
 @Component({
   selector: 'app-booking-card',

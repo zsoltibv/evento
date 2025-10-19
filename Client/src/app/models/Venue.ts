@@ -5,4 +5,5 @@ export interface Venue {
   location: string;
   capacity: number;
   imageUrl?: string;
+  slug: string;
 }

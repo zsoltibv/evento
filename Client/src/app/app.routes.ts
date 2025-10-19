@@ -8,7 +8,7 @@ import { BookingsComponent } from './components/bookings-component/bookings-comp
 
 export const routes: Routes = [
   { path: 'venues', component: VenuesComponent, canActivate: [authGuard] },
-  { path: 'venue/:id', component: VenueComponent, canActivate: [authGuard] },
+  { path: 'venue/:slug', component: VenueComponent, canActivate: [authGuard] },
   { path: 'bookings', component: BookingsComponent, canActivate: [authGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },

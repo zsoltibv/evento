@@ -13,6 +13,10 @@ export class VenueService {
     return await this.api.get<VenueWithBookings>(`/api/venues/${id}`);
   }
 
+  async getVenueWithBookingsBySlug(slug: string): Promise<VenueWithBookings> {
+    return await this.api.get<VenueWithBookings>(`/api/venues/slug/${slug}`);
+  }
+
   async getVenues(): Promise<Venue[]> {
     return await this.api.get<Venue[]>('/api/venues');
   }

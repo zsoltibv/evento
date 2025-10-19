@@ -6,7 +6,8 @@ public record VenueDto(
     string? Description,
     string Location,
     int Capacity,
-    string? ImageUrl
+    string? ImageUrl,
+    string Slug
 );
 
 public record VenueWithBookingsDto(
@@ -16,5 +17,6 @@ public record VenueWithBookingsDto(
     string Location,
     int Capacity,
     string? ImageUrl,
+    string Slug,
     IEnumerable<BookingWithVenueNameDto> Bookings
 );
