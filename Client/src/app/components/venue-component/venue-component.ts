@@ -5,15 +5,14 @@ import { ActivatedRoute } from '@angular/router';
 import { VenueWithBookings } from '../../models/VenueWithBookings';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
-import { Booking } from '../../models/Booking';
 import { BookingCard } from '../booking-card/booking-card';
-import { AddBookingCard } from '../add-booking-card/add-booking-card';
+import { AddOrEditBookingCard } from '../add-or-edit-booking-card/add-or-edit-booking-card';
 import { BookingStatusUpdate } from '../../models/BookingStatusUpdate';
 import { BookingWithVenueName } from '../../models/BookingWithVenueName';
 
 @Component({
   selector: 'app-venue-component',
-  imports: [CardModule, TagModule, BookingCard, AddBookingCard],
+  imports: [CardModule, TagModule, BookingCard, AddOrEditBookingCard],
   templateUrl: './venue-component.html',
   styleUrl: './venue-component.scss',
 })

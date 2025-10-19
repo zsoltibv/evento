@@ -18,10 +18,10 @@
   </div>
   }
 
-  <app-add-booking-card
+  <app-add-or-edit-booking-card
     [venue]="venue()"
     (onBookingAdded)="loadVenueWithBookings()"
-  ></app-add-booking-card>
+  ></app-add-or-edit-booking-card>
 
   @if(userBookings().length > 0){
   <div class="user-bookings mt-4">

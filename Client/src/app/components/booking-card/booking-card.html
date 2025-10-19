@@ -2,10 +2,10 @@
   <div class="flex justify-between md:items-center items-start md:flex-row flex-col">
     <div class="info text-gray-300">
       <div class="title flex items-center gap-3 mb-3">
-        <h2 class="font-semibold text-xl">Booking #{{ booking().id }}</h2>
+        <h2 class="font-semibold text-xl">Booking #{{ currentBooking()!.id }}</h2>
         <p-chip
-          [label]="booking().status"
-          [ngClass]="getStatusClass(booking().status)"
+          [label]="currentBooking()!.status"
+          [ngClass]="getStatusClass(currentBooking()!.status)"
           class="text-white text-xs font-semibold"
         ></p-chip>
         @if(showEditButton()){
@@ -19,9 +19,9 @@
         ></button>
         }
       </div>
-      <p><strong>Venue:</strong> {{ booking().venueName }}</p>
-      <p><strong>From:</strong> {{ booking().startDate | bookingDate }}</p>
-      <p><strong>To:</strong> {{ booking().endDate | bookingDate }}</p>
+      <p><strong>Venue:</strong> {{ currentBooking()!.venueName }}</p>
+      <p><strong>From:</strong> {{ currentBooking()!.startDate | bookingDate }}</p>
+      <p><strong>To:</strong> {{ currentBooking()!.endDate | bookingDate }}</p>
     </div>
     <div class="actions md:mt-0 mt-4 flex gap-2">
       @if(this.authService.isAdmin()) { @if(showApproveButton()) {
@@ -30,21 +30,21 @@
       <button
         pButton
         label="Reject"
-        (click)="rejectBooking(booking().id)"
+        (click)="rejectBooking(currentBooking()!.id)"
         severity="secondary"
       ></button>
       } } @else if(this.authService.isUser()) { @if(showCancelButton()) {
       <button
         pButton
         label="Cancel Booking"
-        (click)="confirmCancelBooking(booking().id)"
+        (click)="confirmCancelBooking(currentBooking()!.id)"
         severity="secondary"
       ></button>
       } @if (showReopenButton()) {
       <button
         pButton
         label="Reopen Booking"
-        (click)="reopenBooking(booking().id)"
+        (click)="reopenBooking(currentBooking()!.id)"
         severity="secondary"
       ></button>
       } }
@@ -58,7 +58,10 @@
   [modal]="true"
   [closable]="true"
   [draggable]="false"
-  [style]="{ width: '500px' }"
+  [style]="{ width: 'fit-content' }"
 >
-  <!-- <app-add-booking-card /> -->
+  <app-add-or-edit-booking-card
+    [booking]="currentBooking()!"
+    (onBookingEdited)="onBookingEdited($event)"
+  />
 </p-dialog>

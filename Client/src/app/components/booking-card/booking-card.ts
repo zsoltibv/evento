@@ -1,8 +1,7 @@
 import { AuthService } from './../../services/auth-service';
-import { Component, computed, inject, input, output, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { BookingDatePipe } from '../../pipe/booking-date-pipe';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { Booking } from '../../models/Booking';
 import { BookingService } from '../../services/booking-service';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
@@ -14,7 +13,8 @@ import { BookingWithVenueName } from '../../models/BookingWithVenueName';
 import { ChipModule } from 'primeng/chip';
 import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
-import { AddBookingCard } from '../add-booking-card/add-booking-card';
+import { AddOrEditBookingCard } from '../add-or-edit-booking-card/add-or-edit-booking-card';
+import { Booking } from '../../models/Booking';
 
 @Component({
   selector: 'app-booking-card',
@@ -26,7 +26,7 @@ import { AddBookingCard } from '../add-booking-card/add-booking-card';
     ChipModule,
     CommonModule,
     DialogModule,
-    AddBookingCard,
+    AddOrEditBookingCard,
   ],
   templateUrl: './booking-card.html',
   styleUrl: './booking-card.scss',
@@ -40,29 +40,40 @@ export class BookingCard {
   private confirmationService = inject(ConfirmationService);
   public authService = inject(AuthService);
 
+  currentBooking = signal<BookingWithVenueName | null>(null);
+
+  constructor() {
+    effect(() => {
+      const b = this.booking();
+      if (b) {
+        this.currentBooking.set(structuredClone(b));
+      }
+    });
+  }
+
   protected readonly showEditDialog = signal(false);
   protected toggleEditDialog() {
     this.showEditDialog.set(!this.showEditDialog());
   }
 
   protected readonly showCancelButton = computed(
-    () => this.authService.isUser() && this.booking()?.status === BookingStatus.Pending
+    () => this.authService.isUser() && this.currentBooking()?.status === BookingStatus.Pending
   );
 
   protected readonly showReopenButton = computed(
-    () => this.authService.isUser() && this.booking()?.status === BookingStatus.Cancelled
+    () => this.authService.isUser() && this.currentBooking()?.status === BookingStatus.Cancelled
   );
 
   protected readonly showApproveButton = computed(
-    () => this.authService.isAdmin() && this.booking()?.status === BookingStatus.Pending
+    () => this.authService.isAdmin() && this.currentBooking()?.status === BookingStatus.Pending
   );
 
   protected readonly showRejectButton = computed(
-    () => this.authService.isAdmin() && this.booking()?.status === BookingStatus.Pending
+    () => this.authService.isAdmin() && this.currentBooking()?.status === BookingStatus.Pending
   );
 
   protected readonly showEditButton = computed(
-    () => this.authService.isUser() && this.booking()?.status === BookingStatus.Pending
+    () => this.authService.isUser() && this.currentBooking()?.status === BookingStatus.Pending
   );
 
   getStatusClass(status: BookingStatus): string {
@@ -162,5 +173,10 @@ export class BookingCard {
       summary: 'Rejected',
       detail: `Booking #${id} was rejected successfully`,
     });
+  }
+
+  protected onBookingEdited(updatedBooking: BookingWithVenueName) {
+    this.currentBooking.set(updatedBooking);
+    this.showEditDialog.set(false);
   }
 }
