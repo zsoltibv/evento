@@ -1,7 +1,11 @@
-﻿using Evento.Application.Common;
+﻿using System.Security.Claims;
+using Evento.Application.Common;
 using Evento.Application.Venues.GetVenueById;
 using Evento.Application.Venues.GetVenueBySlug;
+using Evento.Application.Venues.GetVenueRoles;
 using Evento.Application.Venues.GetVenues;
+using Evento.Application.Venues.RequestVenueAdminCommand;
+using Evento.Endpoints.Helpers;
 
 namespace Evento.Endpoints.Endpoints;
 
@@ -24,7 +28,7 @@ public static class VenueEndpoints
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status401Unauthorized);
-        
+
         venuesGroup.MapGet("/slug/{slug}",
                 async (string slug, IQueryHandler<GetVenueBySlugQuery> handler) =>
                     await handler.Handle(new GetVenueBySlugQuery(slug)))
@@ -33,6 +37,22 @@ public static class VenueEndpoints
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status401Unauthorized);
 
+        venuesGroup.MapPost("/{id:int}/request-admin",
+                async (int id, ICommandHandler<RequestVenueAdminCommand> handler, ClaimsPrincipal user) =>
+                    await handler.Handle(new RequestVenueAdminCommand(user.GetUserId(), id)))
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status400BadRequest)
+            .Produces(StatusCodes.Status401Unauthorized);
+
+        venuesGroup.MapGet("/roles",
+                async (IQueryHandler<GetVenueRolesQuery> handler, ClaimsPrincipal user) =>
+                    await handler.Handle(new GetVenueRolesQuery(user.GetUserId(), user.IsAdmin())))
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status400BadRequest)
+            .Produces(StatusCodes.Status401Unauthorized);
+        
         return app;
     }
 }

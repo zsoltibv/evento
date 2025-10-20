@@ -54,7 +54,7 @@
 
 <p-dialog
   [(visible)]="showEditDialog"
-  header="Edit Booking"
+  header="Edit Booking #{{ currentBooking()!.id }}"
   [modal]="true"
   [closable]="true"
   [draggable]="false"

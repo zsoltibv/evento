@@ -9,10 +9,13 @@ import { BookingCard } from '../booking-card/booking-card';
 import { AddOrEditBookingCard } from '../add-or-edit-booking-card/add-or-edit-booking-card';
 import { BookingStatusUpdate } from '../../models/BookingStatusUpdate';
 import { BookingWithVenueName } from '../../models/BookingWithVenueName';
+import { MenuItem, MessageService } from 'primeng/api';
+import { MenuModule } from 'primeng/menu';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-venue-component',
-  imports: [CardModule, TagModule, BookingCard, AddOrEditBookingCard],
+  imports: [CardModule, TagModule, BookingCard, AddOrEditBookingCard, MenuModule, ButtonModule],
   templateUrl: './venue-component.html',
   styleUrl: './venue-component.scss',
 })
@@ -20,9 +23,18 @@ export class VenueComponent {
   private activatedRoute = inject(ActivatedRoute);
   private venueService = inject(VenueService);
   private authService = inject(AuthService);
+  private messageService = inject(MessageService);
 
   venue = signal<VenueWithBookings>({} as VenueWithBookings);
   slug = signal<string>('');
+
+  menuItems: MenuItem[] = [
+    {
+      label: 'Request for venue admin role',
+      icon: 'pi pi-user-plus',
+      command: () => this.requestVenuAdminRole(),
+    },
+  ];
 
   ngOnInit() {
     this.activatedRoute.params.subscribe((params) => {
@@ -46,5 +58,15 @@ export class VenueComponent {
 
   protected onCancel(booking: BookingStatusUpdate) {
     this.loadVenueWithBookings();
+  }
+
+  protected async requestVenuAdminRole() {
+    await this.venueService.requestVenueAdminRole(this.venue().id);
+
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Request Sent',
+      detail: 'Your request for venue admin role has been sent successfully.',
+    });
   }
 }

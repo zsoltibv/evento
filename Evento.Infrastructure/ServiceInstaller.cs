@@ -1,8 +1,5 @@
 ﻿using System.Security.Claims;
-using Evento.Application;
-using Evento.Application.Bookings;
-using Evento.Application.VenueAdmin;
-using Evento.Application.Venues;
+using Evento.Application.Services.Interfaces;
 using Evento.Domain;
 using Evento.Domain.Models;
 using Evento.Infrastructure.Repository;
@@ -34,6 +31,7 @@ public static class ServiceInstaller
 
         // Register Repositories
         services.AddScoped<IBookingRepository, BookingRepository>();
+        services.AddScoped<IRoleRequestRepository, RoleRequestRepository>();
 
         // Register Identity
         services.AddIdentity<AppUser, IdentityRole>(options =>

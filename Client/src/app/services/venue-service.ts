@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { RestApiService } from './rest-api-service';
 import { Venue } from '../models/Venue';
 import { VenueWithBookings } from '../models/VenueWithBookings';
+import { RoleRequest } from '../models/RoleRequest';
 
 @Injectable({
   providedIn: 'root',
@@ -19,5 +20,9 @@ export class VenueService {
 
   async getVenues(): Promise<Venue[]> {
     return await this.api.get<Venue[]>('/api/venues');
+  }
+
+  async requestVenueAdminRole(venueId: number): Promise<RoleRequest> {
+    return await this.api.post<RoleRequest>(`/api/venues/${venueId}/request-admin`, null);
   }
 }

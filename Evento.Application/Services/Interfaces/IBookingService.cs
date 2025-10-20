@@ -1,6 +1,6 @@
 ﻿using Evento.Application.Common.Dto;
 
-namespace Evento.Application.Bookings;
+namespace Evento.Application.Services.Interfaces;
 
 public interface IBookingService
 {

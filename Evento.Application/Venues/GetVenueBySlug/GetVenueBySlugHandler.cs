@@ -1,5 +1,6 @@
 ﻿using Evento.Application.Common;
 using Evento.Application.Common.Extensions;
+using Evento.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 
 namespace Evento.Application.Venues.GetVenueBySlug;

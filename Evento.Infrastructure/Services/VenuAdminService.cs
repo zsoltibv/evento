@@ -1,4 +1,4 @@
-﻿using Evento.Application.VenueAdmin;
+﻿using Evento.Application.Services.Interfaces;
 using Evento.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 

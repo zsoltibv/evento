@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using Evento.Application.Auth.Login;
 using Evento.Application.Common;
+using Evento.Application.Services;
+using Evento.Application.Services.Interfaces;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,6 +23,9 @@ public static class ServiceInstaller
         
         services.AddValidatorsFromAssembly(Assembly.GetAssembly(typeof(LoginDtoValidator))!, includeInternalTypes: true);
 
+        // Register Service 
+        services.AddScoped<IRoleRequestService, RoleRequestService>();
+            
         return services;
     }
 }

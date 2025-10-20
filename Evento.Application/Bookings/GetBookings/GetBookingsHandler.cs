@@ -1,4 +1,5 @@
 ﻿using Evento.Application.Common;
+using Evento.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 
 namespace Evento.Application.Bookings.GetBookings;

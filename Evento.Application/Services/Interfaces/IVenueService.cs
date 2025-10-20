@@ -1,6 +1,6 @@
 ﻿using Evento.Domain.Models;
 
-namespace Evento.Application.Venues;
+namespace Evento.Application.Services.Interfaces;
 
 public interface IVenueService
 {

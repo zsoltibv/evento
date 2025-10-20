@@ -9,10 +9,10 @@ public class RoleRequest
     public string UserId { get; set; } = null!; 
     public AppUser User { get; set; } = null!;
 
-    public string RoleName { get; set; } = null!; // Admin, VenueAdmin
-    public RequestStatus Status { get; set; } = RequestStatus.Pending; // Pending, Approved, Rejected
+    public string RoleName { get; set; } = null!;
+    public RequestStatus Status { get; set; } = RequestStatus.Pending; 
     public DateTime RequestDate { get; set; } = DateTime.UtcNow;
     
-    public int? VenueId { get; set; } // only set if RoleName == "VenueAdmin"
+    public int? VenueId { get; set; } 
     public Venue? Venue { get; set; }
 }

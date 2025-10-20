@@ -1,6 +1,6 @@
-﻿using Evento.Application.Bookings;
-using Evento.Application.Common.Dto;
+﻿using Evento.Application.Common.Dto;
 using Evento.Application.Common.Extensions;
+using Evento.Application.Services.Interfaces;
 using Evento.Domain;
 using Evento.Domain.Enums;
 using Evento.Domain.Models;

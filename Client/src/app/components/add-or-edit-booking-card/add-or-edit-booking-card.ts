@@ -9,10 +9,11 @@ import { Booking } from '../../models/Booking';
 import { BookingService } from '../../services/booking-service';
 import { MessageService } from 'primeng/api';
 import { BookingWithVenueName } from '../../models/BookingWithVenueName';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-add-or-edit-booking-card',
-  imports: [DatePickerModule, ButtonModule, FormsModule, CardModule],
+  imports: [DatePickerModule, ButtonModule, FormsModule, CardModule, CommonModule],
   templateUrl: './add-or-edit-booking-card.html',
   styleUrl: './add-or-edit-booking-card.scss',
 })

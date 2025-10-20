@@ -1,6 +1,7 @@
 ﻿using Evento.Application.Common;
 using Evento.Application.Common.Dto;
 using Evento.Application.Common.Errors;
+using Evento.Application.Services.Interfaces;
 using Evento.Application.Venues;
 using FluentValidation;
 

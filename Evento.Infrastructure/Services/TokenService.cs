@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Evento.Application;
+using Evento.Application.Services.Interfaces;
 using Evento.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;

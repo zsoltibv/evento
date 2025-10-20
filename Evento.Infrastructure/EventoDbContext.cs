@@ -10,6 +10,7 @@ public class EventoDbContext(DbContextOptions<EventoDbContext> options) : Identi
     public DbSet<Venue> Venues { get; set; }
     public DbSet<Booking> Bookings { get; set; }
     public DbSet<VenueAdmin> VenueAdmins { get; set; }
+    public DbSet<RoleRequest> RoleRequests { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

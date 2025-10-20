@@ -95,15 +95,15 @@ namespace Evento.Infrastructure.Migrations
                         {
                             Id = "00000000-0000-0000-0000-000000000001",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a361e5ca-8876-4b4f-9393-dd3ce6fc013c",
+                            ConcurrencyStamp = "7aa1a937-a4fe-4b08-bb4f-c72828be08d3",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEL4ofnVq7wjIlJnqUYB/UfGqO6yd8F00RAdg5ycUDTuwdD4yyeB7A/HC5hpq/NJEvQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDtagxTP4zWnjFgLxH0tIXgazaOY9EgtPLt5ab7bASrJ0vrpSQisyKZTE1l9z7LgTg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "01da2546-6cf3-4bea-909f-30295fee57cc",
+                            SecurityStamp = "8dbdfe2c-d724-40c9-9bcb-4226d55148ea",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
@@ -143,6 +143,40 @@ namespace Evento.Infrastructure.Migrations
                     b.HasIndex("VenueId");
 
                     b.ToTable("Bookings");
+                });
+
+            modelBuilder.Entity("Evento.Domain.Models.RoleRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("RequestDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("VenueId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("VenueId");
+
+                    b.ToTable("RoleRequests");
                 });
 
             modelBuilder.Entity("Evento.Domain.Models.Venue", b =>
@@ -455,6 +489,23 @@ namespace Evento.Infrastructure.Migrations
                         .HasForeignKey("VenueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
+
+                    b.Navigation("Venue");
+                });
+
+            modelBuilder.Entity("Evento.Domain.Models.RoleRequest", b =>
+                {
+                    b.HasOne("Evento.Domain.Models.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Evento.Domain.Models.Venue", "Venue")
+                        .WithMany()
+                        .HasForeignKey("VenueId");
 
                     b.Navigation("User");
 
