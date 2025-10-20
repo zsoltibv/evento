@@ -24,7 +24,7 @@ public class RoleRequestService(IRoleRequestRepository repository) : IRoleReques
         return new RoleRequestDto
         {
             RoleName = request.RoleName,
-            Status = request.Status,
+            Status = request.Status.ToString(),
             RequestDate = request.RequestDate,
             VenueId = request.VenueId,
         };
@@ -41,11 +41,13 @@ public class RoleRequestService(IRoleRequestRepository repository) : IRoleReques
 
         return requests.Select(r => new RoleRequestDto
         {
+            Id = r.Id,
             RoleName = r.RoleName,
-            Status = r.Status,
+            Status = r.Status.ToString(),
             RequestDate = r.RequestDate,
             VenueId = r.VenueId,
-            Venue = r.Venue
+            Venue = r.Venue,
+            User = r.User
         }).ToList();
     }
 }

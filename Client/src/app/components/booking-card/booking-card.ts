@@ -10,7 +10,6 @@ import { BookingStatus } from '../enums/BookingStatus';
 import { UpdateBooking } from '../../models/UpdateBooking';
 import { BookingStatusUpdate } from '../../models/BookingStatusUpdate';
 import { BookingWithVenueName } from '../../models/BookingWithVenueName';
-import { ChipModule } from 'primeng/chip';
 import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
 import { AddOrEditBookingCard } from '../add-or-edit-booking-card/add-or-edit-booking-card';
@@ -22,7 +21,6 @@ import { AddOrEditBookingCard } from '../add-or-edit-booking-card/add-or-edit-bo
     CardModule,
     ButtonModule,
     ConfirmDialogModule,
-    ChipModule,
     CommonModule,
     DialogModule,
     AddOrEditBookingCard,

@@ -44,14 +44,6 @@ public static class VenueEndpoints
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status401Unauthorized);
-
-        venuesGroup.MapGet("/roles",
-                async (IQueryHandler<GetVenueRolesQuery> handler, ClaimsPrincipal user) =>
-                    await handler.Handle(new GetVenueRolesQuery(user.GetUserId(), user.IsAdmin())))
-            .RequireAuthorization()
-            .Produces(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status401Unauthorized);
         
         return app;
     }

@@ -25,6 +25,8 @@ public class RoleRequestRepository(EventoDbContext db) : IRoleRequestRepository
     public async Task<IEnumerable<RoleRequest>> GetAllAsync()
     {
         return await db.RoleRequests
+            .AsNoTracking()
+            .Include(r => r.User)
             .Include(r => r.Venue)
             .OrderByDescending(r => r.RequestDate)
             .ToListAsync();
@@ -33,6 +35,7 @@ public class RoleRequestRepository(EventoDbContext db) : IRoleRequestRepository
     public async Task<IEnumerable<RoleRequest>> GetByUserIdAsync(string userId)
     {
         return await db.RoleRequests
+            .AsNoTracking()
             .Where(r => r.UserId == userId)
             .Include(r => r.Venue)
             .OrderByDescending(r => r.RequestDate)

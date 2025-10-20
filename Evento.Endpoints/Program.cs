@@ -47,5 +47,6 @@ app.UseCors();
 app.MapAuthEndpoints();
 app.MapVenueEndpoints();
 app.MapBookingEndpoints();
+app.MapRoleRequestEndpoints();
 
 app.Run();

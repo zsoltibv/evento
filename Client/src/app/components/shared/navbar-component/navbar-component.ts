@@ -28,11 +28,15 @@ export class NavbarComponent {
       return [
         { label: 'Venues', routerLink: '/venues' },
         { label: 'Bookings', routerLink: '/bookings' },
+        { label: 'Role Requests', routerLink: '/role-requests' },
       ];
     }
 
     if (this.authService.isAdmin()) {
-      return [{ label: 'Bookings', routerLink: '/bookings' }];
+      return [
+        { label: 'Bookings', routerLink: '/bookings' },
+        { label: 'Role Requests', routerLink: '/role-requests' },
+      ];
     }
 
     return [];
