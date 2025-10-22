@@ -1,6 +1,6 @@
 <p-card class="flex flex-col h-full w-full rounded-lg shadow-md px-4">
   <div class="flex justify-between md:items-center items-start md:flex-row flex-col">
-    <div class="info text-gray-300">
+    <div class="info">
       <div class="title flex items-center gap-3 mb-3">
         <h2 class="font-semibold text-xl">Booking #{{ currentBooking()!.id }}</h2>
         <span
@@ -21,9 +21,9 @@
         ></button>
         }
       </div>
-      <p><strong>Venue:</strong> {{ currentBooking()!.venueName }}</p>
       <p><strong>From:</strong> {{ currentBooking()!.startDate | bookingDate }}</p>
       <p><strong>To:</strong> {{ currentBooking()!.endDate | bookingDate }}</p>
+      <p><strong>Venue:</strong> {{ currentBooking()!.venueName }}</p>
     </div>
     <div class="actions md:mt-0 mt-4 flex gap-2">
       @if(this.authService.isAdmin()) { @if(showApproveButton()) {

@@ -39,18 +39,14 @@ export class LoginComponent {
   }
 
   private redirectToMainPage() {
-    const role = this.authService.userTokenInfo()?.roles[0] || '';
+    const role = this.authService.roles();
 
-    switch (role) {
-      case 'User':
-        this.router.navigate(['/venues']);
-        break;
-      case 'Admin':
-        this.router.navigate(['/bookings']);
-        break;
-      default:
-        this.router.navigate(['/login']);
-        break;
+    if (role.includes('User')) {
+      this.router.navigate(['/venues']);
+    } else if (role.includes('Admin')) {
+      this.router.navigate(['/bookings']);
+    } else {
+      this.router.navigate(['/login']);
     }
   }
 }

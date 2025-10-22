@@ -46,9 +46,11 @@ export class AuthService {
     }
   });
 
-  readonly isAdmin = computed(() => this.userTokenInfo()?.roles.includes('Admin') ?? false);
+  readonly roles = computed(() => this.userTokenInfo()?.roles[0] || '');
 
-  readonly isUser = computed(() => this.userTokenInfo()?.roles.includes('User') ?? false);
+  readonly isAdmin = computed(() => this.roles().includes('Admin') ?? false);
+
+  readonly isUser = computed(() => this.roles().includes('User') ?? false);
 
   async login(email: string, password: string): Promise<LoginResponse> {
     const response = await this.api.post<LoginResponse>('/api/auth/login', { email, password });

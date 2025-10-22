@@ -30,7 +30,7 @@ public class EventoDbContext(DbContextOptions<EventoDbContext> options) : Identi
         {
             new() { Id = "1", Name = "Admin", NormalizedName = "ADMIN" },
             new() { Id = "2", Name = "User", NormalizedName = "USER" },
-            new() { Id = "3", Name = "VenueAdmin", NormalizedName = "VENUE_ADMIN" }
+            new() { Id = "3", Name = "VenueAdmin", NormalizedName = "VENUEADMIN" }
         };
 
         modelBuilder.Entity<IdentityRole>().HasData(roles);

@@ -50,4 +50,18 @@ public class RoleRequestService(IRoleRequestRepository repository) : IRoleReques
             User = r.User
         }).ToList();
     }
+
+    public async Task<RoleRequest?> GetRoleRequestByIdAsync(int id) => await repository.GetByIdAsync(id);
+
+    public async Task UpdateStatusAsync(int id, RequestStatus newStatus)
+    {
+        var request = await repository.GetByIdAsync(id);
+        if (request == null)
+        {
+            throw new KeyNotFoundException("Role request not found.");
+        }
+
+        request.Status = newStatus;
+        await repository.UpdateAsync(request);
+    }
 }

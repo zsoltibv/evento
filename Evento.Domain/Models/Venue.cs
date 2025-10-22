@@ -10,6 +10,6 @@ public class Venue
     public int Capacity { get; set; }
     public required string Slug { get; set; }
     
-    public ICollection<AppUser> VenueAdmins { get; set; } = new List<AppUser>();
+    public ICollection<VenueAdmin> VenueAdmins { get; set; } = new List<VenueAdmin>();
     public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 }

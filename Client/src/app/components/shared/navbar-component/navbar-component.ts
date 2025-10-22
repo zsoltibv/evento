@@ -60,6 +60,11 @@ export class NavbarComponent {
     return !!this.authService.jwtToken();
   });
 
+  protected formattedRoles = computed(() => {
+    const roles = this.authService.roles();
+    return Array.isArray(roles) ? roles.join(', ') : roles;
+  });
+
   protected user = computed<UserTokenInfo | null>(() => {
     return this.authService.userTokenInfo();
   });

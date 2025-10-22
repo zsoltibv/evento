@@ -13,7 +13,7 @@
     </ng-template>
 
     <div class="p-2 mb-3">
-      <p class="text-gray-300 line-clamp-2">
+      <p class="line-clamp-2">
         {{ venue.description || 'No description available' }}
       </p>
     </div>
@@ -21,6 +21,6 @@
     <p-button label="See venue" class="w-full" (onClick)="goToVenue(venue)"></p-button>
   </p-card>
   } @empty {
-  <p class="text-center text-gray-500">No bookings available.</p>
+  <p class="text-center text-gray-500">No venues available.</p>
   }
 </div>

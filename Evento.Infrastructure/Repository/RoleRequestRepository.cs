@@ -22,6 +22,17 @@ public class RoleRequestRepository(EventoDbContext db) : IRoleRequestRepository
         await db.SaveChangesAsync();
     }
 
+    public async Task UpdateAsync(RoleRequest roleRequest)
+    {
+        db.RoleRequests.Update(roleRequest);
+        await db.SaveChangesAsync();
+    }
+
+    public async Task<RoleRequest?> GetByIdAsync(int id)
+    {
+        return await db.RoleRequests.FirstOrDefaultAsync(r => r.Id == id);
+    }
+
     public async Task<IEnumerable<RoleRequest>> GetAllAsync()
     {
         return await db.RoleRequests

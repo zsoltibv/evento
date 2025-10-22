@@ -4,6 +4,7 @@ using Evento.Domain;
 using Evento.Domain.Models;
 using Evento.Infrastructure.Repository;
 using Evento.Infrastructure.Services;
+using Evento.Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,8 @@ public static class ServiceInstaller
         services.AddScoped<IVenueService, VenueService>();
         services.AddScoped<IBookingService, BookingService>();
         services.AddScoped<IVenueAdminService, VenueAdminService>();
+        services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+        services.AddTransient<IEmailService, EmailService>();
 
         // Register Repositories
         services.AddScoped<IBookingRepository, BookingRepository>();
