@@ -30,7 +30,7 @@ public static class ServiceInstaller
         services.AddScoped<IBookingService, BookingService>();
         services.AddScoped<IVenueAdminService, VenueAdminService>();
         services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
-        services.AddTransient<IEmailService, EmailService>();
+        services.AddScoped<IEmailService, EmailService>();
 
         // Register Repositories
         services.AddScoped<IBookingRepository, BookingRepository>();

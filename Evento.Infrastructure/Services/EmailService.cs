@@ -1,8 +1,9 @@
-﻿using System.Net;
-using System.Net.Mail;
+﻿using System.Text;
 using Evento.Application.Common.Dto;
 using Evento.Infrastructure.Services.Interfaces;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using Task = System.Threading.Tasks.Task;
 
 namespace Evento.Infrastructure.Services;
 
@@ -12,19 +13,42 @@ public class EmailService(IOptions<EmailSettings> options) : IEmailService
 
     public async Task SendEmailAsync(EmailMessageDto message)
     {
-        using var client = new SmtpClient(_settings.SmtpServer, _settings.Port);
-        client.Credentials = new NetworkCredential(_settings.Username, _settings.Password);
-        client.EnableSsl = _settings.EnableSsl;
-
-        var mailMessage = new MailMessage
+        var client = new HttpClient();
+        var request = new HttpRequestMessage
         {
-            From = new MailAddress(_settings.SenderEmail, _settings.SenderName),
-            Subject = message.Subject,
-            Body = message.Body,
-            IsBodyHtml = message.IsHtml
+            Method = HttpMethod.Post,
+            RequestUri = new Uri(_settings.BrevoSmtpUri),
+            Headers =
+            {
+                { "accept", "application/json" },
+                { "api-key", _settings.BrevoApiKey },
+            },
+            Content = new StringContent(
+                JsonConvert.SerializeObject(new
+                {
+                    sender = new { email = _settings.SenderEmail, name = _settings.SenderName },
+                    to = new[] { new { email = message.To } },
+                    subject = message.Subject,
+                    htmlContent = message.Body,
+                    textContent = message.Body
+                }),
+                Encoding.UTF8,
+                "application/json"
+            )
         };
-        mailMessage.To.Add(message.To);
 
-        await client.SendMailAsync(mailMessage);
+        try
+        {
+            using var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            
+            var body = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Email sent successfully: {body}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error sending email: {ex.Message}");
+            throw;
+        }
     }
 }

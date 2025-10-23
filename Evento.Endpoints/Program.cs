@@ -48,5 +48,6 @@ app.MapAuthEndpoints();
 app.MapVenueEndpoints();
 app.MapBookingEndpoints();
 app.MapRoleRequestEndpoints();
+app.MapEmailEndpoints();
 
 app.Run();
