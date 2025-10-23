@@ -30,7 +30,9 @@ public class RoleRequestRepository(EventoDbContext db) : IRoleRequestRepository
 
     public async Task<RoleRequest?> GetByIdAsync(int id)
     {
-        return await db.RoleRequests.FirstOrDefaultAsync(r => r.Id == id);
+        return await db.RoleRequests
+            .Include(u => u.User)
+            .FirstOrDefaultAsync(r => r.Id == id);
     }
 
     public async Task<IEnumerable<RoleRequest>> GetAllAsync()

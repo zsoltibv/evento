@@ -20,13 +20,10 @@ public static class RoleRequestEndpoints
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status401Unauthorized);
-        
+
         roleRequestsGroup.MapPost("/{id:int}/approve",
                 async (int id, ICommandHandler<ApproveVenueAdminCommand> handler) =>
-                {
-                    var token = await handler.Handle(new ApproveVenueAdminCommand(id));
-                    return Results.Ok(new { Token = token });
-                })
+                    await handler.Handle(new ApproveVenueAdminCommand(id)))
             .RequireAuthorization(AppRoles.Admin)
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
