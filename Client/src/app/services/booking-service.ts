@@ -4,6 +4,7 @@ import { Booking } from '../models/Booking';
 import { CreateBooking } from '../models/CreateBooking';
 import { UpdateBooking } from '../models/UpdateBooking';
 import { BookingWithVenueName } from '../models/BookingWithVenueName';
+import { GetBookingsResponse } from '../models/GetBookingsResponse';
 
 @Injectable({
   providedIn: 'root',
@@ -11,8 +12,8 @@ import { BookingWithVenueName } from '../models/BookingWithVenueName';
 export class BookingService {
   private api = inject(RestApiService);
 
-  async getBookings(): Promise<BookingWithVenueName[]> {
-    return await this.api.get<BookingWithVenueName[]>('/api/bookings');
+  async getBookings(): Promise<GetBookingsResponse> {
+    return await this.api.get<GetBookingsResponse>('/api/bookings');
   }
 
   async getBooking(id: number): Promise<Booking[]> {

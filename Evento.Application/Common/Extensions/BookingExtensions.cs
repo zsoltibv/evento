@@ -16,7 +16,7 @@ public static class BookingExtensions
             booking.VenueId
         );
     
-    public static BookingWithVenueNameDto ToDtoWithVenueName(this Booking booking)
+    public static BookingWithInfo ToDtoWithVenueName(this Booking booking)
         => new(
             booking.Id,
             booking.UserId,
@@ -31,6 +31,6 @@ public static class BookingExtensions
     public static IEnumerable<BookingDto> ToDto(this IEnumerable<Booking> bookings)
         => bookings.Select(b => b.ToDto());
     
-    public static IEnumerable<BookingWithVenueNameDto> ToDtoWithVenueName(this IEnumerable<Booking> bookings)
+    public static IEnumerable<BookingWithInfo> ToDtoWithVenueName(this IEnumerable<Booking> bookings)
         => bookings.Select(b => b.ToDtoWithVenueName());
 }

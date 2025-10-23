@@ -53,24 +53,37 @@ export class BookingCard {
     this.showEditDialog.set(!this.showEditDialog());
   }
 
+  protected readonly isUsersBooking = computed(
+    () => this.authService.userId() == this.currentBooking()?.userId
+  );
+
   protected readonly showCancelButton = computed(
-    () => this.authService.isUser() && this.currentBooking()?.status === BookingStatus.Pending
+    () =>
+      this.authService.isUser() &&
+      this.currentBooking()?.status === BookingStatus.Pending &&
+      this.isUsersBooking()
   );
 
   protected readonly showReopenButton = computed(
-    () => this.authService.isUser() && this.currentBooking()?.status === BookingStatus.Cancelled
+    () =>
+      this.authService.isUser() &&
+      this.currentBooking()?.status === BookingStatus.Cancelled &&
+      this.isUsersBooking()
   );
 
   protected readonly showApproveButton = computed(
-    () => this.authService.isAdmin() && this.currentBooking()?.status === BookingStatus.Pending
+    () => this.currentBooking()?.status === BookingStatus.Pending && !this.isUsersBooking()
   );
 
   protected readonly showRejectButton = computed(
-    () => this.authService.isAdmin() && this.currentBooking()?.status === BookingStatus.Pending
+    () => this.currentBooking()?.status === BookingStatus.Pending && !this.isUsersBooking()
   );
 
   protected readonly showEditButton = computed(
-    () => this.authService.isUser() && this.currentBooking()?.status === BookingStatus.Pending
+    () =>
+      this.authService.isUser() &&
+      this.currentBooking()?.status === BookingStatus.Pending &&
+      this.isUsersBooking()
   );
 
   getStatusClass(status: BookingStatus): string {

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Evento.Application.Bookings.UpdateBooking;
 
-public class UpdateBookingHandler(IBookingService service) : ICommandHandler<UpdateBookingCommand>
+public class UpdateBookingHandler(IBookingService service, IVenueAdminService venueAdminService) : ICommandHandler<UpdateBookingCommand>
 {
     public async Task<IResult> Handle(UpdateBookingCommand command)
     {
@@ -17,16 +17,15 @@ public class UpdateBookingHandler(IBookingService service) : ICommandHandler<Upd
         }
 
         var statusString = command.Dto.Status;
-        if (command is { IsAdmin: false } && (statusString.EqualsStatus(BookingStatus.Approved) ||
-                                              statusString.EqualsStatus(BookingStatus.Rejected)))
-        {
-            return Results.Json(BookingErrors.UserCannotApproveOrRejectBooking,
-                statusCode: StatusCodes.Status403Forbidden);
-        }
+        var isVenueAdmin = await venueAdminService.IsUserVenueAdminAsync(command.UserId, booking.VenueId);
 
-        if (!command.IsAdmin && booking.UserId != command.UserId)
+        if (!isVenueAdmin && command is { IsAdmin: false } &&
+            (statusString.EqualsStatus(BookingStatus.Approved) ||
+             statusString.EqualsStatus(BookingStatus.Rejected)))
         {
-            return Results.Forbid();
+            return Results.Json(
+                BookingErrors.UserCannotApproveOrRejectBooking,
+                statusCode: StatusCodes.Status403Forbidden);
         }
 
         if (statusString.EqualsStatus(BookingStatus.Approved))

@@ -19,6 +19,7 @@ public class BookingRepository(EventoDbContext db) : IBookingRepository
     public async Task<IEnumerable<Booking>> GetByUserAsync(string userId)
     {
         return await db.Bookings
+            .Include(b => b.User)
             .Include(b => b.Venue)
             .Where(b => b.UserId == userId)
             .OrderByDescending(b => b.BookingDate)
@@ -33,6 +34,17 @@ public class BookingRepository(EventoDbContext db) : IBookingRepository
             .Include(b => b.Venue)
             .AsNoTracking()
             .FirstOrDefaultAsync(b => b.Id == id);
+    }
+
+    public async Task<IEnumerable<Booking>> GetBookingsByVenueIdsAsync(string userId, IEnumerable<int> venueIds)
+    {
+        return await db.Bookings
+            .Where(b => venueIds.Contains(b.VenueId) && b.UserId != userId)
+            .Include(b => b.Venue)
+            .Include(b => b.User)
+            .OrderByDescending(b => b.BookingDate)
+            .AsNoTracking()
+            .ToListAsync();
     }
 
     public async Task<Booking> CreateAsync(Booking booking)

@@ -4,9 +4,10 @@ namespace Evento.Application.Services.Interfaces;
 
 public interface IBookingService
 {
-    Task<IEnumerable<BookingWithVenueNameDto>> GetAllAsync();
-    Task<IEnumerable<BookingWithVenueNameDto>> GetByUserAsync(string userId);
+    Task<IEnumerable<BookingWithInfo>> GetAllAsync();
+    Task<IEnumerable<BookingWithInfo>> GetByUserAsync(string userId);
     Task<BookingDto?> GetByIdAsync(int id);
+    Task<IEnumerable<BookingWithInfo>> GetBookingsByVenueIdsAsync(string userId, IEnumerable<int> venueIds);
     Task<BookingDto> CreateAsync(string userId, CreateBookingDto createDto);
     Task<BookingDto?> UpdateAsync(int id, UpdateBookingDto updateDto);
     Task<bool> DeleteAsync(int id);

@@ -1,11 +1,37 @@
 <div class="container mx-auto p-4">
   <h1 class="text-2xl font-bold mb-4">Bookings</h1>
 
-  <div class="flex flex-col gap-3">
-    @for(booking of bookings(); track booking.id){
-    <app-booking-card [booking]="booking" (onCancel)="onCancel($event)" />
-    } @empty {
-    <p class="text-gray-500">No bookings available.</p>
-    }
-  </div>
+  <p-tabs [value]="activeTab()">
+    <p-tablist>
+      @if(isUser()) {
+      <p-tab value="0">My Bookings</p-tab>
+      }
+      <!-- First tab -->
+      <p-tab value="1">Booking Requests</p-tab>
+      <!-- Second tab -->
+    </p-tablist>
+    <p-tabpanels>
+      <!-- Tab for My Bookings -->
+      <p-tabpanel value="0">
+        <div class="flex flex-col gap-3">
+          @for(booking of bookings(); track booking.id){
+          <app-booking-card [booking]="booking" (onCancel)="onCancelBookings($event)" />
+          } @empty {
+          <p class="text-gray-500">No bookings available.</p>
+          }
+        </div>
+      </p-tabpanel>
+
+      <!-- Tab for Booking Requests -->
+      <p-tabpanel value="1">
+        <div class="flex flex-col gap-3">
+          @for(booking of venueBookings(); track booking.id){
+          <app-booking-card [booking]="booking" (onCancel)="onCancelVenueBookings($event)" />
+          } @empty {
+          <p class="text-gray-500">No booking requests available.</p>
+          }
+        </div>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
 </div>

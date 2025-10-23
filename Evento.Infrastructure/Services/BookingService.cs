@@ -10,13 +10,13 @@ namespace Evento.Infrastructure.Services;
 
 public class BookingService(IBookingRepository repo) : IBookingService
 {
-    public async Task<IEnumerable<BookingWithVenueNameDto>> GetAllAsync()
+    public async Task<IEnumerable<BookingWithInfo>> GetAllAsync()
     {
         var bookings = await repo.GetAllAsync();
         return bookings.Select(b => b.ToDtoWithVenueName()).ToList();
     }
 
-    public async Task<IEnumerable<BookingWithVenueNameDto>> GetByUserAsync(string userId)
+    public async Task<IEnumerable<BookingWithInfo>> GetByUserAsync(string userId)
     {
         var bookings = await repo.GetByUserAsync(userId);
         return bookings.Select(b => b.ToDtoWithVenueName()).ToList();
@@ -26,6 +26,12 @@ public class BookingService(IBookingRepository repo) : IBookingService
     {
         var booking = await repo.GetByIdAsync(id);
         return booking?.ToDto();
+    }
+    
+    public async Task<IEnumerable<BookingWithInfo>> GetBookingsByVenueIdsAsync(string userId, IEnumerable<int> venueIds)
+    {
+        var bookings = await repo.GetBookingsByVenueIdsAsync(userId, venueIds);
+        return bookings.Select(b => b.ToDtoWithVenueName()).ToList();
     }
 
     public async Task<BookingDto> CreateAsync(string userId, CreateBookingDto createDto)

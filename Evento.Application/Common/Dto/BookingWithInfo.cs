@@ -1,6 +1,6 @@
 ﻿namespace Evento.Application.Common.Dto;
 
-public record BookingWithVenueNameDto(
+public record BookingWithInfo(
     int Id,
     string UserId,
     DateTime StartDate,

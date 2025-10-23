@@ -26,7 +26,7 @@
       <p><strong>Venue:</strong> {{ currentBooking()!.venueName }}</p>
     </div>
     <div class="actions md:mt-0 mt-4 flex gap-2">
-      @if(this.authService.isAdmin()) { @if(showApproveButton()) {
+      @if(showApproveButton()) {
       <button pButton label="Approve" (click)="approveBooking(booking().id)"></button>
       } @if (showRejectButton()) {
       <button
@@ -35,7 +35,7 @@
         (click)="rejectBooking(currentBooking()!.id)"
         severity="secondary"
       ></button>
-      } } @else if(this.authService.isUser()) { @if(showCancelButton()) {
+      } @if(showCancelButton()) {
       <button
         pButton
         label="Cancel Booking"
@@ -49,7 +49,7 @@
         (click)="reopenBooking(currentBooking()!.id)"
         severity="secondary"
       ></button>
-      } }
+      }
     </div>
   </div>
 </p-card>
