@@ -30,8 +30,8 @@ public class RoleRequestService(IRoleRequestRepository repository) : IRoleReques
         };
     }
 
-    public async Task<bool> HasPendingRequestAsync(string userId, int venueId) =>
-        await repository.ExistsPendingRequestAsync(userId, venueId, AppRoles.VenueAdmin);
+    public async Task<bool> HasActiveRequestAsync(string userId, int venueId) =>
+        await repository.HasActiveRequestAsync(userId, venueId, AppRoles.VenueAdmin);
 
     public async Task<IEnumerable<RoleRequestDto>> GetRoleRequestsAsync(string? userId = null)
     {

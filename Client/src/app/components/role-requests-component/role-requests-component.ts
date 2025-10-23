@@ -2,6 +2,7 @@ import { RoleRequest } from '../../models/RoleRequest';
 import { RoleRequestService } from '../../services/role-request-service';
 import { Component, inject, signal } from '@angular/core';
 import { RoleRequestCard } from './role-request-card/role-request-card';
+import { RequestStatus } from '../enums/RequestStatus';
 
 @Component({
   selector: 'app-role-requests-component',
@@ -15,11 +16,22 @@ export class RoleRequestsComponent {
 
   async ngOnInit() {
     const result = await this.roleRequestService.getRoleRequests();
-    console.log(result);
     this.roleRequests.set(result);
   }
 
-  protected onRequestCancelled(requestId: number) {
-    this.roleRequests.set(this.roleRequests().filter((r) => r.venueId !== requestId));
+  protected onRequestRejected(requestId: number) {
+    this.roleRequests.set(
+      this.roleRequests().map((r) =>
+        r.id === requestId ? { ...r, status: RequestStatus.Rejected } : r
+      )
+    );
+  }
+
+  protected onRequestApproved(requestId: number) {
+    this.roleRequests.set(
+      this.roleRequests().map((r) =>
+        r.id === requestId ? { ...r, status: RequestStatus.Approved } : r
+      )
+    );
   }
 }

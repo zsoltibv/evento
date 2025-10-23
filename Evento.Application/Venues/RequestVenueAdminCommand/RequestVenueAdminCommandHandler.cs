@@ -9,10 +9,10 @@ public class RequestVenueAdminCommandHandler(IRoleRequestService service) : ICom
 {
     public async Task<IResult> Handle(RequestVenueAdminCommand command)
     {
-        var exists = await service.HasPendingRequestAsync(command.UserId, command.VenueId);
+        var exists = await service.HasActiveRequestAsync(command.UserId, command.VenueId);
         if (exists)
         {
-            return Results.BadRequest(RoleRequestErrors.HasPendingRequest);
+            return Results.BadRequest(RoleRequestErrors.HasActiveRequest);
         }
         
         var result = await service.RequestVenueAdminAsync(command.UserId, command.VenueId);

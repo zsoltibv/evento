@@ -5,7 +5,8 @@
     @for(request of roleRequests(); track request.id){
     <app-role-request-card
       [roleRequest]="request"
-      (onCancel)="onRequestCancelled($event)"
+      (onReject)="onRequestRejected($event)"
+      (onApprove)="onRequestApproved($event)"
     ></app-role-request-card>
     } @empty {
     <p class="text-gray-500">No role requests available.</p>

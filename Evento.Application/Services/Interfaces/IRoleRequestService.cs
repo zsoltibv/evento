@@ -6,7 +6,7 @@ namespace Evento.Application.Services.Interfaces;
 
 public interface IRoleRequestService
 {
-    Task<bool> HasPendingRequestAsync(string userId, int venueId);
+    Task<bool> HasActiveRequestAsync(string userId, int venueId);
     Task<RoleRequestDto> RequestVenueAdminAsync(string userId, int venueId);
     Task<IEnumerable<RoleRequestDto>> GetRoleRequestsAsync(string? userId = null);
     Task<RoleRequest?> GetRoleRequestByIdAsync(int id);

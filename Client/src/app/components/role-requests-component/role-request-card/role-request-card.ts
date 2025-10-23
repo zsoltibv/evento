@@ -5,6 +5,7 @@ import { CardModule } from 'primeng/card';
 import { CommonModule } from '@angular/common';
 import { BookingDatePipe } from '../../../pipe/booking-date-pipe';
 import { ButtonModule } from 'primeng/button';
+import { RoleRequestService } from '../../../services/role-request-service';
 
 @Component({
   selector: 'app-role-request-card',
@@ -14,9 +15,11 @@ import { ButtonModule } from 'primeng/button';
 })
 export class RoleRequestCard {
   roleRequest = input.required<RoleRequest>();
-  onCancel = output<number>();
+  onReject = output<number>();
+  onApprove = output<number>();
 
   private authService = inject(AuthService);
+  private roleRequestService = inject(RoleRequestService);
 
   protected readonly showApproveButton = computed(() => this.roleRequest().status === 'Pending');
   protected readonly showRejectButton = computed(() => this.roleRequest().status === 'Pending');
@@ -35,7 +38,13 @@ export class RoleRequestCard {
     }
   }
 
-  protected async approveRoleRequest(id: number) {}
+  protected async approveRoleRequest(id: number) {
+    await this.roleRequestService.approveRoleRequest(id);
+    this.onApprove.emit(id);
+  }
 
-  protected async rejectRoleRequest(id: number) {}
+  protected async rejectRoleRequest(id: number) {
+    // to be implemented: call to service to reject the role request
+    this.onReject.emit(id);
+  }
 }

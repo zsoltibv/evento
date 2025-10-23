@@ -1,5 +1,4 @@
 ﻿using Evento.Domain;
-using Evento.Domain.Enums;
 using Evento.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,13 +6,12 @@ namespace Evento.Infrastructure.Repository;
 
 public class RoleRequestRepository(EventoDbContext db) : IRoleRequestRepository
 {
-    public async Task<bool> ExistsPendingRequestAsync(string userId, int venueId, string roleName)
+    public async Task<bool> HasActiveRequestAsync(string userId, int venueId, string roleName)
     {
         return await db.RoleRequests.AnyAsync(r =>
             r.UserId == userId &&
             r.VenueId == venueId &&
-            r.RoleName == roleName &&
-            r.Status == RequestStatus.Pending);
+            r.RoleName == roleName);
     }
 
     public async Task AddAsync(RoleRequest roleRequest)
