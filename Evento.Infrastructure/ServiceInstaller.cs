@@ -4,6 +4,7 @@ using Evento.Domain;
 using Evento.Domain.Models;
 using Evento.Infrastructure.Repository;
 using Evento.Infrastructure.Services;
+using Evento.Infrastructure.Services.EmailTemplates;
 using Evento.Infrastructure.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -31,6 +32,8 @@ public static class ServiceInstaller
         services.AddScoped<IVenueAdminService, VenueAdminService>();
         services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IEmailTemplateFactory, EmailTemplateFactory>();
+        services.AddScoped<VenueAdminApprovedEmailTemplate>();
 
         // Register Repositories
         services.AddScoped<IBookingRepository, BookingRepository>();

@@ -29,8 +29,11 @@ public class ApproveVenueAdminCommandHandler(UserManager<AppUser> userManager, I
         await roleRequestService.UpdateStatusAsync(request.Id, RequestStatus.Approved);
 
         // Assign venue admin if applicable
-        if (request.VenueId.HasValue)
+        if (request is { VenueId: not null, Venue: not null })
+        {
             await venueAdminService.AssignVenueAdminAsync(request.VenueId.Value, request.UserId);
+            await venueAdminService.SendVenueAdminApprovedEmailAsync(request.User.Email!, request.Venue.Name);
+        }
 
         // Assign user role
         await userManager.AddToRoleAsync(request.User, request.RoleName);

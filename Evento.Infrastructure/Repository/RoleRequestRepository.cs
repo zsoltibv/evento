@@ -32,6 +32,7 @@ public class RoleRequestRepository(EventoDbContext db) : IRoleRequestRepository
     {
         return await db.RoleRequests
             .Include(u => u.User)
+            .Include(v => v.Venue)
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 
