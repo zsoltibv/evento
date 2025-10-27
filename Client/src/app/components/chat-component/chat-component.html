@@ -1,0 +1,67 @@
+<div class="chat-container flex flex-col md:flex-row gap-3 container mx-auto p-4">
+  <!-- Online users list -->
+  <div class="md:w-[250px] w-fit-content">
+    <p-panel header="Online Users">
+      <p-listbox
+        [options]="showOnlineUsers()"
+        [(ngModel)]="selectedUser"
+        optionLabel="username"
+        (ngModelChange)="selectUser($event)"
+      >
+        <ng-template let-user pTemplate="item">
+          <div class="flex items-center gap-2">
+            <i class="pi pi-user"></i>
+            <span>{{ user.username }}</span>
+          </div>
+        </ng-template>
+      </p-listbox>
+    </p-panel>
+  </div>
+
+  <!-- Chat section -->
+  <div class="w-full">
+    <p-panel
+      [header]="selectedUser() ? selectedUser()?.username : 'Select a user to start chatting'"
+    >
+      @if(selectedUser()){
+      <div class="messages-container flex flex-col gap-2 h-96 overflow-y-auto">
+        @for(message of messages(); track $index){
+        <div
+          [ngClass]="{
+            'self-end message-sent': message.sender.userId === currentUser()?.userId,
+            'self-start message-received': message.sender.userId !== currentUser()?.userId
+          }"
+          class="p-2 rounded-lg max-w-xs"
+        >
+          {{ message.message }}
+        </div>
+        }
+      </div>
+
+      <div class="input-container flex gap-2 items-center mt-4">
+        <textarea
+          pInputTextarea
+          rows="1"
+          placeholder="Type your message..."
+          [(ngModel)]="messageText"
+          class="flex-1 border p-2 rounded"
+          (keydown.enter)="sendMessage(); $event.preventDefault()"
+        ></textarea>
+        <button
+          pButton
+          label="Send"
+          icon="pi pi-send"
+          (click)="sendMessage()"
+          [disabled]="!messageText()"
+          class="h-10"
+        ></button>
+      </div>
+      }@else{
+      <div class="text-center text-gray-500 p-3">
+        <i class="pi pi-comments text-3xl mb-2"></i>
+        <p>Select a user from the list to start chatting.</p>
+      </div>
+      }
+    </p-panel>
+  </div>
+</div>

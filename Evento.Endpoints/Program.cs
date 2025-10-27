@@ -1,6 +1,7 @@
 using Evento.Application;
 using Evento.Endpoints;
 using Evento.Endpoints.Endpoints;
+using Evento.Endpoints.Hubs;
 using Evento.Infrastructure;
 
 using Scalar.AspNetCore;
@@ -9,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 //Register OpenApi
 builder.Services.AddOpenApi("v1", options => { options.AddDocumentTransformer<BearerSecuritySchemeTransformer>(); });
+
+// Add SignalR
+builder.Services.AddSignalR();
 
 // Add all Infrastructure services
 builder.Services.AddInfrastructureServices(builder.Configuration);
@@ -49,5 +53,6 @@ app.MapVenueEndpoints();
 app.MapBookingEndpoints();
 app.MapRoleRequestEndpoints();
 app.MapEmailEndpoints();
+app.MapHub<ChatNotificationHub>("/hubs/chat");
 
 app.Run();

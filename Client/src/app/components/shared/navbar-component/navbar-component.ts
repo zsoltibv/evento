@@ -50,6 +50,11 @@ export class NavbarComponent {
       routerLink: '/bookings',
     },
     {
+      label: 'Chat',
+      icon: 'pi pi-comments',
+      routerLink: '/chat',
+    },
+    {
       label: 'Logout',
       icon: 'pi pi-sign-out',
       command: () => this.logout(),
