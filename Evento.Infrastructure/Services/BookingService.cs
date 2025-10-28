@@ -28,6 +28,12 @@ public class BookingService(IBookingRepository repo) : IBookingService
         return booking?.ToDto();
     }
     
+    public async Task<BookingDetailsDto?> GetWithDetailsByIdAsync(int id)
+    {
+        var booking = await repo.GetByIdAsync(id);
+        return booking?.ToDetailsDto();
+    }
+    
     public async Task<IEnumerable<BookingWithInfo>> GetBookingsByVenueIdsAsync(string userId, IEnumerable<int> venueIds)
     {
         var bookings = await repo.GetBookingsByVenueIdsAsync(userId, venueIds);

@@ -49,6 +49,7 @@ public class RoleRequestRepository(EventoDbContext db) : IRoleRequestRepository
         return await db.RoleRequests
             .AsNoTracking()
             .Where(r => r.UserId == userId)
+            .Include(r => r.User)
             .Include(r => r.Venue)
             .OrderByDescending(r => r.RequestDate)
             .ToListAsync();

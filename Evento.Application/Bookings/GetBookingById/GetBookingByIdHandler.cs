@@ -8,7 +8,7 @@ public class GetBookingByIdHandler(IBookingService service) : IQueryHandler<GetB
 {
     public async Task<IResult> Handle(GetBookingByIdQuery query)
     {
-        var booking = await service.GetByIdAsync(query.BookingId);
+        var booking = await service.GetWithDetailsByIdAsync(query.BookingId);
         if (booking is null)
             return Results.NotFound();
 

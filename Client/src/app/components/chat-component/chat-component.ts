@@ -67,7 +67,7 @@ export class ChatComponent {
   }
 
   async sendMessage() {
-    if (!this.currentUser() || !this.selectedUser()) return;
+    if (!this.currentUser() || !this.selectedUser() || !this.messageText()) return;
 
     const msg: ChatMessage = {
       sender: this.currentUser()!,

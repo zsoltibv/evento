@@ -2,7 +2,11 @@
   <!-- Online users list -->
   <div class="md:w-[250px] w-fit-content">
     <p-panel header="Online Users">
-      <p-listbox
+      @if(showOnlineUsers().length === 0){
+      <div class="text-gray-500">
+        <p>No users are currently online.</p>
+      </div>
+      }@else{<p-listbox
         [options]="showOnlineUsers()"
         [(ngModel)]="selectedUser"
         optionLabel="username"
@@ -13,8 +17,8 @@
             <i class="pi pi-user"></i>
             <span>{{ user.username }}</span>
           </div>
-        </ng-template>
-      </p-listbox>
+        </ng-template> </p-listbox
+      >}
     </p-panel>
   </div>
 

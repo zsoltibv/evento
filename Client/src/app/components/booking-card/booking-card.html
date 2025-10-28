@@ -10,6 +10,15 @@
           {{ currentBooking()!.status }}
         </span>
 
+        <button
+          pButton
+          type="button"
+          icon="pi pi-info-circle"
+          class="p-button-text p-button-sm"
+          (click)="goToBooking()"
+          title="View Booking Details"
+        ></button>
+
         @if(showEditButton()){
         <button
           pButton

@@ -1,4 +1,5 @@
 ﻿using Evento.Application.Common.Dto;
+using Evento.Application.Common.Extensions;
 using Evento.Application.Services.Interfaces;
 using Evento.Domain;
 using Evento.Domain.Enums;
@@ -46,8 +47,8 @@ public class RoleRequestService(IRoleRequestRepository repository) : IRoleReques
             Status = r.Status.ToString(),
             RequestDate = r.RequestDate,
             VenueId = r.VenueId,
-            Venue = r.Venue,
-            User = r.User
+            Venue = r.Venue!.ToDto(),
+            User = r.User.ToDto()
         }).ToList();
     }
 

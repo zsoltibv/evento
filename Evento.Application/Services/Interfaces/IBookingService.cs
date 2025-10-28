@@ -7,6 +7,7 @@ public interface IBookingService
     Task<IEnumerable<BookingWithInfo>> GetAllAsync();
     Task<IEnumerable<BookingWithInfo>> GetByUserAsync(string userId);
     Task<BookingDto?> GetByIdAsync(int id);
+    Task<BookingDetailsDto?> GetWithDetailsByIdAsync(int id);
     Task<IEnumerable<BookingWithInfo>> GetBookingsByVenueIdsAsync(string userId, IEnumerable<int> venueIds);
     Task<BookingDto> CreateAsync(string userId, CreateBookingDto createDto);
     Task<BookingDto?> UpdateAsync(int id, UpdateBookingDto updateDto);

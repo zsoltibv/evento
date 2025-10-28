@@ -13,6 +13,7 @@ import { BookingWithVenueName } from '../../models/BookingWithVenueName';
 import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
 import { AddOrEditBookingCard } from '../add-or-edit-booking-card/add-or-edit-booking-card';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-booking-card',
@@ -36,6 +37,7 @@ export class BookingCard {
   private bookingService = inject(BookingService);
   private confirmationService = inject(ConfirmationService);
   public authService = inject(AuthService);
+  private router = inject(Router);
 
   currentBooking = signal<BookingWithVenueName | null>(null);
 
@@ -188,5 +190,9 @@ export class BookingCard {
   protected onBookingEdited(updatedBooking: BookingWithVenueName) {
     this.currentBooking.set(updatedBooking);
     this.showEditDialog.set(false);
+  }
+
+  protected goToBooking() {
+    this.router.navigate(['/bookings', this.booking().id]);
   }
 }

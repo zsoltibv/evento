@@ -33,4 +33,16 @@ public static class BookingExtensions
     
     public static IEnumerable<BookingWithInfo> ToDtoWithVenueName(this IEnumerable<Booking> bookings)
         => bookings.Select(b => b.ToDtoWithVenueName());
+    
+    public static BookingDetailsDto ToDetailsDto(this Booking booking)
+        => new(
+            booking.Id,
+            booking.UserId,
+            booking.StartDate,
+            booking.EndDate,
+            booking.BookingDate,
+            booking.Status.ToString(),
+            booking.Venue.ToDto(),
+            booking.User.ToDto()
+        );
 }

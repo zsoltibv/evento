@@ -7,11 +7,13 @@ import { VenueComponent } from './components/venue-component/venue-component';
 import { BookingsComponent } from './components/bookings-component/bookings-component';
 import { RoleRequestsComponent } from './components/role-requests-component/role-requests-component';
 import { ChatComponent } from './components/chat-component/chat-component';
+import { BookingComponent } from './components/booking-component/booking-component';
 
 export const routes: Routes = [
   { path: 'venues', component: VenuesComponent, canActivate: [authGuard] },
-  { path: 'venue/:slug', component: VenueComponent, canActivate: [authGuard] },
+  { path: 'venues/:slug', component: VenueComponent, canActivate: [authGuard] },
   { path: 'bookings', component: BookingsComponent, canActivate: [authGuard] },
+  { path: 'bookings/:id', component: BookingComponent, canActivate: [authGuard] },
   { path: 'role-requests', component: RoleRequestsComponent, canActivate: [authGuard] },
   { path: 'chat', component: ChatComponent, canActivate: [authGuard] },
   { path: 'login', component: LoginComponent },

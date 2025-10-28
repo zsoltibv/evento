@@ -5,7 +5,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { Router } from '@angular/router';
-import { LoginResponse } from '../../../models/LoginResponse';
 
 @Component({
   selector: 'app-register-component',

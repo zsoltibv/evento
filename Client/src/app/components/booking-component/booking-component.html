@@ -1,0 +1,56 @@
+@if (booking()) {
+<!-- Header with background image -->
+<div
+  class="relative w-full h-72 md:h-96 bg-center bg-cover flex items-end"
+  [style.backgroundImage]="'url(' + booking()!.venue.imageUrl + ')'"
+>
+  <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+
+  <div class="relative container mx-auto p-4">
+    <div class="flex items-center justify-between">
+      <div class="flex flex-col">
+        <h1 class="mb-1 text-2xl md:text-4xl font-bold text-white">Booking #{{ booking()!.id }}</h1>
+        <span class="text-white text-lg hover:underline cursor-pointer" (click)="goToVenue()">{{
+          booking()!.venue.name
+        }}</span>
+      </div>
+
+      <span
+        class="px-3 py-1 text-sm rounded-full"
+        [ngClass]="{
+          'bg-yellow-500 text-white': booking()!.status === 'Pending',
+          'bg-green-600 text-white': booking()!.status === 'Approved',
+          'bg-red-600 text-white':
+            booking()!.status === 'Cancelled' || booking()!.status === 'Rejected'
+        }"
+      >
+        {{ booking()!.status }}
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Details section -->
+<div class="container mx-auto px-4 py-5">
+  <!-- <div class="border-t border-gray-300 my-4"></div> -->
+
+  <div class="flex md:flex-row gap-4">
+    <div class="w-1/2">
+      <h2 class="text-xl font-semibold mb-2">Booking Information</h2>
+      <p><strong>Start:</strong> {{ booking()!.startDate | bookingDate }}</p>
+      <p><strong>End:</strong> {{ booking()!.endDate | bookingDate }}</p>
+      <p><strong>Booked on:</strong> {{ booking()!.bookingDate | bookingDate }}</p>
+    </div>
+
+    <div class="w-1/2">
+      <h2 class="text-xl font-semibold mb-2">Booked By</h2>
+      <p><strong>User:</strong> {{ booking()!.user.userName }}</p>
+      <p><strong>Email:</strong> {{ booking()!.user.email }}</p>
+    </div>
+  </div>
+</div>
+} @else {
+<div class="flex justify-center items-center h-96">
+  <p class="text-gray-500 text-lg">Loading booking details...</p>
+</div>
+}

@@ -3,8 +3,8 @@ import { RestApiService } from './rest-api-service';
 import { Booking } from '../models/Booking';
 import { CreateBooking } from '../models/CreateBooking';
 import { UpdateBooking } from '../models/UpdateBooking';
-import { BookingWithVenueName } from '../models/BookingWithVenueName';
 import { GetBookingsResponse } from '../models/GetBookingsResponse';
+import { BookingDetails } from '../models/BookingDetails';
 
 @Injectable({
   providedIn: 'root',
@@ -16,8 +16,8 @@ export class BookingService {
     return await this.api.get<GetBookingsResponse>('/api/bookings');
   }
 
-  async getBooking(id: number): Promise<Booking[]> {
-    return await this.api.get<Booking[]>(`/api/bookings/${id}`);
+  async getBooking(id: number): Promise<BookingDetails> {
+    return await this.api.get<BookingDetails>(`/api/bookings/${id}`);
   }
 
   async createBooking(booking: CreateBooking): Promise<Booking> {
