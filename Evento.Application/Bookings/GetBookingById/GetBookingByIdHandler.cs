@@ -4,15 +4,16 @@ using Microsoft.AspNetCore.Http;
 
 namespace Evento.Application.Bookings.GetBookingById;
 
-public class GetBookingByIdHandler(IBookingService service) : IQueryHandler<GetBookingByIdQuery>
+public class GetBookingByIdHandler(IBookingService service, IVenueAdminService venueAdminService) : IQueryHandler<GetBookingByIdQuery>
 {
     public async Task<IResult> Handle(GetBookingByIdQuery query)
     {
         var booking = await service.GetWithDetailsByIdAsync(query.BookingId);
         if (booking is null)
             return Results.NotFound();
-
-        if (query.IsAdmin || booking.UserId == query.UserId)
+        
+        var venueIds = await venueAdminService.GetVenueIdsByUserIdAsync(query.UserId);
+        if (query.IsAdmin || booking.UserId == query.UserId || venueIds.Contains(booking.Venue.Id))
             return Results.Ok(booking);
 
         return Results.Forbid();

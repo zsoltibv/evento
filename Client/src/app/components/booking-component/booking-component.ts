@@ -5,10 +5,11 @@ import { BookingService } from '../../services/booking-service';
 import { CommonModule } from '@angular/common';
 import { BookingDatePipe } from '../../pipe/booking-date-pipe';
 import { PanelModule } from 'primeng/panel';
+import { ChatWidget } from '../chat-widget/chat-widget';
 
 @Component({
   selector: 'app-booking-component',
-  imports: [CommonModule, BookingDatePipe, PanelModule],
+  imports: [CommonModule, BookingDatePipe, PanelModule, ChatWidget],
   templateUrl: './booking-component.html',
   styleUrl: './booking-component.scss',
 })
