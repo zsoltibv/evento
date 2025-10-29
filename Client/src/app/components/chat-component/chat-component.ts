@@ -9,7 +9,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { CommonModule } from '@angular/common';
 import { ChatUser } from '../../models/ChatUser';
-import { ChatMessage } from '../../models/ChatMessage';
 
 @Component({
   selector: 'app-chat-component',
@@ -38,7 +37,7 @@ export class ChatComponent {
   });
 
   showOnlineUsers = computed(() =>
-    this.chatService.onlineUsers().filter((user) => user.userId !== this.authService.userId())
+    this.chatService.onlineUsers().filter((u) => u.userId !== this.authService.userId())
   );
 
   messages = computed(() =>
@@ -59,23 +58,29 @@ export class ChatComponent {
     const users = this.showOnlineUsers();
     if (users.length > 0) {
       this.selectedUser.set(users[0]);
+      await this.loadChatHistory();
     }
   }
 
-  selectUser(user: ChatUser) {
+  async selectUser(user: ChatUser) {
     this.selectedUser.set(user);
+    await this.loadChatHistory();
+  }
+
+  private async loadChatHistory() {
+    if (!this.currentUser() || !this.selectedUser()) return;
+    await this.chatService.loadChatHistory(this.currentUser()!.userId, this.selectedUser()!.userId);
   }
 
   async sendMessage() {
     if (!this.currentUser() || !this.selectedUser() || !this.messageText()) return;
 
-    const msg: ChatMessage = {
-      sender: this.currentUser()!,
-      receiver: this.selectedUser()!,
-      message: this.messageText(),
-    };
+    await this.chatService.sendMessage(
+      this.currentUser()!.userId,
+      this.selectedUser()!.userId,
+      this.messageText()
+    );
 
-    await this.chatService.sendMessage(msg);
     this.messageText.set('');
   }
 }

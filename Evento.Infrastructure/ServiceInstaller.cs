@@ -38,6 +38,7 @@ public static class ServiceInstaller
         // Register Repositories
         services.AddScoped<IBookingRepository, BookingRepository>();
         services.AddScoped<IRoleRequestRepository, RoleRequestRepository>();
+        services.AddScoped<IChatRepository, ChatRepository>();
 
         // Register Identity
         services.AddIdentity<AppUser, IdentityRole>(options =>

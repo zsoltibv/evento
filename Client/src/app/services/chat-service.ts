@@ -39,6 +39,8 @@ export class ChatService {
   }
 
   async start() {
+    if (this.connection?.state === 'Connected') return;
+
     await this.connection?.start();
     console.log('Connected to SignalR hub');
 
@@ -46,12 +48,16 @@ export class ChatService {
     if (users) this.onlineUsers.set(users);
   }
 
-  async sendMessage(message: ChatMessage) {
-    await this.connection?.invoke(
-      'SendMessage',
-      message.sender.userId,
-      message.receiver.userId,
-      message.message
+  async sendMessage(senderId: string, receiverId: string, messageText: string) {
+    await this.connection?.invoke('SendMessage', senderId, receiverId, messageText);
+  }
+
+  async loadChatHistory(userId1: string, userId2: string) {
+    const history = await this.connection?.invoke<ChatMessage[]>(
+      'GetChatHistory',
+      userId1,
+      userId2
     );
+    if (history) this.messages.set(history);
   }
 }

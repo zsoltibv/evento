@@ -9,7 +9,7 @@
 <!-- Popover Chat Window -->
 <p-popover #op [dismissable]="true" class="w-[25rem]">
   <div class="flex flex-col h-[400px]">
-    <div class="flex-1 overflow-y-auto p-3 flex flex-col gap-2 bg-gray-50 rounded-t-lg">
+    <div class="flex-1 overflow-y-auto p-3 flex flex-col gap-2 rounded-t-lg">
       @if(messages().length === 0){
       <p class="text-gray-500 text-center mt-5">No messages yet.</p>
       }@else{ @for(msg of messages(); track $index){
@@ -20,25 +20,23 @@
         }"
         class="p-2 rounded-lg max-w-[80%] break-words"
       >
-        {{ msg.message }}
+        {{ msg.messageText }}
       </div>
       } }
     </div>
 
-    <div class="flex p-2 border-t border-gray-300 gap-2">
+    <div class="flex p-2 border-gray-300 gap-2">
       <input
         pInputText
         placeholder="Type your message..."
         [value]="messageText()"
         (input)="messageText.set($any($event.target).value)"
-        (keydown.enter)="sendMessage(); $event.preventDefault()"
         class="flex-1 border rounded p-2"
       />
       <button
         pButton
         type="button"
         icon="pi pi-send"
-        (click)="sendMessage()"
         [disabled]="!messageText()"
         class="h-10"
       ></button>

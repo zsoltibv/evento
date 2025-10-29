@@ -1,3 +1,4 @@
+import { AuthService } from './../../services/auth-service';
 import { Component, inject, signal } from '@angular/core';
 import { PanelModule } from 'primeng/panel';
 import { ButtonModule } from 'primeng/button';
@@ -21,8 +22,9 @@ export class ChatWidget {
   messages = signal<ChatMessage[]>([]);
 
   private chatService = inject(ChatService);
+  private authService = inject(AuthService);
 
-  targetUserIds = ['user1', 'user2'];
+  targetUserIds = [this.authService.userId()];
 
   toggleChat() {
     this.isOpen.set(!this.isOpen());
@@ -41,24 +43,26 @@ export class ChatWidget {
     });
   }
 
-  async sendMessage() {
-    if (!this.messageText()) return;
+  // async sendMessage() {
+  //   if (!this.messageText()) return;
 
-    const currentUser = this.chatService.onlineUsers().find((u) => u.userId === 'me')!;
+  //   const currentUser = this.chatService
+  //     .onlineUsers()
+  //     .find((u) => u.userId === this.authService.userId())!;
 
-    for (const userId of this.targetUserIds) {
-      const receiver: ChatUser = this.chatService.onlineUsers().find((u) => u.userId === userId)!;
+  //   for (const userId of this.targetUserIds) {
+  //     const receiver: ChatUser = this.chatService.onlineUsers().find((u) => u.userId === userId)!;
 
-      const msg: ChatMessage = {
-        sender: currentUser,
-        receiver,
-        message: this.messageText(),
-      };
+  //     const msg: ChatMessage = {
+  //       sender: currentUser,
+  //       receiver,
+  //       messageText: this.messageText(),
+  //     };
 
-      await this.chatService.sendMessage(msg);
-      this.messages.set([...this.messages(), msg]);
-    }
+  //     await this.chatService.sendMessage(msg);
+  //     this.messages.set([...this.messages(), msg]);
+  //   }
 
-    this.messageText.set('');
-  }
+  //   this.messageText.set('');
+  // }
 }

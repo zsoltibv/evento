@@ -37,20 +37,19 @@
           }"
           class="p-2 rounded-lg max-w-xs"
         >
-          {{ message.message }}
+          {{ message.messageText }}
         </div>
         }
       </div>
 
       <div class="input-container flex gap-2 items-center mt-4">
-        <textarea
-          pInputTextarea
-          rows="1"
+        <input
+          pInputText
           placeholder="Type your message..."
           [(ngModel)]="messageText"
-          class="flex-1 border p-2 rounded"
           (keydown.enter)="sendMessage(); $event.preventDefault()"
-        ></textarea>
+          class="flex-1 border rounded p-2"
+        />
         <button
           pButton
           label="Send"
