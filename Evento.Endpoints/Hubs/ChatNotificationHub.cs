@@ -36,11 +36,21 @@ public sealed class ChatNotificationHub(IChatService chatService) : Hub
 
         await base.OnDisconnectedAsync(exception);
     }
-
+    
     public async Task SendMessage(string senderId, string receiverId, string messageText)
     {
-        var message = await chatService.SendMessageAsync(senderId, receiverId, messageText);
+        var claimOwner = await chatService.GetChatClaimOwnerAsync(receiverId);
+        if (claimOwner is not null && claimOwner != senderId)
+        {
+            await Clients.Caller.SendAsync("ChatClaimed", receiverId, claimOwner);
+            return;
+        }
         
+        if (claimOwner is null)
+            await chatService.TryClaimChatAsync(receiverId, senderId);
+
+        var message = await chatService.SendMessageAsync(senderId, receiverId, messageText);
+
         var senderUser = OnlineUsers.GetValueOrDefault(senderId);
         var receiverUser = OnlineUsers.GetValueOrDefault(receiverId);
 
@@ -50,27 +60,32 @@ public sealed class ChatNotificationHub(IChatService chatService) : Hub
             message.MessageText,
             message.SentAt
         );
-        
+
         if (receiverUser is not null)
             await Clients.Client(receiverUser.ConnectionId).SendAsync("ReceiveMessage", messageDto);
-        
+
         if (senderUser is not null)
             await Clients.Client(senderUser.ConnectionId).SendAsync("ReceiveMessage", messageDto);
+    }
+    
+    public async Task SendMessageToUsers(string senderId, string[] receiverIds, string messageText)
+    {
+        foreach (var receiverId in receiverIds)
+        {
+            await SendMessage(senderId, receiverId, messageText);
+        }
     }
 
     public async Task<List<ChatMessageDto>> GetChatHistory(string userId1, string userId2)
     {
         var messages = await chatService.GetChatHistoryAsync(userId1, userId2);
-        
-        var result = messages.Select(m =>
+
+        return messages.Select(m =>
         {
             var sender = new ChatUserDto(m.SenderId, m.Sender?.UserName ?? "Unknown");
             var receiver = new ChatUserDto(m.ReceiverId, m.Receiver?.UserName ?? "Unknown");
-
             return new ChatMessageDto(sender, receiver, m.MessageText, m.SentAt);
         }).ToList();
-
-        return result;
     }
 
     public Task<List<ChatUserDto>> GetOnlineUsers()

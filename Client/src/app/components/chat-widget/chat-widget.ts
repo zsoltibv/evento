@@ -24,7 +24,7 @@ export class ChatWidget {
   private chatService = inject(ChatService);
   private authService = inject(AuthService);
 
-  targetUserIds = [this.authService.userId()];
+  targetUserIds: string[] = ['00000000-0000-0000-0000-000000000001'];
 
   toggleChat() {
     this.isOpen.set(!this.isOpen());
@@ -33,36 +33,45 @@ export class ChatWidget {
   async ngOnInit() {
     await this.chatService.start();
 
+    const relevantMessages = this.chatService
+      .messages()
+      .filter(
+        (msg) =>
+          this.targetUserIds.includes(msg.sender.userId) ||
+          this.targetUserIds.includes(msg.receiver.userId)
+      );
+    this.messages.set(relevantMessages);
+
     this.chatService.messages().forEach((msg) => {
       if (
-        this.targetUserIds.includes(msg.receiver.userId) ||
-        this.targetUserIds.includes(msg.sender.userId)
+        this.targetUserIds.includes(msg.sender.userId) ||
+        this.targetUserIds.includes(msg.receiver.userId)
       ) {
-        this.messages.set([...this.messages(), msg]);
+        this.messages.update((prev) => [...prev, msg]);
       }
     });
   }
 
-  // async sendMessage() {
-  //   if (!this.messageText()) return;
+  async sendMessage() {
+    if (!this.messageText()) return;
 
-  //   const currentUser = this.chatService
-  //     .onlineUsers()
-  //     .find((u) => u.userId === this.authService.userId())!;
+    const senderId = this.authService.userId();
+    await this.chatService.sendMessageToUsers(senderId!, this.targetUserIds, this.messageText());
 
-  //   for (const userId of this.targetUserIds) {
-  //     const receiver: ChatUser = this.chatService.onlineUsers().find((u) => u.userId === userId)!;
+    const sender: ChatUser = this.chatService.onlineUsers().find((u) => u.userId === senderId)!;
+    this.targetUserIds.forEach((receiverId) => {
+      const receiver: ChatUser = this.chatService
+        .onlineUsers()
+        .find((u) => u.userId === receiverId)!;
+      const msg: ChatMessage = {
+        sender,
+        receiver,
+        messageText: this.messageText(),
+        sentAt: new Date(),
+      };
+      this.messages.update((prev) => [...prev, msg]);
+    });
 
-  //     const msg: ChatMessage = {
-  //       sender: currentUser,
-  //       receiver,
-  //       messageText: this.messageText(),
-  //     };
-
-  //     await this.chatService.sendMessage(msg);
-  //     this.messages.set([...this.messages(), msg]);
-  //   }
-
-  //   this.messageText.set('');
-  // }
+    this.messageText.set('');
+  }
 }

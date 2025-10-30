@@ -12,6 +12,7 @@ public class EventoDbContext(DbContextOptions<EventoDbContext> options) : Identi
     public DbSet<VenueAdmin> VenueAdmins { get; set; }
     public DbSet<RoleRequest> RoleRequests { get; set; }
     public DbSet<ChatMessage> ChatMessages { get; set; }
+    public DbSet<ChatClaim> ChatClaims { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
