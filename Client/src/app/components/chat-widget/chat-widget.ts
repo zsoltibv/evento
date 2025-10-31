@@ -1,5 +1,5 @@
 import { AuthService } from './../../services/auth-service';
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { PanelModule } from 'primeng/panel';
 import { ButtonModule } from 'primeng/button';
 import { PopoverModule } from 'primeng/popover';
@@ -19,12 +19,24 @@ import { FormsModule } from '@angular/forms';
 export class ChatWidget {
   isOpen = signal(false);
   messageText = signal('');
-  messages = signal<ChatMessage[]>([]);
 
   private chatService = inject(ChatService);
   private authService = inject(AuthService);
 
   targetUserIds: string[] = ['00000000-0000-0000-0000-000000000001'];
+
+  messages = computed(() => {
+    const all = this.chatService.messages();
+    return all.filter(
+      (msg) =>
+        this.targetUserIds.includes(msg.sender.userId) ||
+        this.targetUserIds.includes(msg.receiver.userId)
+    );
+  });
+
+  currentUserId = computed(() => {
+    return this.authService.userId();
+  });
 
   toggleChat() {
     this.isOpen.set(!this.isOpen());
@@ -32,45 +44,15 @@ export class ChatWidget {
 
   async ngOnInit() {
     await this.chatService.start();
-
-    const relevantMessages = this.chatService
-      .messages()
-      .filter(
-        (msg) =>
-          this.targetUserIds.includes(msg.sender.userId) ||
-          this.targetUserIds.includes(msg.receiver.userId)
-      );
-    this.messages.set(relevantMessages);
-
-    this.chatService.messages().forEach((msg) => {
-      if (
-        this.targetUserIds.includes(msg.sender.userId) ||
-        this.targetUserIds.includes(msg.receiver.userId)
-      ) {
-        this.messages.update((prev) => [...prev, msg]);
-      }
-    });
   }
 
   async sendMessage() {
     if (!this.messageText()) return;
 
     const senderId = this.authService.userId();
-    await this.chatService.sendMessageToUsers(senderId!, this.targetUserIds, this.messageText());
+    if (!senderId) return;
 
-    const sender: ChatUser = this.chatService.onlineUsers().find((u) => u.userId === senderId)!;
-    this.targetUserIds.forEach((receiverId) => {
-      const receiver: ChatUser = this.chatService
-        .onlineUsers()
-        .find((u) => u.userId === receiverId)!;
-      const msg: ChatMessage = {
-        sender,
-        receiver,
-        messageText: this.messageText(),
-        sentAt: new Date(),
-      };
-      this.messages.update((prev) => [...prev, msg]);
-    });
+    await this.chatService.sendMessageToUsers(senderId, this.targetUserIds, this.messageText());
 
     this.messageText.set('');
   }
