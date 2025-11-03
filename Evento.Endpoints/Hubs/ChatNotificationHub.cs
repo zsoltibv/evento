@@ -9,11 +9,12 @@ namespace Evento.Endpoints.Hubs;
 public sealed class ChatNotificationHub(IChatService chatService) : Hub
 {
     private static readonly ConcurrentDictionary<string, ChatUser> OnlineUsers = new();
+    private const string UnknowUser = "Unknown";
 
     public override async Task OnConnectedAsync()
     {
         var userId = Context.UserIdentifier;
-        var username = Context.User?.GetUserName() ?? "Unknown";
+        var username = Context.User?.GetUserName() ?? UnknowUser;
 
         if (!string.IsNullOrEmpty(userId))
         {
@@ -40,23 +41,22 @@ public sealed class ChatNotificationHub(IChatService chatService) : Hub
     public async Task SendMessage(string senderId, string receiverId, string messageText)
     {
         var claimOwner = await chatService.GetChatClaimOwnerAsync(receiverId);
-        if (claimOwner is not null && claimOwner != senderId)
-        {
-            await Clients.Caller.SendAsync("ChatClaimed", receiverId, claimOwner);
-            return;
-        }
-        
-        if (claimOwner is null)
-            await chatService.TryClaimChatAsync(receiverId, senderId);
-
-        var message = await chatService.SendMessageAsync(senderId, receiverId, messageText);
-
         var senderUser = OnlineUsers.GetValueOrDefault(senderId);
         var receiverUser = OnlineUsers.GetValueOrDefault(receiverId);
 
+        if (claimOwner is not null && claimOwner.AgentId != senderId)
+        {
+            await Clients.Client(senderUser!.ConnectionId).SendAsync("ChatClaimed", senderId, claimOwner.AgentId, claimOwner.AgentName);
+        }
+        
+        if (claimOwner is null)
+            await chatService.TryClaimChatAsync(senderId, receiverId);
+
+        var message = await chatService.SendMessageAsync(senderId, receiverId, messageText);
+
         var messageDto = new ChatMessageDto(
-            new ChatUserDto(senderId, senderUser?.Username ?? "Unknown"),
-            new ChatUserDto(receiverId, receiverUser?.Username ?? "Unknown"),
+            new ChatUserDto(senderId, senderUser?.Username ?? UnknowUser),
+            new ChatUserDto(receiverId, receiverUser?.Username ?? UnknowUser),
             message.MessageText,
             message.SentAt
         );
@@ -82,13 +82,13 @@ public sealed class ChatNotificationHub(IChatService chatService) : Hub
 
         return messages.Select(m =>
         {
-            var sender = new ChatUserDto(m.SenderId, m.Sender?.UserName ?? "Unknown");
-            var receiver = new ChatUserDto(m.ReceiverId, m.Receiver?.UserName ?? "Unknown");
+            var sender = new ChatUserDto(m.SenderId, m.Sender?.UserName ?? UnknowUser);
+            var receiver = new ChatUserDto(m.ReceiverId, m.Receiver?.UserName ?? UnknowUser);
             return new ChatMessageDto(sender, receiver, m.MessageText, m.SentAt);
         }).ToList();
     }
 
-    public Task<List<ChatUserDto>> GetOnlineUsers()
+    public static Task<List<ChatUserDto>> GetOnlineUsers()
         => Task.FromResult(OnlineUsers.Values
             .Select(u => new ChatUserDto(u.UserId, u.Username))
             .ToList());

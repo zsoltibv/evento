@@ -4,6 +4,7 @@ import { HttpTransportType, HubConnection, HubConnectionBuilder } from '@microso
 import { environment } from '../../../environment';
 import { ChatMessage } from '../models/ChatMessage';
 import { ChatUser } from '../models/ChatUser';
+import { ChatClaim } from '../models/ChatClaim';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +15,7 @@ export class ChatService {
 
   messages = signal<ChatMessage[]>([]);
   onlineUsers = signal<ChatUser[]>([]);
+  chatClaimed = signal<ChatClaim | null>(null);
 
   constructor() {
     this.connection = new HubConnectionBuilder()
@@ -37,8 +39,9 @@ export class ChatService {
       this.onlineUsers.update((list) => list.filter((u) => u.userId !== user.userId));
     });
 
-    this.connection.on('ChatClaimed', (userId: string, ownerId: string) => {
-      console.warn(`Chat with ${userId} is claimed by ${ownerId}`);
+    this.connection.on('ChatClaimed', (userId: string, ownerId: string, ownerName?: string) => {
+      console.log(`Chat with ${userId} claimed by ${ownerName || ownerId}`);
+      this.chatClaimed.set({ userId, ownerId, ownerName } as ChatClaim);
     });
   }
 

@@ -40,6 +40,7 @@ public static class ServiceInstaller
         services.AddScoped<IRoleRequestRepository, RoleRequestRepository>();
         services.AddScoped<IChatRepository, ChatRepository>();
         services.AddScoped<IChatClaimRepository, ChatClaimRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         // Register Identity
         services.AddIdentity<AppUser, IdentityRole>(options =>

@@ -1,11 +1,9 @@
 import { AuthService } from './../../services/auth-service';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { PanelModule } from 'primeng/panel';
 import { ButtonModule } from 'primeng/button';
 import { PopoverModule } from 'primeng/popover';
-import { ChatMessage } from '../../models/ChatMessage';
 import { ChatService } from '../../services/chat-service';
-import { ChatUser } from '../../models/ChatUser';
 import { CommonModule } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
@@ -23,20 +21,33 @@ export class ChatWidget {
   private chatService = inject(ChatService);
   private authService = inject(AuthService);
 
-  targetUserIds: string[] = ['00000000-0000-0000-0000-000000000001'];
+  targetUserIds = signal<string[]>(['00000000-0000-0000-0000-000000000001']);
+  chatOwnerName = signal<string>('Support Agent');
 
   messages = computed(() => {
     const all = this.chatService.messages();
+    const targets = this.targetUserIds();
     return all.filter(
-      (msg) =>
-        this.targetUserIds.includes(msg.sender.userId) ||
-        this.targetUserIds.includes(msg.receiver.userId)
+      (msg) => targets.includes(msg.sender.userId) || targets.includes(msg.receiver.userId)
     );
   });
 
-  currentUserId = computed(() => {
-    return this.authService.userId();
-  });
+  currentUserId = computed(() => this.authService.userId());
+
+  constructor() {
+    effect(async () => {
+      const claim = this.chatService.chatClaimed();
+      const currentUser = this.currentUserId();
+      console.log(claim + ' ' + currentUser);
+
+      if (claim && claim.userId === currentUser) {
+        console.log(`Chat claimed by ${claim.ownerName || claim.ownerId}`);
+        this.targetUserIds.set([claim.ownerId]);
+        this.chatOwnerName.set(claim.ownerName || 'Support Agent');
+        await this.chatService.loadChatHistory(claim.userId, claim.ownerId);
+      }
+    });
+  }
 
   toggleChat() {
     this.isOpen.set(!this.isOpen());
@@ -44,16 +55,24 @@ export class ChatWidget {
 
   async ngOnInit() {
     await this.chatService.start();
+
+    const claim = this.chatService.chatClaimed();
+    const currentUser = this.authService.userId();
+
+    if (claim && claim.userId === currentUser) {
+      this.targetUserIds.set([claim.ownerId]);
+      this.chatOwnerName.set(claim.ownerName || 'Support Agent');
+      await this.chatService.loadChatHistory(claim.userId, claim.ownerId);
+    }
   }
 
   async sendMessage() {
     if (!this.messageText()) return;
-
     const senderId = this.authService.userId();
-    if (!senderId) return;
+    const targets = this.targetUserIds();
+    if (!senderId || targets.length === 0) return;
 
-    await this.chatService.sendMessageToUsers(senderId, this.targetUserIds, this.messageText());
-
+    await this.chatService.sendMessageToUsers(senderId, targets, this.messageText());
     this.messageText.set('');
   }
 }

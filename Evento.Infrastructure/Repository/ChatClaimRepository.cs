@@ -10,6 +10,11 @@ public class ChatClaimRepository(EventoDbContext db) : IChatClaimRepository
     {
         return await db.ChatClaims.FirstOrDefaultAsync(c => c.UserId == userId);     
     }
+    
+    public async Task<ChatClaim?> GetByAgentIdAsync(string agentId)
+    {
+        return await db.ChatClaims.FirstOrDefaultAsync(c => c.AgentId == agentId);     
+    }
 
     public async Task AddAsync(ChatClaim claim)
     {
