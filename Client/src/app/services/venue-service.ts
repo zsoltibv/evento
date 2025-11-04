@@ -25,4 +25,8 @@ export class VenueService {
   async requestVenueAdminRole(venueId: number): Promise<RoleRequest> {
     return await this.api.post<RoleRequest>(`/api/venues/${venueId}/request-admin`, null);
   }
+
+  async getVenueAdminIds(venueId: number): Promise<string[]> {
+    return await this.api.get<string[]>(`/api/venues/${venueId}/admins`);
+  }
 }

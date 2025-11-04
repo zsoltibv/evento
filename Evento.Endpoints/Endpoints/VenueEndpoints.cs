@@ -1,8 +1,8 @@
 ﻿using System.Security.Claims;
 using Evento.Application.Common;
+using Evento.Application.Services.Interfaces;
 using Evento.Application.Venues.GetVenueById;
 using Evento.Application.Venues.GetVenueBySlug;
-using Evento.Application.Venues.GetVenueRoles;
 using Evento.Application.Venues.GetVenues;
 using Evento.Application.Venues.RequestVenueAdminCommand;
 using Evento.Endpoints.Helpers;
@@ -44,7 +44,21 @@ public static class VenueEndpoints
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status401Unauthorized);
-        
+
+        venuesGroup.MapGet("/{id:int}/admins",
+                async (int id, IVenueAdminService venueAdminService) =>
+                {
+                    var adminIds = await venueAdminService.GetAdminUserIdsByVenueIdAsync(id);
+
+                    return adminIds.Length == 0
+                        ? Results.NotFound($"No admins found for venue ID {id}.")
+                        : Results.Ok(adminIds);
+                })
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status401Unauthorized);
+
         return app;
     }
 }

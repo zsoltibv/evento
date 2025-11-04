@@ -6,4 +6,5 @@ public interface IVenueAdminService
     Task SendVenueAdminApprovedEmailAsync(string email, string venueName);
     Task<int[]> GetVenueIdsByUserIdAsync(string userId);
     Task<bool> IsUserVenueAdminAsync(string userId, int venueId);
+    Task<string[]> GetAdminUserIdsByVenueIdAsync(int venueId);
 }

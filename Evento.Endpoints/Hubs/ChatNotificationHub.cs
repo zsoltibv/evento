@@ -88,7 +88,7 @@ public sealed class ChatNotificationHub(IChatService chatService) : Hub
         }).ToList();
     }
 
-    public static Task<List<ChatUserDto>> GetOnlineUsers()
+    public Task<List<ChatUserDto>> GetOnlineUsers()
         => Task.FromResult(OnlineUsers.Values
             .Select(u => new ChatUserDto(u.UserId, u.Username))
             .ToList());

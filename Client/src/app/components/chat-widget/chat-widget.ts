@@ -1,5 +1,7 @@
+import { BookingDetails } from './../../models/BookingDetails';
+import { VenueService } from './../../services/venue-service';
 import { AuthService } from './../../services/auth-service';
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { PanelModule } from 'primeng/panel';
 import { ButtonModule } from 'primeng/button';
 import { PopoverModule } from 'primeng/popover';
@@ -15,13 +17,16 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './chat-widget.scss',
 })
 export class ChatWidget {
+  booking = input.required<BookingDetails | null>();
+
   isOpen = signal(false);
   messageText = signal('');
 
   private chatService = inject(ChatService);
   private authService = inject(AuthService);
+  private venueService = inject(VenueService);
 
-  targetUserIds = signal<string[]>(['00000000-0000-0000-0000-000000000001']);
+  targetUserIds = signal<string[]>([]);
   chatOwnerName = signal<string>('Support Agent');
 
   messages = computed(() => {
@@ -36,12 +41,31 @@ export class ChatWidget {
 
   constructor() {
     effect(async () => {
+      const booking = this.booking();
+      if (!booking) return; // wait until booking is provided
+
+      await this.chatService.start();
+
+      const adminIds = await this.venueService.getVenueAdminIds(booking.venue.id);
+      this.targetUserIds.set(adminIds);
+      console.log('ADMIN IDS: ', adminIds);
+
       const claim = this.chatService.chatClaimed();
       const currentUser = this.currentUserId();
-      console.log(claim + ' ' + currentUser);
 
       if (claim && claim.userId === currentUser) {
-        console.log(`Chat claimed by ${claim.ownerName || claim.ownerId}`);
+        this.targetUserIds.set([claim.ownerId]);
+        this.chatOwnerName.set(claim.ownerName || 'Support Agent');
+        await this.chatService.loadChatHistory(claim.userId, claim.ownerId);
+      }
+    });
+
+    // Keep your existing effect for claim updates
+    effect(async () => {
+      const claim = this.chatService.chatClaimed();
+      const currentUser = this.currentUserId();
+
+      if (claim && claim.userId === currentUser) {
         this.targetUserIds.set([claim.ownerId]);
         this.chatOwnerName.set(claim.ownerName || 'Support Agent');
         await this.chatService.loadChatHistory(claim.userId, claim.ownerId);
@@ -51,19 +75,6 @@ export class ChatWidget {
 
   toggleChat() {
     this.isOpen.set(!this.isOpen());
-  }
-
-  async ngOnInit() {
-    await this.chatService.start();
-
-    const claim = this.chatService.chatClaimed();
-    const currentUser = this.authService.userId();
-
-    if (claim && claim.userId === currentUser) {
-      this.targetUserIds.set([claim.ownerId]);
-      this.chatOwnerName.set(claim.ownerName || 'Support Agent');
-      await this.chatService.loadChatHistory(claim.userId, claim.ownerId);
-    }
   }
 
   async sendMessage() {

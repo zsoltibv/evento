@@ -13,7 +13,7 @@ public class VenueAdminService(
 {
     public async Task AssignVenueAdminAsync(int venueId, string userId)
     {
-        if (db.VenueAdmins.Any(a => a.UserId == userId && a.VenueId == venueId))
+        if (await db.VenueAdmins.AnyAsync(a => a.UserId == userId && a.VenueId == venueId))
         {
             return;
         }
@@ -38,6 +38,14 @@ public class VenueAdminService(
     {
         return await db.VenueAdmins
             .AnyAsync(a => a.UserId == userId && a.VenueId == venueId);
+    }
+
+    public async Task<string[]> GetAdminUserIdsByVenueIdAsync(int venueId)
+    {
+        return await db.VenueAdmins
+            .Where(a => a.VenueId == venueId)
+            .Select(a => a.UserId)
+            .ToArrayAsync();
     }
 
     public async Task SendVenueAdminApprovedEmailAsync(string email, string venueName)
