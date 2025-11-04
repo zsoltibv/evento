@@ -9,6 +9,7 @@ namespace Evento.Endpoints.Hubs;
 public sealed class ChatNotificationHub(IChatService chatService, IVenueAdminService venueAdminService) : Hub
 {
     private static readonly ConcurrentDictionary<string, ChatUser> OnlineUsers = new();
+    private static readonly ConcurrentDictionary<string, int> UnreadMessageCount = new();
     private const string UnknownUser = "Unknown";
 
     public override async Task OnConnectedAsync()
@@ -21,6 +22,16 @@ public sealed class ChatNotificationHub(IChatService chatService, IVenueAdminSer
             var chatUser = new ChatUser(userId, username, Context.ConnectionId);
             OnlineUsers[userId] = chatUser;
             await Clients.All.SendAsync(ChatNotificationType.UserOnline, new ChatUserDto(chatUser.UserId, chatUser.Username));
+            
+            // Notify user of unread messages
+            if (UnreadMessageCount.TryGetValue(userId, out var count) && count > 0)
+            {
+                await Clients.Client(chatUser.ConnectionId)
+                    .SendAsync("UnreadMessagesNotification", count);
+
+                // Optionally reset unread count after notifying
+                UnreadMessageCount[userId] = 0;
+            }
         }
 
         await base.OnConnectedAsync();
@@ -65,6 +76,10 @@ public sealed class ChatNotificationHub(IChatService chatService, IVenueAdminSer
         if (receiverUser is not null)
         {
             await Clients.Client(receiverUser.ConnectionId).SendAsync(ChatNotificationType.ReceiveMessage, messageDto);
+        }
+        else
+        {
+            UnreadMessageCount.AddOrUpdate(receiverId, 1, (_, count) => count + 1);
         }
 
         if (senderUser is not null)

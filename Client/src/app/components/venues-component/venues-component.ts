@@ -1,3 +1,4 @@
+import { ChatService } from './../../services/chat-service';
 import { Component, inject, signal } from '@angular/core';
 import { VenueService } from '../../services/venue-service';
 import { Venue } from '../../models/Venue';
@@ -15,10 +16,12 @@ import { Router } from '@angular/router';
 export class VenuesComponent {
   private venueService = inject(VenueService);
   private router = inject(Router);
+  private chatService = inject(ChatService);
 
   venues = signal<Venue[]>([]);
 
   ngOnInit() {
+    this.chatService.start().catch((err) => console.error('SignalR connection error:', err));
     this.loadVenues();
   }
 

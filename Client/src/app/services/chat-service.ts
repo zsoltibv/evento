@@ -18,6 +18,7 @@ export class ChatService {
   messages = signal<ChatMessage[]>([]);
   onlineUsers = signal<ChatUser[]>([]);
   chatClaimed = signal<ChatClaim | null>(null);
+  unreadMessagesCount = signal<number>(0);
 
   constructor() {
     this.connection = new HubConnectionBuilder()
@@ -44,7 +45,10 @@ export class ChatService {
     this.connection.on('ChatClaimed', (userId: string, ownerId: string, ownerName?: string) => {
       console.log(`Chat with ${userId} claimed by ${ownerName || ownerId}`);
       this.chatClaimed.set({ userId, ownerId, ownerName } as ChatClaim);
-      console.log('here');
+    });
+
+    this.connection.on('UnreadMessagesNotification', (count: number) => {
+      this.unreadMessagesCount.set(count);
     });
   }
 
@@ -76,5 +80,9 @@ export class ChatService {
 
   async getUserChats(userId: string): Promise<ChatUser[]> {
     return this.api.get<ChatUser[]>('/api/chats/user');
+  }
+
+  resetUnreadMessages() {
+    this.unreadMessagesCount.set(0);
   }
 }
