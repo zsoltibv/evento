@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Evento.Endpoints.Hubs;
 
-public sealed class ChatNotificationHub(IChatService chatService) : Hub
+public sealed class ChatNotificationHub(IChatService chatService, IVenueAdminService venueAdminService) : Hub
 {
     private static readonly ConcurrentDictionary<string, ChatUser> OnlineUsers = new();
     private const string UnknownUser = "Unknown";
@@ -20,7 +20,7 @@ public sealed class ChatNotificationHub(IChatService chatService) : Hub
         {
             var chatUser = new ChatUser(userId, username, Context.ConnectionId);
             OnlineUsers[userId] = chatUser;
-            await Clients.All.SendAsync("UserOnline", new ChatUserDto(chatUser.UserId, chatUser.Username));
+            await Clients.All.SendAsync(ChatNotificationType.UserOnline, new ChatUserDto(chatUser.UserId, chatUser.Username));
         }
 
         await base.OnConnectedAsync();
@@ -32,28 +32,29 @@ public sealed class ChatNotificationHub(IChatService chatService) : Hub
         if (user is not null)
         {
             OnlineUsers.TryRemove(user.UserId, out _);
-            await Clients.All.SendAsync("UserOffline", new ChatUserDto(user.UserId, user.Username));
+            await Clients.All.SendAsync(ChatNotificationType.UserOffline, new ChatUserDto(user.UserId, user.Username));
         }
 
         await base.OnDisconnectedAsync(exception);
     }
-    
+
     public async Task SendMessage(string senderId, string receiverId, string messageText)
     {
-        var claimOwner = await chatService.GetChatClaimOwnerAsync(receiverId);
+        var existingClaimOwner = await chatService.GetChatClaimOwnerAsync(receiverId);
         var senderUser = OnlineUsers.GetValueOrDefault(senderId);
         var receiverUser = OnlineUsers.GetValueOrDefault(receiverId);
 
-        if (claimOwner is not null && claimOwner.AgentId != senderId)
+        if (existingClaimOwner is null && Context.User!.IsVenueAdmin()) 
         {
-            await Clients.Client(senderUser!.ConnectionId).SendAsync("ChatClaimed", senderId, claimOwner.AgentId, claimOwner.AgentName);
+            var newClaimOwner = await chatService.TryClaimChatAsync(senderId, receiverId);
+            if (newClaimOwner is not null && newClaimOwner.AgentId != senderId)
+            {
+                await Clients.Client(receiverUser!.ConnectionId)
+                    .SendAsync(ChatNotificationType.ChatClaimed, senderId, newClaimOwner.AgentId, newClaimOwner.AgentName);
+            }
         }
-        
-        if (claimOwner is null)
-            await chatService.TryClaimChatAsync(senderId, receiverId);
 
         var message = await chatService.SendMessageAsync(senderId, receiverId, messageText);
-
         var messageDto = new ChatMessageDto(
             new ChatUserDto(senderId, senderUser?.Username ?? UnknownUser),
             new ChatUserDto(receiverId, receiverUser?.Username ?? UnknownUser),
@@ -62,12 +63,16 @@ public sealed class ChatNotificationHub(IChatService chatService) : Hub
         );
 
         if (receiverUser is not null)
-            await Clients.Client(receiverUser.ConnectionId).SendAsync("ReceiveMessage", messageDto);
+        {
+            await Clients.Client(receiverUser.ConnectionId).SendAsync(ChatNotificationType.ReceiveMessage, messageDto);
+        }
 
         if (senderUser is not null)
-            await Clients.Client(senderUser.ConnectionId).SendAsync("ReceiveMessage", messageDto);
+        {
+            await Clients.Client(senderUser.ConnectionId).SendAsync(ChatNotificationType.ReceiveMessage, messageDto);
+        }
     }
-    
+
     public async Task SendMessageToUsers(string senderId, string[] receiverIds, string messageText)
     {
         foreach (var receiverId in receiverIds)

@@ -29,7 +29,6 @@ export class ChatWidget {
   private venueService = inject(VenueService);
 
   targetUserIds = signal<string[]>([]);
-  chatOwnerName = signal<string>(defaultChatOwnerName);
 
   messages = computed(() => {
     const all = this.chatService.messages();
@@ -40,6 +39,11 @@ export class ChatWidget {
   });
 
   currentUserId = computed(() => this.authService.userId());
+
+  chatOwnerName = computed((): string => {
+    const claim = this.chatService.chatClaimed();
+    return claim?.ownerName || defaultChatOwnerName;
+  });
 
   constructor() {
     effect(async () => {
@@ -55,7 +59,6 @@ export class ChatWidget {
 
       if (claim && claim.userId === currentUser) {
         this.targetUserIds.set([claim.ownerId]);
-        this.chatOwnerName.set(claim.ownerName || defaultChatOwnerName);
         await this.chatService.loadChatHistory(claim.userId, claim.ownerId);
       }
     });
@@ -66,7 +69,6 @@ export class ChatWidget {
 
       if (claim && claim.userId === currentUser) {
         this.targetUserIds.set([claim.ownerId]);
-        this.chatOwnerName.set(claim.ownerName || defaultChatOwnerName);
         await this.chatService.loadChatHistory(claim.userId, claim.ownerId);
       }
     });

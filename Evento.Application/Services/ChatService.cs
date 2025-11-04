@@ -34,19 +34,19 @@ public sealed class ChatService(IChatRepository chatRepository, IChatClaimReposi
         return await chatRepository.GetChatHistoryAsync(userId1, userId2);
     }
 
-    public async Task<bool> TryClaimChatAsync(string userId, string agentId)
+    public async Task<ChatClaimOwnerDto?> TryClaimChatAsync(string userId, string agentId)
     {
         var existingClaim = await chatClaimRepository.GetByUserIdAsync(userId);
         if (existingClaim != null)
-            return false;
+            return null;
 
         await chatClaimRepository.AddAsync(new ChatClaim
         {
             UserId = userId,
             AgentId = agentId
         });
-        
-        return true;
+
+        return await GetChatClaimOwnerAsync(agentId);
     }
 
     public async Task<ChatClaimOwnerDto?> GetChatClaimOwnerAsync(string userId)

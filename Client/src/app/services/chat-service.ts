@@ -44,6 +44,7 @@ export class ChatService {
     this.connection.on('ChatClaimed', (userId: string, ownerId: string, ownerName?: string) => {
       console.log(`Chat with ${userId} claimed by ${ownerName || ownerId}`);
       this.chatClaimed.set({ userId, ownerId, ownerName } as ChatClaim);
+      console.log('here');
     });
   }
 

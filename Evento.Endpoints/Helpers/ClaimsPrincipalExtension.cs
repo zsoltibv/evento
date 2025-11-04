@@ -18,4 +18,7 @@ public static class ClaimsPrincipalExtensions
 
     public static bool IsUser(this ClaimsPrincipal user) =>
         user.IsInRole(AppRoles.User);
+    
+    public static bool IsVenueAdmin(this ClaimsPrincipal user) =>
+        user.IsInRole(AppRoles.VenueAdmin);
 }

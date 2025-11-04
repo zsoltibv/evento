@@ -20,8 +20,8 @@
       } @else { @for(msg of messages(); track $index){
       <div
         [ngClass]="{
-          'self-end bg-blue-500 text-white': msg.sender.userId === currentUserId(),
-          'self-start bg-gray-200 text-gray-900': msg.sender.userId !== currentUserId()
+          'self-end message-sent': msg.sender.userId === currentUserId(),
+          'self-start message-received': msg.sender.userId !== currentUserId()
         }"
         class="p-2 rounded-lg max-w-[80%] break-words"
       >

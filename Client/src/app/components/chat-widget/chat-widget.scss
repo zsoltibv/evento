@@ -1,0 +1,19 @@
+.message-sent {
+  align-self: flex-end;
+  background-color: var(--p-button-primary-background);
+  color: black;
+  padding: 0.5rem 0.75rem;
+  border-radius: 1rem 1rem 0.25rem 1rem;
+  max-width: 70%;
+  word-wrap: break-word;
+}
+
+.message-received {
+  align-self: flex-start;
+  background-color: #e5e5ea;
+  color: black;
+  padding: 0.5rem 0.75rem;
+  border-radius: 1rem 1rem 1rem 0.25rem;
+  max-width: 70%;
+  word-wrap: break-word;
+}

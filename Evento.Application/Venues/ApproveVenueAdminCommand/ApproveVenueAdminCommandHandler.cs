@@ -27,6 +27,10 @@ public class ApproveVenueAdminCommandHandler(UserManager<AppUser> userManager, I
 
         // Update status to approved
         await roleRequestService.UpdateStatusAsync(request.Id, RequestStatus.Approved);
+        
+        // Assign user role
+        await userManager.AddToRoleAsync(request.User, request.RoleName);
+        var updatedUser = await userManager.FindByIdAsync(request.User.Id);
 
         // Assign venue admin if applicable
         if (request is { VenueId: not null, Venue: not null })
@@ -34,10 +38,6 @@ public class ApproveVenueAdminCommandHandler(UserManager<AppUser> userManager, I
             await venueAdminService.AssignVenueAdminAsync(request.VenueId.Value, request.UserId);
             await venueAdminService.SendVenueAdminApprovedEmailAsync(request.User.Email!, request.Venue.Name);
         }
-
-        // Assign user role
-        await userManager.AddToRoleAsync(request.User, request.RoleName);
-        var updatedUser = await userManager.FindByIdAsync(request.User.Id);
         
         // Create new token with updated roles
         var token = await tokenService.CreateToken(updatedUser!);
