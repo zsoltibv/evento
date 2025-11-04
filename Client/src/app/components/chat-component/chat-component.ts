@@ -30,6 +30,7 @@ export class ChatComponent {
 
   messageText = signal('');
   selectedUser = signal<ChatUser | null>(null);
+  chatUsers = signal<ChatUser[]>([]);
 
   currentUser = computed(() => {
     const userId = this.authService.userId();
@@ -55,9 +56,11 @@ export class ChatComponent {
   async ngOnInit() {
     await this.chatService.start();
 
-    const users = this.showOnlineUsers();
-    if (users.length > 0) {
-      this.selectedUser.set(users[0]);
+    const chatUsers = await this.chatService.getUserChats(this.authService.userId()!);
+    this.chatUsers.set(chatUsers);
+
+    if (chatUsers.length > 0) {
+      this.selectedUser.set(chatUsers[0]);
       await this.loadChatHistory();
     }
   }
@@ -82,5 +85,9 @@ export class ChatComponent {
     );
 
     this.messageText.set('');
+  }
+
+  isUserOnline(user: ChatUser): boolean {
+    return this.showOnlineUsers().some((u) => u.userId === user.userId);
   }
 }

@@ -1,4 +1,5 @@
 ﻿using Evento.Application.Common.Dto;
+using Evento.Application.Common.Extensions;
 using Evento.Application.Services.Interfaces;
 using Evento.Domain;
 using Evento.Domain.Models;
@@ -59,5 +60,11 @@ public sealed class ChatService(IChatRepository chatRepository, IChatClaimReposi
             AgentId = claim.AgentId,
             AgentName = agent?.UserName ?? "Unknown"
         };
+    }
+
+    public async Task<IEnumerable<ChatUserDto>> GetUserChatsAsync(string userId)
+    {
+        var chats = await chatRepository.GetUserChatsAsync(userId);
+        return chats.Select(u => u.ToChatDto());
     }
 }

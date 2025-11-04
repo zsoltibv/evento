@@ -5,6 +5,7 @@ import { environment } from '../../../environment';
 import { ChatMessage } from '../models/ChatMessage';
 import { ChatUser } from '../models/ChatUser';
 import { ChatClaim } from '../models/ChatClaim';
+import { RestApiService } from './rest-api-service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +13,7 @@ import { ChatClaim } from '../models/ChatClaim';
 export class ChatService {
   private authService = inject(AuthService);
   private connection?: HubConnection;
+  private api = inject(RestApiService);
 
   messages = signal<ChatMessage[]>([]);
   onlineUsers = signal<ChatUser[]>([]);
@@ -69,5 +71,9 @@ export class ChatService {
       userId2
     );
     if (history) this.messages.set(history);
+  }
+
+  async getUserChats(userId: string): Promise<ChatUser[]> {
+    return this.api.get<ChatUser[]>('/api/chats/user');
   }
 }

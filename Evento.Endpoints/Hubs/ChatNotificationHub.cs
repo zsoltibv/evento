@@ -9,12 +9,12 @@ namespace Evento.Endpoints.Hubs;
 public sealed class ChatNotificationHub(IChatService chatService) : Hub
 {
     private static readonly ConcurrentDictionary<string, ChatUser> OnlineUsers = new();
-    private const string UnknowUser = "Unknown";
+    private const string UnknownUser = "Unknown";
 
     public override async Task OnConnectedAsync()
     {
         var userId = Context.UserIdentifier;
-        var username = Context.User?.GetUserName() ?? UnknowUser;
+        var username = Context.User?.GetUserName() ?? UnknownUser;
 
         if (!string.IsNullOrEmpty(userId))
         {
@@ -55,8 +55,8 @@ public sealed class ChatNotificationHub(IChatService chatService) : Hub
         var message = await chatService.SendMessageAsync(senderId, receiverId, messageText);
 
         var messageDto = new ChatMessageDto(
-            new ChatUserDto(senderId, senderUser?.Username ?? UnknowUser),
-            new ChatUserDto(receiverId, receiverUser?.Username ?? UnknowUser),
+            new ChatUserDto(senderId, senderUser?.Username ?? UnknownUser),
+            new ChatUserDto(receiverId, receiverUser?.Username ?? UnknownUser),
             message.MessageText,
             message.SentAt
         );
@@ -82,8 +82,8 @@ public sealed class ChatNotificationHub(IChatService chatService) : Hub
 
         return messages.Select(m =>
         {
-            var sender = new ChatUserDto(m.SenderId, m.Sender?.UserName ?? UnknowUser);
-            var receiver = new ChatUserDto(m.ReceiverId, m.Receiver?.UserName ?? UnknowUser);
+            var sender = new ChatUserDto(m.SenderId, m.Sender?.UserName ?? UnknownUser);
+            var receiver = new ChatUserDto(m.ReceiverId, m.Receiver?.UserName ?? UnknownUser);
             return new ChatMessageDto(sender, receiver, m.MessageText, m.SentAt);
         }).ToList();
     }

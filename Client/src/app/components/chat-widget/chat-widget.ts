@@ -10,6 +10,8 @@ import { CommonModule } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 
+const defaultChatOwnerName: string = 'Support Agent';
+
 @Component({
   selector: 'app-chat-widget',
   imports: [PanelModule, FormsModule, ButtonModule, PopoverModule, CommonModule, InputTextModule],
@@ -27,7 +29,7 @@ export class ChatWidget {
   private venueService = inject(VenueService);
 
   targetUserIds = signal<string[]>([]);
-  chatOwnerName = signal<string>('Support Agent');
+  chatOwnerName = signal<string>(defaultChatOwnerName);
 
   messages = computed(() => {
     const all = this.chatService.messages();
@@ -42,32 +44,29 @@ export class ChatWidget {
   constructor() {
     effect(async () => {
       const booking = this.booking();
-      if (!booking) return; // wait until booking is provided
-
+      if (!booking) return;
       await this.chatService.start();
 
       const adminIds = await this.venueService.getVenueAdminIds(booking.venue.id);
       this.targetUserIds.set(adminIds);
-      console.log('ADMIN IDS: ', adminIds);
 
       const claim = this.chatService.chatClaimed();
       const currentUser = this.currentUserId();
 
       if (claim && claim.userId === currentUser) {
         this.targetUserIds.set([claim.ownerId]);
-        this.chatOwnerName.set(claim.ownerName || 'Support Agent');
+        this.chatOwnerName.set(claim.ownerName || defaultChatOwnerName);
         await this.chatService.loadChatHistory(claim.userId, claim.ownerId);
       }
     });
 
-    // Keep your existing effect for claim updates
     effect(async () => {
       const claim = this.chatService.chatClaimed();
       const currentUser = this.currentUserId();
 
       if (claim && claim.userId === currentUser) {
         this.targetUserIds.set([claim.ownerId]);
-        this.chatOwnerName.set(claim.ownerName || 'Support Agent');
+        this.chatOwnerName.set(claim.ownerName || defaultChatOwnerName);
         await this.chatService.loadChatHistory(claim.userId, claim.ownerId);
       }
     });

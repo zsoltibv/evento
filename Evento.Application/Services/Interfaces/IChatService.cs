@@ -9,4 +9,5 @@ public interface IChatService
     Task<List<ChatMessage>> GetChatHistoryAsync(string userId1, string userId2);
     Task<bool> TryClaimChatAsync(string userId, string agentId);
     Task<ChatClaimOwnerDto?> GetChatClaimOwnerAsync(string userId);
+    Task<IEnumerable<ChatUserDto>> GetUserChatsAsync(string userId);
 }

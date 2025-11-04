@@ -11,4 +11,10 @@ public static class UserExtensions
             user.UserName!,
             user.Email
         );
+    
+    public static ChatUserDto ToChatDto(this AppUser user)
+        => new(
+            user.Id,
+            user.UserName!
+        );
 }

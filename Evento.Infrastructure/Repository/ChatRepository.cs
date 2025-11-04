@@ -11,7 +11,7 @@ public sealed class ChatRepository(EventoDbContext db) : IChatRepository
         db.ChatMessages.Add(message);
         await db.SaveChangesAsync();
     }
-    
+
     public async Task<List<ChatMessage>> GetChatHistoryAsync(string userId1, string userId2)
     {
         return await db.ChatMessages
@@ -20,6 +20,19 @@ public sealed class ChatRepository(EventoDbContext db) : IChatRepository
                 (m.SenderId == userId2 && m.ReceiverId == userId1))
             .OrderBy(m => m.SentAt)
             .AsNoTracking()
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<AppUser>> GetUserChatsAsync(string userId)
+    {
+        var userIds = await db.ChatMessages
+            .Where(m => m.SenderId == userId || m.ReceiverId == userId)
+            .Select(m => m.SenderId == userId ? m.ReceiverId : m.SenderId)
+            .Distinct()
+            .ToListAsync();
+
+        return await db.Users
+            .Where(u => userIds.Contains(u.Id))
             .ToListAsync();
     }
 }
