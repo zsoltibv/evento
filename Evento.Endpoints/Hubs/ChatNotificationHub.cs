@@ -21,8 +21,9 @@ public sealed class ChatNotificationHub(IChatService chatService, IVenueAdminSer
         {
             var chatUser = new ChatUser(userId, username, Context.ConnectionId);
             OnlineUsers[userId] = chatUser;
-            await Clients.All.SendAsync(ChatNotificationType.UserOnline, new ChatUserDto(chatUser.UserId, chatUser.Username));
-            
+            await Clients.All.SendAsync(ChatNotificationType.UserOnline,
+                new ChatUserDto(chatUser.UserId, chatUser.Username));
+
             // Notify user of unread messages
             if (UnreadMessageCount.TryGetValue(userId, out var count) && count > 0)
             {
@@ -55,13 +56,14 @@ public sealed class ChatNotificationHub(IChatService chatService, IVenueAdminSer
         var senderUser = OnlineUsers.GetValueOrDefault(senderId);
         var receiverUser = OnlineUsers.GetValueOrDefault(receiverId);
 
-        if (existingClaimOwner is null && Context.User!.IsVenueAdmin()) 
+        if (existingClaimOwner is null && Context.User!.IsVenueAdmin())
         {
             var newClaimOwner = await chatService.TryClaimChatAsync(senderId, receiverId);
             if (newClaimOwner is not null && newClaimOwner.AgentId != senderId)
             {
                 await Clients.Client(receiverUser!.ConnectionId)
-                    .SendAsync(ChatNotificationType.ChatClaimed, senderId, newClaimOwner.AgentId, newClaimOwner.AgentName);
+                    .SendAsync(ChatNotificationType.ChatClaimed, senderId, newClaimOwner.AgentId,
+                        newClaimOwner.AgentName);
             }
         }
 
@@ -85,6 +87,10 @@ public sealed class ChatNotificationHub(IChatService chatService, IVenueAdminSer
         if (senderUser is not null)
         {
             await Clients.Client(senderUser.ConnectionId).SendAsync(ChatNotificationType.ReceiveMessage, messageDto);
+        }
+        else
+        {
+            UnreadMessageCount.AddOrUpdate(senderId, 1, (_, count) => count + 1);
         }
     }
 
