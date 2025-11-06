@@ -6,4 +6,5 @@ public static class ChatNotificationType
     public const string UserOffline = "UserOffline";
     public const string ReceiveMessage = "ReceiveMessage";
     public const string ChatClaimed = "ChatClaimed";
+    public const string UnreadMessagesNotification = "UnreadMessagesNotification";
 }

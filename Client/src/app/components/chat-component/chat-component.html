@@ -35,7 +35,10 @@
       [header]="selectedUser() ? selectedUser()?.username : 'Select a user to start chatting'"
     >
       @if(selectedUser()){
-      <div class="messages-container flex flex-col gap-2 h-96 overflow-y-auto">
+      <div
+        class="messages-container flex flex-col gap-2 h-96 overflow-y-auto px-2"
+        #messagesContainer
+      >
         @for(message of messages(); track $index){
         <div
           [ngClass]="{

@@ -1,5 +1,5 @@
 import { AuthService } from './../../services/auth-service';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { ChatService } from '../../services/chat-service';
 import { FormsModule } from '@angular/forms';
 import { PanelModule } from 'primeng/panel';
@@ -32,6 +32,8 @@ export class ChatComponent {
   selectedUser = signal<ChatUser | null>(null);
   chatUsers = signal<ChatUser[]>([]);
 
+  messagesContainer = viewChild<ElementRef<HTMLDivElement>>('messagesContainer');
+
   currentUser = computed(() => {
     const userId = this.authService.userId();
     return this.chatService.onlineUsers().find((u) => u.userId === userId) ?? null;
@@ -52,6 +54,13 @@ export class ChatComponent {
             m.receiver.userId === this.currentUser()?.userId)
       )
   );
+
+  constructor() {
+    effect(() => {
+      this.messages();
+      setTimeout(() => this.scrollToBottomOfChatContainer(), 50);
+    });
+  }
 
   async ngOnInit() {
     await this.chatService.start();
@@ -89,5 +98,12 @@ export class ChatComponent {
 
   isUserOnline(user: ChatUser): boolean {
     return this.showOnlineUsers().some((u) => u.userId === user.userId);
+  }
+
+  private scrollToBottomOfChatContainer() {
+    const container = this.messagesContainer()?.nativeElement;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
   }
 }

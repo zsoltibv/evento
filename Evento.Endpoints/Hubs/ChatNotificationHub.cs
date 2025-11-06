@@ -91,7 +91,7 @@ public sealed class ChatNotificationHub(IChatService chatService, IVenueAdminSer
                 connCounts.AddOrUpdate(connId, 1, (_, c) => c + 1);
 
                 await Clients.Client(connId)
-                    .SendAsync("UnreadMessagesNotification", connCounts[connId]);
+                    .SendAsync(ChatNotificationType.UnreadMessagesNotification, connCounts[connId]);
             }
         }
 

@@ -17,3 +17,22 @@
   max-width: 70%;
   word-wrap: break-word;
 }
+
+.messages-container {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(151, 151, 151, 0.3) transparent;
+}
+
+.messages-container::-webkit-scrollbar {
+  width: 3px;
+}
+
+.messages-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messages-container::-webkit-scrollbar-thumb {
+  background-color: rgba(151, 151, 151, 0.3);
+  border-radius: 3px;
+}
