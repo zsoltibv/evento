@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, computed, inject, ViewChild } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { MenubarModule } from 'primeng/menubar';
@@ -11,6 +11,9 @@ import { Menu, MenuModule } from 'primeng/menu';
 import { ChatService } from '../../../services/chat-service';
 import { BadgeModule } from 'primeng/badge';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
+import { PopoverModule } from 'primeng/popover';
+import { CardModule } from 'primeng/card';
+import { PanelModule } from 'primeng/panel';
 
 @Component({
   selector: 'app-navbar-component',
@@ -23,6 +26,9 @@ import { OverlayBadgeModule } from 'primeng/overlaybadge';
     MenuModule,
     BadgeModule,
     OverlayBadgeModule,
+    PopoverModule,
+    CardModule,
+    PanelModule,
   ],
   templateUrl: './navbar-component.html',
   styleUrl: './navbar-component.scss',
@@ -33,6 +39,17 @@ export class NavbarComponent {
   private authService = inject(AuthService);
   private chatService = inject(ChatService);
   private router = inject(Router);
+
+  protected groupedUnread = computed(() => this.chatService.unreadMessagesGrouped());
+  protected unreadList = computed(() =>
+    Object.entries(this.groupedUnread()).map(([senderId, messages]) => ({
+      senderId,
+      messages,
+    }))
+  );
+  protected totalUnread = computed(() =>
+    this.unreadList().reduce((acc, entry) => acc + entry.messages.length, 0)
+  );
 
   protected menuItems = computed<MenuItem[]>(() => {
     if (!this.authService.jwtToken()) return [];
@@ -54,8 +71,6 @@ export class NavbarComponent {
 
     return [];
   });
-
-  protected unreadCount = computed(() => this.chatService.unreadMessagesCount());
 
   protected userMenuItems = computed<MenuItem[]>(() => {
     return [
@@ -95,8 +110,12 @@ export class NavbarComponent {
     this.router.navigate(['/login']);
   }
 
-  protected openChat() {
-    this.chatService.resetUnreadMessages();
-    this.router.navigate(['/chat']);
+  protected openChat(senderId?: string) {
+    this.router.navigate(['/chat'], { queryParams: senderId ? { user: senderId } : {} });
+  }
+
+  protected getUserName(senderId: string): string {
+    const user = this.chatService.onlineUsers().find((u) => u.userId === senderId);
+    return user ? user.username : 'Unknown';
   }
 }

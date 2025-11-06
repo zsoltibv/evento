@@ -6,20 +6,14 @@
   <ng-template pTemplate="end">
     @if (isLoggedIn()) { @if (user()) {
     <div class="user-menu flex items-center justify-center gap-3">
-      <div class="flex items-center">
-        @if(unreadCount() > 0){
-        <p-overlaybadge [value]="unreadCount()" (click)="openChat()" badgeSize="small" class="mt-2">
-          <i
-            class="pi pi-comments text-gray-600 hover:text-primary transition p-button-rounded cursor-pointer text-xl"
-          ></i>
-        </p-overlaybadge>
-        }@else {
-        <i
-          class="pi pi-comments text-gray-600 hover:text-primary transition p-button-rounded cursor-pointer text-xl"
-          (click)="openChat()"
-        ></i>
-        }
-      </div>
+      <p-overlaybadge severity="success" class="mt-2" (click)="op.toggle($event)">
+        <i class="pi pi-bell text-gray-600 hover:text-primary cursor-pointer text-xl"></i>
+      </p-overlaybadge>
+
+      <i
+        class="pi pi-comments text-gray-600 hover:text-primary transition p-button-rounded cursor-pointer text-xl"
+        (click)="openChat()"
+      ></i>
 
       <div>
         <p-avatar
@@ -51,3 +45,35 @@
     }
   </ng-template>
 </p-menubar>
+
+<!-- Unread Messages Popover -->
+<p-popover #op [dismissable]="true" appendTo="body" styleClass="dark-popover">
+  <div class="p-3">
+    <h3 class="font-semibold text-lg mb-3 text-white">Notifications</h3>
+
+    @if (totalUnread() === 0) {
+    <p class="text-gray-400 text-center">No unread messages.</p>
+    } @else {
+    <div class="flex flex-col gap-3 min-w-md">
+      @for (entry of unreadList(); track entry.senderId) {
+      <p-panel
+        header="{{ getUserName(entry.senderId) }}"
+        [toggleable]="false"
+        class="cursor-pointer dark-panel"
+        (click)="openChat(entry.senderId)"
+      >
+        <ng-template pTemplate="icons">
+          <span class="text-sm text-gray-400 pr-3"> {{ entry.messages.length }} unread </span>
+        </ng-template>
+
+        <ul class="mt-1 text-sm text-gray-300 space-y-1">
+          @for (msg of entry.messages.slice(-3); track msg.sentAt) {
+          <li>{{ msg.messageText }}</li>
+          }
+        </ul>
+      </p-panel>
+      }
+    </div>
+    }
+  </div>
+</p-popover>

@@ -10,7 +10,7 @@ public sealed class ChatNotificationHub(IChatService chatService, IVenueAdminSer
 {
     private static readonly ConcurrentDictionary<string, ChatUser> OnlineUsers = new();
 
-    private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, int>> UserConnectionUnreadCounts =
+    private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, List<ChatMessageDto>>> UnreadMessages =
         new();
 
     private const string UnknownUser = "Unknown";
@@ -26,9 +26,6 @@ public sealed class ChatNotificationHub(IChatService chatService, IVenueAdminSer
             OnlineUsers[userId] = chatUser;
             await Clients.All.SendAsync(ChatNotificationType.UserOnline,
                 new ChatUserDto(chatUser.UserId, chatUser.Username));
-
-            var connCounts = UserConnectionUnreadCounts.GetOrAdd(userId, _ => new());
-            connCounts.TryAdd(Context.ConnectionId, 0);
 
             await Clients.All.SendAsync(ChatNotificationType.UserOnline,
                 new ChatUserDto(chatUser.UserId, chatUser.Username));
@@ -85,13 +82,18 @@ public sealed class ChatNotificationHub(IChatService chatService, IVenueAdminSer
             {
                 await Clients.Client(connId)
                     .SendAsync(ChatNotificationType.ReceiveMessage, messageDto);
+                
+                var senderMessages = UnreadMessages
+                    .GetOrAdd(receiverId, _ => new ConcurrentDictionary<string, List<ChatMessageDto>>())
+                    .GetOrAdd(senderId, _ => []);
 
-                var connCounts =
-                    UserConnectionUnreadCounts.GetOrAdd(receiverId, _ => new ConcurrentDictionary<string, int>());
-                connCounts.AddOrUpdate(connId, 1, (_, c) => c + 1);
-
+                lock (senderMessages) 
+                {
+                    senderMessages.Add(messageDto);
+                }
+                
                 await Clients.Client(connId)
-                    .SendAsync(ChatNotificationType.UnreadMessagesNotification, connCounts[connId]);
+                    .SendAsync(ChatNotificationType.UnreadMessagesNotification, senderMessages.Count);
             }
         }
 
@@ -126,4 +128,26 @@ public sealed class ChatNotificationHub(IChatService chatService, IVenueAdminSer
         => Task.FromResult(OnlineUsers.Values
             .Select(u => new ChatUserDto(u.UserId, u.Username))
             .ToList());
+    
+    public Task<Dictionary<string, List<ChatMessageDto>>> GetUnreadMessages(string receiverId)
+    {
+        if (!UnreadMessages.TryGetValue(receiverId, out var messagesBySender))
+            return Task.FromResult(new Dictionary<string, List<ChatMessageDto>>());
+        
+        var result = messagesBySender.ToDictionary(
+            kv => kv.Key,
+            kv => kv.Value.ToList()
+        );
+
+        return Task.FromResult(result);
+    }
+    
+    public Task MarkMessagesAsRead(string receiverId, string senderId)
+    {
+        if (UnreadMessages.TryGetValue(receiverId, out var messagesBySender))
+        {
+            messagesBySender.TryRemove(senderId, out _);
+        }
+        return Task.CompletedTask;
+    }
 }

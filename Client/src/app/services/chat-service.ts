@@ -20,7 +20,7 @@ export class ChatService {
   messages = signal<ChatMessage[]>([]);
   onlineUsers = signal<ChatUser[]>([]);
   chatClaimed = signal<ChatClaim | null>(null);
-  unreadMessagesCount = signal<number>(0);
+  unreadMessagesGrouped = signal<Record<string, ChatMessage[]>>({});
 
   constructor() {
     this.connection = new HubConnectionBuilder()
@@ -49,13 +49,20 @@ export class ChatService {
       this.chatClaimed.set({ userId, ownerId, ownerName } as ChatClaim);
     });
 
-    this.connection.on('UnreadMessagesNotification', (count: number) => {
-      const currentUrl = this.router.url;
+    this.connection.on('UnreadMessagesNotification', async () => {
+      console.log('Fetching grouped unread messages...');
+      if (!this.connection) return;
 
-      if (!currentUrl.startsWith('/chat')) {
-        this.unreadMessagesCount.set(count);
-      } else {
-        this.unreadMessagesCount.set(0);
+      try {
+        const groupedUnread = await this.connection.invoke<Record<string, ChatMessage[]>>(
+          'GetUnreadMessages',
+          this.authService.userId()
+        );
+
+        console.log('Grouped unread messages:', groupedUnread);
+        this.unreadMessagesGrouped.set(groupedUnread);
+      } catch (err) {
+        console.error('Failed to fetch grouped unread messages:', err);
       }
     });
   }
@@ -90,7 +97,19 @@ export class ChatService {
     return this.api.get<ChatUser[]>('/api/chats/user');
   }
 
-  resetUnreadMessages() {
-    this.unreadMessagesCount.set(0);
+  async markMessagesAsRead(senderId: string) {
+    if (!this.connection || this.connection.state !== 'Connected') return;
+
+    const receiverId = this.authService.userId();
+
+    try {
+      await this.connection.invoke('MarkMessagesAsRead', receiverId, senderId);
+
+      const updated = { ...this.unreadMessagesGrouped() };
+      delete updated[senderId];
+      this.unreadMessagesGrouped.set(updated);
+    } catch (err) {
+      console.error('Failed mark as read messages:', err);
+    }
   }
 }

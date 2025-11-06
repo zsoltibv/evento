@@ -10,6 +10,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { CommonModule } from '@angular/common';
 import { ChatUser } from '../../models/ChatUser';
 import { HourOnlyPipe } from '../../pipe/hour-only-pipe-pipe';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-chat-component',
@@ -29,11 +30,13 @@ import { HourOnlyPipe } from '../../pipe/hour-only-pipe-pipe';
 export class ChatComponent {
   private authService = inject(AuthService);
   private chatService = inject(ChatService);
+  private route = inject(ActivatedRoute);
 
   messageText = signal('');
   selectedUser = signal<ChatUser | null>(null);
   chatUsers = signal<ChatUser[]>([]);
   showDateIndex: number | null = null;
+  senderId?: string;
 
   messagesContainer = viewChild<ElementRef<HTMLDivElement>>('messagesContainer');
 
@@ -75,6 +78,17 @@ export class ChatComponent {
       this.selectedUser.set(chatUsers[0]);
       await this.loadChatHistory();
     }
+
+    //subcribe to chat redirects
+    this.route.queryParams.subscribe(async (params) => {
+      this.senderId = params['user'];
+
+      if (this.senderId) {
+        await this.chatService.markMessagesAsRead(this.senderId);
+        const currentUserId = this.authService.userId();
+        await this.chatService.loadChatHistory(currentUserId!, this.senderId);
+      }
+    });
   }
 
   async selectUser(user: ChatUser) {
