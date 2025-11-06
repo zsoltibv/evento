@@ -9,6 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { CommonModule } from '@angular/common';
 import { ChatUser } from '../../models/ChatUser';
+import { HourOnlyPipe } from '../../pipe/hour-only-pipe-pipe';
 
 @Component({
   selector: 'app-chat-component',
@@ -20,6 +21,7 @@ import { ChatUser } from '../../models/ChatUser';
     ButtonModule,
     InputTextModule,
     CommonModule,
+    HourOnlyPipe,
   ],
   templateUrl: './chat-component.html',
   styleUrl: './chat-component.scss',
@@ -31,6 +33,7 @@ export class ChatComponent {
   messageText = signal('');
   selectedUser = signal<ChatUser | null>(null);
   chatUsers = signal<ChatUser[]>([]);
+  showDateIndex: number | null = null;
 
   messagesContainer = viewChild<ElementRef<HTMLDivElement>>('messagesContainer');
 
@@ -105,5 +108,15 @@ export class ChatComponent {
     if (container) {
       container.scrollTop = container.scrollHeight;
     }
+  }
+
+  toggleDate(index: number) {
+    if (this.showDateIndex === index) {
+      this.showDateIndex = null;
+    } else {
+      this.showDateIndex = index;
+    }
+
+    setTimeout(() => this.scrollToBottomOfChatContainer(), 50);
   }
 }

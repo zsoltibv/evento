@@ -41,13 +41,20 @@
       >
         @for(message of messages(); track $index){
         <div
+          (click)="toggleDate($index)"
           [ngClass]="{
             'self-end message-sent': message.sender.userId === currentUser()?.userId,
             'self-start message-received': message.sender.userId !== currentUser()?.userId
           }"
-          class="p-2 rounded-lg max-w-xs"
+          class="p-2 rounded-lg max-w-xs flex flex-col items-end hover:cursor-pointer"
         >
-          {{ message.messageText }}
+          <span>{{ message.messageText }}</span>
+
+          @if(showDateIndex === $index){
+          <span class="text-xs">
+            {{ message.sentAt | hourOnlyPipe }}
+          </span>
+          }
         </div>
         }
       </div>
