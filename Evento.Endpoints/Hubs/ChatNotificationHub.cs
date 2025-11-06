@@ -9,7 +9,10 @@ namespace Evento.Endpoints.Hubs;
 public sealed class ChatNotificationHub(IChatService chatService, IVenueAdminService venueAdminService) : Hub
 {
     private static readonly ConcurrentDictionary<string, ChatUser> OnlineUsers = new();
-    private static readonly ConcurrentDictionary<string, int> UnreadMessageCount = new();
+
+    private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, int>> UserConnectionUnreadCounts =
+        new();
+
     private const string UnknownUser = "Unknown";
 
     public override async Task OnConnectedAsync()
@@ -24,15 +27,11 @@ public sealed class ChatNotificationHub(IChatService chatService, IVenueAdminSer
             await Clients.All.SendAsync(ChatNotificationType.UserOnline,
                 new ChatUserDto(chatUser.UserId, chatUser.Username));
 
-            // Notify user of unread messages
-            if (UnreadMessageCount.TryGetValue(userId, out var count) && count > 0)
-            {
-                await Clients.Client(chatUser.ConnectionId)
-                    .SendAsync("UnreadMessagesNotification", count);
+            var connCounts = UserConnectionUnreadCounts.GetOrAdd(userId, _ => new());
+            connCounts.TryAdd(Context.ConnectionId, 0);
 
-                // Optionally reset unread count after notifying
-                UnreadMessageCount[userId] = 0;
-            }
+            await Clients.All.SendAsync(ChatNotificationType.UserOnline,
+                new ChatUserDto(chatUser.UserId, chatUser.Username));
         }
 
         await base.OnConnectedAsync();
@@ -77,20 +76,29 @@ public sealed class ChatNotificationHub(IChatService chatService, IVenueAdminSer
 
         if (receiverUser is not null)
         {
-            await Clients.Client(receiverUser.ConnectionId).SendAsync(ChatNotificationType.ReceiveMessage, messageDto);
-        }
-        else
-        {
-            UnreadMessageCount.AddOrUpdate(receiverId, 1, (_, count) => count + 1);
+            var receiverConnections = OnlineUsers
+                .Where(kv => kv.Key == receiverId)
+                .Select(kv => kv.Value.ConnectionId)
+                .ToList();
+
+            foreach (var connId in receiverConnections)
+            {
+                await Clients.Client(connId)
+                    .SendAsync(ChatNotificationType.ReceiveMessage, messageDto);
+
+                var connCounts =
+                    UserConnectionUnreadCounts.GetOrAdd(receiverId, _ => new ConcurrentDictionary<string, int>());
+                connCounts.AddOrUpdate(connId, 1, (_, c) => c + 1);
+
+                await Clients.Client(connId)
+                    .SendAsync("UnreadMessagesNotification", connCounts[connId]);
+            }
         }
 
         if (senderUser is not null)
         {
-            await Clients.Client(senderUser.ConnectionId).SendAsync(ChatNotificationType.ReceiveMessage, messageDto);
-        }
-        else
-        {
-            UnreadMessageCount.AddOrUpdate(senderId, 1, (_, count) => count + 1);
+            await Clients.Client(senderUser.ConnectionId)
+                .SendAsync(ChatNotificationType.ReceiveMessage, messageDto);
         }
     }
 

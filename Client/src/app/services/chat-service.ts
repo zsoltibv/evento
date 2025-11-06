@@ -6,6 +6,7 @@ import { ChatMessage } from '../models/ChatMessage';
 import { ChatUser } from '../models/ChatUser';
 import { ChatClaim } from '../models/ChatClaim';
 import { RestApiService } from './rest-api-service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +15,7 @@ export class ChatService {
   private authService = inject(AuthService);
   private connection?: HubConnection;
   private api = inject(RestApiService);
+  private router = inject(Router);
 
   messages = signal<ChatMessage[]>([]);
   onlineUsers = signal<ChatUser[]>([]);
@@ -48,7 +50,13 @@ export class ChatService {
     });
 
     this.connection.on('UnreadMessagesNotification', (count: number) => {
-      this.unreadMessagesCount.set(count);
+      const currentUrl = this.router.url;
+
+      if (!currentUrl.startsWith('/chat')) {
+        this.unreadMessagesCount.set(count);
+      } else {
+        this.unreadMessagesCount.set(0);
+      }
     });
   }
 
