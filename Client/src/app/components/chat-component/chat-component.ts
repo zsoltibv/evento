@@ -117,6 +117,9 @@ export class ChatComponent {
       this.showDateIndex = index;
     }
 
-    setTimeout(() => this.scrollToBottomOfChatContainer(), 50);
+    const msgs = this.messages();
+    if (index === msgs.length - 1) {
+      setTimeout(() => this.scrollToBottomOfChatContainer(), 50);
+    }
   }
 }
