@@ -6,9 +6,17 @@
   <ng-template pTemplate="end">
     @if (isLoggedIn()) { @if (user()) {
     <div class="user-menu flex items-center justify-center gap-3">
+      @if (totalUnread() !== 0) {
       <p-overlaybadge severity="success" class="mt-2" (click)="op.toggle($event)">
         <i class="pi pi-bell text-gray-600 hover:text-primary cursor-pointer text-xl"></i>
       </p-overlaybadge>
+      }@else{
+      <i
+        class="pi pi-bell text-gray-600 hover:text-primary cursor-pointer text-xl"
+        severity="success"
+        (click)="op.toggle($event)"
+      ></i>
+      }
 
       <i
         class="pi pi-comments text-gray-600 hover:text-primary transition p-button-rounded cursor-pointer text-xl"

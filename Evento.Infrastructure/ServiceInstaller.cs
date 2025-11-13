@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using TokenService = Evento.Infrastructure.Services.TokenService;
 
 namespace Evento.Infrastructure;
 
@@ -30,6 +31,8 @@ public static class ServiceInstaller
         services.AddScoped<IVenueService, VenueService>();
         services.AddScoped<IBookingService, BookingService>();
         services.AddScoped<IVenueAdminService, VenueAdminService>();
+        
+        // Email
         services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IEmailTemplateFactory, EmailTemplateFactory>();

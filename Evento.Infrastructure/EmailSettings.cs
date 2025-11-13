@@ -1,4 +1,4 @@
-﻿namespace Evento.Infrastructure.Services.Interfaces;
+﻿namespace Evento.Infrastructure;
 
 public class EmailSettings
 {

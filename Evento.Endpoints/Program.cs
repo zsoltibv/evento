@@ -3,7 +3,7 @@ using Evento.Endpoints;
 using Evento.Endpoints.Endpoints;
 using Evento.Endpoints.Hubs;
 using Evento.Infrastructure;
-
+using Evento.Payments;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +19,9 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 
 // Add all Application Services
 builder.Services.AddApplicationServices();
+
+// Add payment services
+builder.Services.AddPaymentServices(builder.Configuration);
 
 // Add CORS service
 builder.Services.AddCors(options =>
