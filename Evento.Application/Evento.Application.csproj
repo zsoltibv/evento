@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Evento.Domain\Evento.Domain.csproj" />
+      <ProjectReference Include="..\Evento.Payments\Evento.Payments.csproj" />
     </ItemGroup>
 
     <ItemGroup>
