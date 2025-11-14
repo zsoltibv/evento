@@ -9,21 +9,19 @@ public static class PaymentEndpoint
     {
         var paymentGroup = app.MapGroup("/api/payments");
 
-        paymentGroup.MapPost("/create-intent", async (
+        paymentGroup.MapPost("/create-checkout", async (
                 CreateIntentRequest req,
                 IPaymentService paymentService) =>
             {
-                var clientSecret = await paymentService.CreateVenuePaymentIntentAsync(
+                var clientSecret = await paymentService.CreateCheckoutSessionAsync(
                     req.CustomerId,
                     req.PricePerHour,
                     req.Hours);
 
                 return Results.Ok(new { clientSecret });
             })
-            .RequireAuthorization()
-            .Produces(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status401Unauthorized);
-
+            .RequireAuthorization();
+        
         return app;
     }
 }

@@ -8,6 +8,7 @@ import { BookingsComponent } from './components/bookings-component/bookings-comp
 import { RoleRequestsComponent } from './components/role-requests-component/role-requests-component';
 import { ChatComponent } from './components/chat-component/chat-component';
 import { BookingComponent } from './components/booking-component/booking-component';
+import { PayVenueBooking } from './components/payment/pay-venue-booking/pay-venue-booking';
 
 export const routes: Routes = [
   { path: 'venues', component: VenuesComponent, canActivate: [authGuard] },
@@ -16,6 +17,7 @@ export const routes: Routes = [
   { path: 'bookings/:id', component: BookingComponent, canActivate: [authGuard] },
   { path: 'role-requests', component: RoleRequestsComponent, canActivate: [authGuard] },
   { path: 'chat', component: ChatComponent, canActivate: [authGuard] },
+  { path: 'pay', component: PayVenueBooking, canActivate: [authGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
 

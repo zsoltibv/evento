@@ -1,0 +1,9 @@
+export interface PaymentResponse {
+  clientSecret: string;
+}
+
+export interface PaymentIntent {
+  customerId: string;
+  pricePerHour: number;
+  hours: number;
+}

@@ -3,6 +3,7 @@ using Evento.Payments.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Stripe;
+using Stripe.Checkout;
 using ProductService = Stripe.Climate.ProductService;
 
 namespace Evento.Payments;
@@ -23,6 +24,7 @@ public static class ServiceInstaller
         services.AddScoped<CustomerService>();
         services.AddScoped<ProductService>();
         services.AddScoped<PaymentIntentService>();
+        services.AddScoped<SessionService>();
         
         return services;
     }

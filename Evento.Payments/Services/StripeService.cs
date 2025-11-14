@@ -1,12 +1,13 @@
 using Bogus;
 using Microsoft.Extensions.Options;
 using Stripe;
+using Stripe.Checkout;
 
 namespace Evento.Payments.Services;
 
 public class StripeService(
     CustomerService customerService,
-    PaymentIntentService paymentIntentService,
+    SessionService sessionService,
     Faker faker,
     IOptions<StripeSettings> options)
     : IPaymentService
@@ -44,8 +45,8 @@ public class StripeService(
             return string.Empty;
         }
     }
-    
-    public async Task<string> CreateVenuePaymentIntentAsync(
+
+    public async Task<string> CreateCheckoutSessionAsync(
         string customerId,
         decimal pricePerHour,
         int hours)
@@ -55,19 +56,32 @@ public class StripeService(
         var amountRon = pricePerHour * hours;
         var amountBani = (long)(amountRon * 100);
 
-        var ccOptions = new PaymentIntentCreateOptions
+        var ccOptions = new SessionCreateOptions
         {
-            Amount = amountBani,
-            Currency = "ron",
             Customer = customerId,
-            AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
-            {
-                Enabled = true
-            },
-            Description = $"Venue booking: {hours}h × {pricePerHour} RON"
+            Mode = "payment",
+            UiMode = "embedded",
+            ReturnUrl = "http://localhost:4200/venues",
+
+            LineItems =
+            [
+                new SessionLineItemOptions
+                {
+                    Quantity = hours,
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                        Currency = "ron",
+                        UnitAmount = amountBani,
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Name = "Venue booking"
+                        }
+                    }
+                }
+            ]
         };
-        
-        var intent = await paymentIntentService.CreateAsync(ccOptions);
-        return intent.ClientSecret;
+
+        var session = await sessionService.CreateAsync(ccOptions);
+        return session.ClientSecret;
     }
 }
