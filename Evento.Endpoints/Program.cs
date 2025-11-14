@@ -51,6 +51,7 @@ app.UseAuthorization();
 app.UseCors();
 
 // Map Endpoints
+app.MapPaymentEndpoints();
 app.MapAuthEndpoints();
 app.MapVenueEndpoints();
 app.MapBookingEndpoints();

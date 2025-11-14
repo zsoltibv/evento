@@ -22,6 +22,7 @@ public static class ServiceInstaller
         // Stripe Services
         services.AddScoped<CustomerService>();
         services.AddScoped<ProductService>();
+        services.AddScoped<PaymentIntentService>();
         
         return services;
     }

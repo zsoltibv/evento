@@ -6,6 +6,7 @@ namespace Evento.Payments.Services;
 
 public class StripeService(
     CustomerService customerService,
+    PaymentIntentService paymentIntentService,
     Faker faker,
     IOptions<StripeSettings> options)
     : IPaymentService
@@ -42,5 +43,31 @@ public class StripeService(
             Console.WriteLine(ex.Message);
             return string.Empty;
         }
+    }
+    
+    public async Task<string> CreateVenuePaymentIntentAsync(
+        string customerId,
+        decimal pricePerHour,
+        int hours)
+    {
+        StripeConfiguration.ApiKey = _options.SecretKey;
+
+        var amountRon = pricePerHour * hours;
+        var amountBani = (long)(amountRon * 100);
+
+        var ccOptions = new PaymentIntentCreateOptions
+        {
+            Amount = amountBani,
+            Currency = "ron",
+            Customer = customerId,
+            AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
+            {
+                Enabled = true
+            },
+            Description = $"Venue booking: {hours}h × {pricePerHour} RON"
+        };
+        
+        var intent = await paymentIntentService.CreateAsync(ccOptions);
+        return intent.ClientSecret;
     }
 }
