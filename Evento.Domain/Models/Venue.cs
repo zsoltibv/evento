@@ -9,6 +9,7 @@ public class Venue
     public required string Location { get; set; }
     public int Capacity { get; set; }
     public required string Slug { get; set; }
+    public decimal PricePerHour { get; set; } = 100;
     
     public ICollection<VenueAdmin> VenueAdmins { get; set; } = new List<VenueAdmin>();
     public ICollection<Booking> Bookings { get; set; } = new List<Booking>();

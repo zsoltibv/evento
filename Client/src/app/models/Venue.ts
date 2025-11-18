@@ -6,4 +6,5 @@ export interface Venue {
   capacity: number;
   imageUrl?: string;
   slug: string;
+  pricePerHour: number;
 }

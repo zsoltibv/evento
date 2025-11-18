@@ -7,5 +7,5 @@ public interface IPaymentService
     Task<string> CreateCheckoutSessionAsync(
         string customerId,
         decimal pricePerHour,
-        int hours);
+        int minutes);
 }

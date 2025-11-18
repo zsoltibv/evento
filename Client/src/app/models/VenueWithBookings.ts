@@ -8,5 +8,6 @@ export interface VenueWithBookings {
   location: string;
   capacity: number;
   imageUrl?: string;
+  pricePerHour: number;
   bookings: BookingWithVenueName[];
 }

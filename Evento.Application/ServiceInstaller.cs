@@ -26,6 +26,7 @@ public static class ServiceInstaller
         // Register Service 
         services.AddScoped<IRoleRequestService, RoleRequestService>();
         services.AddScoped<IChatService, ChatService>();
+        services.AddScoped<IUserService, UserService>();
             
         return services;
     }

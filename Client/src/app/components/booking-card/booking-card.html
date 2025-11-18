@@ -58,6 +58,14 @@
         (click)="reopenBooking(currentBooking()!.id)"
         severity="secondary"
       ></button>
+      } @if (currentBooking()!.status === 'Approved' && this.isUsersBooking()) {
+      <button
+        pButton
+        label="Pay Now"
+        icon="pi pi-credit-card"
+        (click)="goToPay()"
+        severity="success"
+      ></button>
       }
     </div>
   </div>

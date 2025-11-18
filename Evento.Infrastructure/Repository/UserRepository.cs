@@ -10,4 +10,12 @@ public class UserRepository(EventoDbContext db) : IUserRepository
     {
         return db.Users.FirstOrDefaultAsync(u => u.Id == userId);
     }
+
+    public Task<string?> GetCustomerId(string userId)
+    {
+        return db.Users
+            .Where(u => u.Id == userId)
+            .Select(u => u.StripeCustomerId)
+            .FirstOrDefaultAsync();
+    }
 }

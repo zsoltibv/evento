@@ -17,7 +17,7 @@ export const routes: Routes = [
   { path: 'bookings/:id', component: BookingComponent, canActivate: [authGuard] },
   { path: 'role-requests', component: RoleRequestsComponent, canActivate: [authGuard] },
   { path: 'chat', component: ChatComponent, canActivate: [authGuard] },
-  { path: 'pay', component: PayVenueBooking, canActivate: [authGuard] },
+  { path: 'pay/:id', component: PayVenueBooking, canActivate: [authGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
 

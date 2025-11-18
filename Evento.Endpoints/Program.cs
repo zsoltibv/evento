@@ -58,6 +58,7 @@ app.MapBookingEndpoints();
 app.MapRoleRequestEndpoints();
 app.MapEmailEndpoints();
 app.MapChatEndpoints();
+app.MapUserEndpoints();
 app.MapHub<ChatNotificationHub>("/hubs/chat");
 
 app.Run();

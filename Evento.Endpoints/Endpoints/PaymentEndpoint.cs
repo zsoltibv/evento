@@ -16,7 +16,7 @@ public static class PaymentEndpoint
                 var clientSecret = await paymentService.CreateCheckoutSessionAsync(
                     req.CustomerId,
                     req.PricePerHour,
-                    req.Hours);
+                    req.Minutes);
 
                 return Results.Ok(new { clientSecret });
             })

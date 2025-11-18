@@ -49,10 +49,11 @@ public class StripeService(
     public async Task<string> CreateCheckoutSessionAsync(
         string customerId,
         decimal pricePerHour,
-        int hours)
+        int minutes)
     {
         StripeConfiguration.ApiKey = _options.SecretKey;
-
+        
+        var hours = minutes / 60m;
         var amountRon = pricePerHour * hours;
         var amountBani = (long)(amountRon * 100);
 
@@ -67,7 +68,7 @@ public class StripeService(
             [
                 new SessionLineItemOptions
                 {
-                    Quantity = hours,
+                    Quantity = 1,
                     PriceData = new SessionLineItemPriceDataOptions
                     {
                         Currency = "ron",

@@ -13,7 +13,8 @@ public static class VenueExtensions
             venue.Location,
             venue.Capacity,
             venue.ImageUrl,
-            venue.Slug
+            venue.Slug,
+            venue.PricePerHour
         );
 
     public static VenueWithBookingsDto ToDtoWithBookings(this Venue venue)
@@ -25,6 +26,7 @@ public static class VenueExtensions
             venue.Capacity,
             venue.ImageUrl,
             venue.Slug,
+            venue.PricePerHour,
             venue.Bookings.ToDtoWithVenueName()
         );
 

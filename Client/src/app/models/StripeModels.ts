@@ -5,5 +5,5 @@ export interface PaymentResponse {
 export interface PaymentIntent {
   customerId: string;
   pricePerHour: number;
-  hours: number;
+  minutes: number;
 }

@@ -195,4 +195,8 @@ export class BookingCard {
   protected goToBooking() {
     this.router.navigate(['/bookings', this.booking().id]);
   }
+
+  protected goToPay() {
+    this.router.navigate(['/pay', this.booking().id]);
+  }
 }
