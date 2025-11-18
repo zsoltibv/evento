@@ -8,4 +8,6 @@ public interface IPaymentService
         string customerId,
         decimal pricePerHour,
         int minutes);
+    
+    Task<StripeSessionStatus> GetStripeSessionStatusAsync(string sessionId);
 }

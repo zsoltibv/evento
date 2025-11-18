@@ -83,6 +83,7 @@ export class PayVenueBooking implements OnInit {
     });
 
     checkout.mount('#checkout');
+
     this.loading.set(false);
   }
 }

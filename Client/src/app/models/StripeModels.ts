@@ -7,3 +7,8 @@ export interface PaymentIntent {
   pricePerHour: number;
   minutes: number;
 }
+
+export interface StripeSessionStatus {
+  status: string;
+  email: string;
+}

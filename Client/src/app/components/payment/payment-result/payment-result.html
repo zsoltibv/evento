@@ -1,0 +1,7 @@
+<div class="text-center mt-20">
+  @if(status()?.status === 'complete'){
+  <h1>Payment Successful!</h1>
+  } @if(status()?.status !== 'complete'){
+  <h1>Payment Failed or Canceled</h1>
+  }
+</div>

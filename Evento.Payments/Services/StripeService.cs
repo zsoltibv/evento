@@ -52,7 +52,7 @@ public class StripeService(
         int minutes)
     {
         StripeConfiguration.ApiKey = _options.SecretKey;
-        
+
         var hours = minutes / 60m;
         var amountRon = pricePerHour * hours;
         var amountBani = (long)(amountRon * 100);
@@ -62,7 +62,7 @@ public class StripeService(
             Customer = customerId,
             Mode = "payment",
             UiMode = "embedded",
-            ReturnUrl = "http://localhost:4200/venues",
+            ReturnUrl = "http://localhost:4200/payment-result?sessionId={CHECKOUT_SESSION_ID}",
 
             LineItems =
             [
@@ -84,5 +84,11 @@ public class StripeService(
 
         var session = await sessionService.CreateAsync(ccOptions);
         return session.ClientSecret;
+    }
+
+    public async Task<StripeSessionStatus> GetStripeSessionStatusAsync(string sessionId)
+    {
+        var session = await sessionService.GetAsync(sessionId);
+        return new StripeSessionStatus(session.Status, session.CustomerDetails!.Email);
     }
 }

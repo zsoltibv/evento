@@ -21,7 +21,14 @@ public static class PaymentEndpoint
                 return Results.Ok(new { clientSecret });
             })
             .RequireAuthorization();
-        
+
+        paymentGroup.MapGet("/session-status", async (string sessionId, IPaymentService paymentService) =>
+            {
+                var sessionStatus = await paymentService.GetStripeSessionStatusAsync(sessionId);
+                return Results.Ok(sessionStatus);
+            })
+            .RequireAuthorization();
+
         return app;
     }
 }
