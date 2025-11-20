@@ -4,4 +4,5 @@
   } @if(status()?.status !== 'complete'){
   <h1>Payment Failed or Canceled</h1>
   }
+  <p>Email: {{ status()?.email }}</p>
 </div>

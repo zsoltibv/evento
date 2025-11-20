@@ -73,6 +73,7 @@ export class PayVenueBooking implements OnInit {
       customerId: this.customerId()!,
       pricePerHour,
       minutes: diffMinutes,
+      bookingId: this.bookingId()!,
     };
 
     const response = await this.paymentService.createCheckoutSession(intent);

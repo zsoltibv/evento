@@ -7,6 +7,7 @@ using Evento.Application.Bookings.GetBookings;
 using Evento.Application.Bookings.UpdateBooking;
 using Evento.Application.Common;
 using Evento.Application.Common.Dto;
+using Evento.Application.Services.Interfaces;
 using Evento.Endpoints.Helpers;
 
 namespace Evento.Endpoints.Endpoints;
@@ -27,7 +28,7 @@ public static class BookingEndpoints
                     user.IsAdmin(),
                     user.IsUser()
                 );
-                
+
                 return await handler.Handle(query);
             })
             .RequireAuthorization()
@@ -111,6 +112,15 @@ public static class BookingEndpoints
             .Produces(StatusCodes.Status404NotFound)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status403Forbidden);
+
+        bookingsGroup.MapPut("/{id:int}/payment", async (int id, UpdateBookingPaymentDto dto, IBookingService bookingService) =>
+            {
+                var updatedBooking = await bookingService.UpdatePaymentAsync(id, dto);
+                return updatedBooking is null ? Results.NotFound() : Results.Ok(updatedBooking);
+            })
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound);
 
         return app;
     }

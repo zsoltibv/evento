@@ -7,7 +7,8 @@ public interface IPaymentService
     Task<string> CreateCheckoutSessionAsync(
         string customerId,
         decimal pricePerHour,
-        int minutes);
+        int minutes,
+        int bookingId);
     
     Task<StripeSessionStatus> GetStripeSessionStatusAsync(string sessionId);
 }

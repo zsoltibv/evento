@@ -49,7 +49,8 @@ public class StripeService(
     public async Task<string> CreateCheckoutSessionAsync(
         string customerId,
         decimal pricePerHour,
-        int minutes)
+        int minutes,
+        int bookingId)
     {
         StripeConfiguration.ApiKey = _options.SecretKey;
 
@@ -62,6 +63,7 @@ public class StripeService(
             Customer = customerId,
             Mode = "payment",
             UiMode = "embedded",
+            ClientReferenceId = bookingId.ToString(),
             ReturnUrl = "http://localhost:4200/payment-result?sessionId={CHECKOUT_SESSION_ID}",
 
             LineItems =
@@ -89,6 +91,13 @@ public class StripeService(
     public async Task<StripeSessionStatus> GetStripeSessionStatusAsync(string sessionId)
     {
         var session = await sessionService.GetAsync(sessionId);
-        return new StripeSessionStatus(session.Status, session.CustomerDetails!.Email);
+        var amountPaid = session.AmountTotal.GetValueOrDefault() / 100m;
+
+        return new StripeSessionStatus(
+            session.Status,
+            session.CustomerDetails!.Email,
+            amountPaid,
+            int.Parse(session.ClientReferenceId!)
+        );
     }
 }

@@ -113,4 +113,18 @@ public class BookingService(IBookingRepository repo) : IBookingService
                         b.EndDate > start)
             .AnyAsync();
     }
+
+    public async Task<BookingDto?> UpdatePaymentAsync(int bookingId, UpdateBookingPaymentDto paymentDto)
+    {
+        var booking = await repo.GetByIdAsync(bookingId);
+        if (booking is null)
+            return null;
+
+        // Update only payment info
+        booking.IsPaid = paymentDto.IsPaid;
+        booking.AmountPaid = paymentDto.AmountPaid;
+
+        var updated = await repo.UpdateAsync(booking);
+        return updated.ToDto();
+    }
 }

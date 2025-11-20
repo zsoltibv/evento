@@ -14,4 +14,5 @@ public interface IBookingService
     Task<bool> DeleteAsync(int id);
     Task<bool> AnyOverlappingApprovedBookingsAsync(int id, int venueId, DateTime start, DateTime end);
     Task<bool> UserHasOverlappingApprovedOrPendingBookingsAsync(string userId, int venueId, DateTime start, DateTime end);
+    Task<BookingDto?> UpdatePaymentAsync(int bookingId, UpdateBookingPaymentDto paymentDto);
 }

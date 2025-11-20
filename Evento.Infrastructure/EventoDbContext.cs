@@ -13,6 +13,7 @@ public class EventoDbContext(DbContextOptions<EventoDbContext> options) : Identi
     public DbSet<RoleRequest> RoleRequests { get; set; }
     public DbSet<ChatMessage> ChatMessages { get; set; }
     public DbSet<ChatClaim> ChatClaims { get; set; }
+    public DbSet<Payment> Payments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

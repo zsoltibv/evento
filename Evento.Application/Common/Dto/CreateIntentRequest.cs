@@ -1,3 +1,3 @@
 namespace Evento.Application.Common.Dto;
 
-public record CreateIntentRequest(string CustomerId, decimal PricePerHour, int Minutes);
+public record CreateIntentRequest(string CustomerId, decimal PricePerHour, int Minutes, int BookingId);

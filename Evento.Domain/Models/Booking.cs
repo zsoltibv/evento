@@ -12,9 +12,11 @@ public class Booking
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public DateTime BookingDate { get; set; } = DateTime.UtcNow; 
-    
     public BookingStatus Status { get; set; }
     
     public int VenueId { get; set; }
     public Venue Venue { get; set; } = null!;
+    
+    public bool IsPaid { get; set; } = false;
+    public decimal AmountPaid { get; set; } = 0m;
 }
