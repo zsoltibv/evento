@@ -1,4 +1,5 @@
 ﻿using Evento.Domain;
+using Evento.Domain.Enums;
 using Evento.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -73,4 +74,16 @@ public class BookingRepository(EventoDbContext db) : IBookingRepository
 
     public IQueryable<Booking> GetAll() => db.Bookings;
     public IQueryable<Booking> GetByUser(string userId) => db.Bookings.Where(b => b.UserId == userId);
+
+    public async Task<IEnumerable<Booking>> GetUnpaidApprovedBookingsAsync()
+    {
+        return await db.Bookings
+            .Where(b => b.Status == BookingStatus.Approved && !b.IsPaid)
+            .ToListAsync();
+    }
+    
+    public async Task SaveChangesAsync()
+    {
+        await db.SaveChangesAsync();
+    }
 }

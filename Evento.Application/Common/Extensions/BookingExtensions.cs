@@ -25,7 +25,9 @@ public static class BookingExtensions
             booking.BookingDate,
             booking.Status.ToString(),
             booking.VenueId,
-            booking.Venue.Name
+            booking.Venue.Name,
+            booking.IsPaid,
+            booking.AmountPaid
         );
     
     public static IEnumerable<BookingDto> ToDto(this IEnumerable<Booking> bookings)

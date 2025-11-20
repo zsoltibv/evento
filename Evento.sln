@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evento.Application", "Event
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evento.Payments", "Evento.Payments\Evento.Payments.csproj", "{F67992E8-606E-4EFB-B6FC-0C1A45A5DE2F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evento.Jobs", "Evento.Jobs\Evento.Jobs.csproj", "{BE073F37-345F-4422-A489-7A4C29618D07}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{F67992E8-606E-4EFB-B6FC-0C1A45A5DE2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F67992E8-606E-4EFB-B6FC-0C1A45A5DE2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F67992E8-606E-4EFB-B6FC-0C1A45A5DE2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE073F37-345F-4422-A489-7A4C29618D07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE073F37-345F-4422-A489-7A4C29618D07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE073F37-345F-4422-A489-7A4C29618D07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE073F37-345F-4422-A489-7A4C29618D07}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

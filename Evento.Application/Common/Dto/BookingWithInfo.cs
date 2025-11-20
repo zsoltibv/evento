@@ -8,5 +8,7 @@ public record BookingWithInfo(
     DateTime BookingDate,
     string Status,
     int VenueId,
-    string VenueName
+    string VenueName,
+    bool IsPaid,
+    decimal AmountPaid
 );

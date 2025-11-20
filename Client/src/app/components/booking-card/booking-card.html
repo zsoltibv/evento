@@ -58,7 +58,8 @@
         (click)="reopenBooking(currentBooking()!.id)"
         severity="secondary"
       ></button>
-      } @if (currentBooking()!.status === 'Approved' && this.isUsersBooking()) {
+      } @if (currentBooking()?.status === 'Approved' && currentBooking()?.isPaid === false &&
+      this.isUsersBooking()) {
       <button
         pButton
         label="Pay Now"
@@ -66,6 +67,21 @@
         (click)="goToPay()"
         severity="success"
       ></button>
+      }@else if(currentBooking()?.isPaid === true && this.isUsersBooking()){
+      <div class="bg-green-50 px-3 py-2 rounded">
+        <div class="flex items-center gap-2">
+          <i class="pi pi-check-circle text-green-600 text-xl"></i>
+
+          <div>
+            <p class="text-green-800">
+              Amount Paid:
+              <span class="font-bold">
+                {{ currentBooking()?.amountPaid | currency : 'RON' : 'symbol' : '1.2-2' }}
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
       }
     </div>
   </div>

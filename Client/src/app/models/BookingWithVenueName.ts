@@ -9,4 +9,6 @@ export interface BookingWithVenueName {
   status: BookingStatus;
   venueId: number;
   venueName: string;
+  isPaid: boolean;
+  amountPaid: number;
 }
