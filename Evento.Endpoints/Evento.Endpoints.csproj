@@ -17,6 +17,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Evento.Application\Evento.Application.csproj"/>
         <ProjectReference Include="..\Evento.Infrastructure\Evento.Infrastructure.csproj"/>
+        <ProjectReference Include="..\Evento.Jobs\Evento.Jobs.csproj" />
         <ProjectReference Include="..\Evento.Payments\Evento.Payments.csproj" />
     </ItemGroup>
 </Project>

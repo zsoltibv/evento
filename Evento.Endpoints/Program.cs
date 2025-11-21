@@ -3,6 +3,7 @@ using Evento.Endpoints;
 using Evento.Endpoints.Endpoints;
 using Evento.Endpoints.Hubs;
 using Evento.Infrastructure;
+using Evento.Jobs;
 using Evento.Payments;
 using Scalar.AspNetCore;
 
@@ -22,6 +23,9 @@ builder.Services.AddApplicationServices();
 
 // Add payment services
 builder.Services.AddPaymentServices(builder.Configuration);
+
+// Add quartz jobs
+builder.Services.AddQuartzJobs(builder.Configuration);
 
 // Add CORS service
 builder.Services.AddCors(options =>
