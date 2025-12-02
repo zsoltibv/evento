@@ -1,4 +1,6 @@
 using Bogus;
+using Evento.Email.EmailTemplates;
+using Evento.Email.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
@@ -8,6 +10,8 @@ namespace Evento.Payments.Services;
 public class StripeService(
     CustomerService customerService,
     SessionService sessionService,
+    IEmailTemplateFactory emailTemplateFactory,
+    IEmailService emailService,
     Faker faker,
     IOptions<StripeSettings> options)
     : IPaymentService
@@ -93,11 +97,22 @@ public class StripeService(
         var session = await sessionService.GetAsync(sessionId);
         var amountPaid = session.AmountTotal.GetValueOrDefault() / 100m;
 
-        return new StripeSessionStatus(
+        var status = new StripeSessionStatus(
             session.Status,
             session.CustomerDetails!.Email,
             amountPaid,
             int.Parse(session.ClientReferenceId!)
         );
+
+        if (status.Status != "complete") return status;
+        var bookingInfo = $"Booking #{status.BookingId} (Amount Paid: {status.AmountPaid:C})";
+
+        var message = emailTemplateFactory.CreateEmail<PaymentApprovedEmailTemplate>(
+            to: status.Email,
+            data: bookingInfo
+        );
+
+        await emailService.SendEmailAsync(message);
+        return status;
     }
 }

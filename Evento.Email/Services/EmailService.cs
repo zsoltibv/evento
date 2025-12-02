@@ -1,13 +1,12 @@
 ﻿using System.Text;
-using Evento.Application.Common.Dto;
-using Evento.Infrastructure.Services.Interfaces;
+using Evento.Email.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Task = System.Threading.Tasks.Task;
 
-namespace Evento.Infrastructure.Services;
+namespace Evento.Email.Services;
 
-public class EmailService(IOptions<EmailSettings> options) : IEmailService
+public class EmailService(IOptions<EmailSettings> options, IEmailTemplateFactory emailTemplateFactory) : IEmailService
 {
     private readonly EmailSettings _settings = options.Value;
 
@@ -41,7 +40,7 @@ public class EmailService(IOptions<EmailSettings> options) : IEmailService
         {
             using var response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
-            
+
             var body = await response.Content.ReadAsStringAsync();
             Console.WriteLine($"Email sent successfully: {body}");
         }

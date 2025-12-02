@@ -1,6 +1,4 @@
-﻿using Evento.Application.Common.Dto;
-
-namespace Evento.Infrastructure.Services.Interfaces;
+﻿namespace Evento.Email.Services.Interfaces;
 
 public interface IEmailTemplateFactory
 {

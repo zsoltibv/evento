@@ -1,7 +1,7 @@
 ﻿using Evento.Application.Services.Interfaces;
 using Evento.Domain.Models;
-using Evento.Infrastructure.Services.EmailTemplates;
-using Evento.Infrastructure.Services.Interfaces;
+using Evento.Email.EmailTemplates;
+using Evento.Email.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Evento.Infrastructure.Services;

@@ -26,6 +26,8 @@ public static class ServiceInstaller
         services.AddScoped<PaymentIntentService>();
         services.AddScoped<SessionService>();
         
+        services.AddScoped<SessionService>();
+        
         return services;
     }
 } 

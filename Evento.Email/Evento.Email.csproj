@@ -7,15 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Bogus" Version="35.6.5" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.9" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.9" />
       <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.9" />
-      <PackageReference Include="Stripe.net" Version="49.3.0-alpha.1" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Evento.Email\Evento.Email.csproj" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
 </Project>

@@ -1,5 +1,6 @@
 ﻿using Evento.Application.Common.Dto;
-using Evento.Infrastructure.Services.Interfaces;
+using Evento.Email;
+using Evento.Email.Services.Interfaces;
 
 namespace Evento.Endpoints.Endpoints;
 

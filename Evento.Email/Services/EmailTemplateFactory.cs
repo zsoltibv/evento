@@ -1,8 +1,7 @@
-﻿using Evento.Application.Common.Dto;
-using Evento.Infrastructure.Services.Interfaces;
+﻿using Evento.Email.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Evento.Infrastructure.Services;
+namespace Evento.Email.Services;
 
 public class EmailTemplateFactory(IServiceProvider serviceProvider) : IEmailTemplateFactory
 {

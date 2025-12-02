@@ -1,4 +1,5 @@
 using Evento.Application;
+using Evento.Email;
 using Evento.Endpoints;
 using Evento.Endpoints.Endpoints;
 using Evento.Endpoints.Hubs;
@@ -20,6 +21,9 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 
 // Add all Application Services
 builder.Services.AddApplicationServices();
+
+// Add email services
+builder.Services.AddEmailServices(builder.Configuration);
 
 // Add payment services
 builder.Services.AddPaymentServices(builder.Configuration);
