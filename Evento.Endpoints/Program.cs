@@ -43,6 +43,12 @@ builder.Services.AddCors(options =>
     });
 });
 
+// FastApi
+builder.Services.AddHttpClient("AiGenerator", client =>
+{
+    client.BaseAddress = new Uri("http://127.0.0.1:8000"); // FastAPI URL
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -59,6 +65,7 @@ app.UseAuthorization();
 app.UseCors();
 
 // Map Endpoints
+app.MapGenerateEndpoints();
 app.MapPaymentEndpoints();
 app.MapAuthEndpoints();
 app.MapVenueEndpoints();
