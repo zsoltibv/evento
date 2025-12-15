@@ -64,4 +64,11 @@ export class VenuesComponent {
       venue.loading.set(false);
     }
   }
+
+  async updateDescription(venue: VenueUi) {
+    const res = await this.venueService.updateVenueDescription(
+      venue.id,
+      venue.generatedDescription()!
+    );
+  }
 }

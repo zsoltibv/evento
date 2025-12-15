@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Evento.Application.Common;
+using Evento.Application.Common.Dto;
 using Evento.Application.Services.Interfaces;
 using Evento.Application.Venues.GetVenueById;
 using Evento.Application.Venues.GetVenueBySlug;
@@ -24,6 +25,14 @@ public static class VenueEndpoints
         venuesGroup.MapGet("/{id:int}",
                 async (int id, IQueryHandler<GetVenueByIdQuery> handler) =>
                     await handler.Handle(new GetVenueByIdQuery(id)))
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status401Unauthorized);
+        
+        venuesGroup.MapPut("/{id:int}/description",
+                async (int id, UpdateVenueDescriptionDto dto, IVenueService venueService) =>
+                    await venueService.UpdateVenueDescriptionAsync(id, dto.description))
             .RequireAuthorization()
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)

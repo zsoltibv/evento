@@ -41,7 +41,16 @@
       }
     </div>
 
-    <p-button label="See venue" class="w-full" (onClick)="goToVenue(venue)"></p-button>
+    <div class="flex gap-2">
+      @if(venue.editing()){
+      <p-button
+        label="Save suggestion"
+        (onClick)="updateDescription(venue)"
+        severity="secondary"
+      ></p-button>
+      }
+      <p-button label="See venue" (onClick)="goToVenue(venue)"></p-button>
+    </div>
   </p-card>
 
   } @empty {

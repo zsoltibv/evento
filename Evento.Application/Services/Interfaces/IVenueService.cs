@@ -9,4 +9,5 @@ public interface IVenueService
     Task<Venue?> GetBySlugAsync(string slug);
     Task<bool> ExistsAsync(int id);
     Task<string> GenerateUniqueSlug(string name);
+    Task UpdateVenueDescriptionAsync(int id, string description);
 }

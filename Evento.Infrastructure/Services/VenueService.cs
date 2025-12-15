@@ -86,4 +86,12 @@ public class VenueService(EventoDbContext db) : IVenueService
 
         return uniqueSlug;
     }
+
+    public async Task UpdateVenueDescriptionAsync(int id, string description)
+    {
+        await db.Venues
+            .Where(v => v.Id == id)
+            .ExecuteUpdateAsync(setters =>
+                setters.SetProperty(v => v.Description, description));
+    }
 }

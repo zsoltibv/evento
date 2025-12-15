@@ -29,4 +29,8 @@ export class VenueService {
   async getVenueAdminIds(venueId: number): Promise<string[]> {
     return await this.api.get<string[]>(`/api/venues/${venueId}/admins`);
   }
+
+  async updateVenueDescription(venueId: number, description: string) {
+    return await this.api.put<void>(`/api/venues/${venueId}/description`, { description });
+  }
 }
