@@ -6,6 +6,7 @@ import { UpdateBooking } from '../models/UpdateBooking';
 import { GetBookingsResponse } from '../models/GetBookingsResponse';
 import { BookingDetails } from '../models/BookingDetails';
 import { UpdateBookingPayment } from '../models/UpdateBookingPayment';
+import { BookingFilter } from '../models/BookingFilter';
 
 @Injectable({
   providedIn: 'root',
@@ -13,8 +14,19 @@ import { UpdateBookingPayment } from '../models/UpdateBookingPayment';
 export class BookingService {
   private api = inject(RestApiService);
 
-  async getBookings(): Promise<GetBookingsResponse> {
-    return await this.api.get<GetBookingsResponse>('/api/bookings');
+  async getBookings(filter?: BookingFilter): Promise<GetBookingsResponse> {
+    const params: Record<string, any> = {};
+    if (filter?.fromDate) params['fromDate'] = filter.fromDate.toISOString();
+
+    if (filter?.toDate) params['toDate'] = filter.toDate.toISOString();
+
+    if (filter?.status) params['status'] = filter.status;
+
+    if (filter?.venueId) params['venueId'] = filter.venueId;
+
+    if (filter?.isPaid !== undefined) params['isPaid'] = filter.isPaid;
+
+    return await this.api.get<GetBookingsResponse>('/api/bookings', { params });
   }
 
   async getBooking(id: number): Promise<BookingDetails> {

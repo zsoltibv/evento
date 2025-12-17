@@ -20,13 +20,15 @@ public static class BookingEndpoints
 
         bookingsGroup.MapGet("/", async (
                 IQueryHandler<GetBookingsQuery> handler,
-                ClaimsPrincipal user
+                ClaimsPrincipal user,
+                [AsParameters] BookingFilter filter
             ) =>
             {
                 var query = new GetBookingsQuery(
                     user.GetUserId(),
                     user.IsAdmin(),
-                    user.IsUser()
+                    user.IsUser(),
+                    filter
                 );
 
                 return await handler.Handle(query);

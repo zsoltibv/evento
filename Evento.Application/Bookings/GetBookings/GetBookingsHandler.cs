@@ -10,31 +10,61 @@ public class GetBookingsHandler(IBookingService bookingService, IVenueAdminServi
 {
     public async Task<IResult> Handle(GetBookingsQuery query)
     {
+        IEnumerable<BookingWithInfo> userBookings = [];
+        IEnumerable<BookingWithInfo> venueBookings = [];
+
         if (query.IsAdmin)
         {
-            var allBookings = await bookingService.GetAllAsync();
-            return Results.Ok(new GetBookingsResponse
-            {
-                UserBookings = new List<BookingWithInfo>(),
-                VenueBookings = allBookings
-            });
+            venueBookings = await bookingService.GetAllAsync();
         }
-
-        if (!query.IsUser) return Results.Forbid();
-
-        var userBookings = await bookingService.GetByUserAsync(query.UserId);
-        var venueIds = await venueAdminService.GetVenueIdsByUserIdAsync(query.UserId);
-
-        var venueBookings = venueIds.Length != 0
-            ? await bookingService.GetBookingsByVenueIdsAsync(query.UserId,  venueIds)
-            : new List<BookingWithInfo>();
-
-        var response = new GetBookingsResponse
+        else
         {
-            UserBookings = userBookings,
-            VenueBookings = venueBookings
-        };
+            if (!query.IsUser)
+                return Results.Forbid();
 
-        return Results.Ok(response);
+            userBookings = await bookingService.GetByUserAsync(query.UserId);
+
+            var venueIds = await venueAdminService.GetVenueIdsByUserIdAsync(query.UserId);
+
+            if (venueIds.Length != 0)
+            {
+                venueBookings = await bookingService
+                    .GetBookingsByVenueIdsAsync(query.UserId, venueIds);
+            }
+        }
+        
+        userBookings = ApplyFilter(userBookings, query.Filter);
+        venueBookings = ApplyFilter(venueBookings, query.Filter);
+
+        return Results.Ok(new GetBookingsResponse
+        {
+            UserBookings = userBookings.ToList(),
+            VenueBookings = venueBookings.ToList()
+        });
+    }
+    
+    private static IEnumerable<BookingWithInfo> ApplyFilter(
+        IEnumerable<BookingWithInfo> bookings,
+        BookingFilter filter)
+    {
+        if (filter is null)
+            return bookings;
+
+        if (filter.FromDate is not null)
+            bookings = bookings.Where(b => b.StartDate >= filter.FromDate);
+
+        if (filter.ToDate is not null)
+            bookings = bookings.Where(b => b.EndDate <= filter.ToDate);
+
+        if (!string.IsNullOrWhiteSpace(filter.Status))
+            bookings = bookings.Where(b => b.Status == filter.Status);
+
+        if (filter.VenueId is not null)
+            bookings = bookings.Where(b => b.VenueId == filter.VenueId);
+
+        if (filter.IsPaid is not null)
+            bookings = bookings.Where(b => b.IsPaid == filter.IsPaid);
+
+        return bookings;
     }
 }

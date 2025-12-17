@@ -1,6 +1,52 @@
 <div class="container mx-auto p-4">
   <h1 class="text-2xl font-bold mb-4">Bookings</h1>
 
+  <p-card class="mb-3">
+    <div class="flex flex-wrap gap-3 items-center">
+      <!-- From date -->
+      <p-datepicker
+        [(ngModel)]="filters().fromDate"
+        (ngModelChange)="loadBookings()"
+        placeholder="From date"
+        dateFormat="yy-mm-dd"
+      >
+      </p-datepicker>
+
+      <!-- To date -->
+      <p-datepicker
+        [(ngModel)]="filters().toDate"
+        (ngModelChange)="loadBookings()"
+        placeholder="To date"
+        dateFormat="yy-mm-dd"
+      >
+      </p-datepicker>
+
+      <!-- Status -->
+      <p-select
+        [options]="statusOptions"
+        [(ngModel)]="filters().status"
+        (ngModelChange)="loadBookings()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Status"
+      >
+      </p-select>
+
+      <p-select
+        [options]="paidOptions"
+        [(ngModel)]="filters().isPaid"
+        (ngModelChange)="loadBookings()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Payment Status"
+      ></p-select>
+
+      <!-- Clear -->
+      <p-button label="Clear" icon="pi pi-times" severity="secondary" (onClick)="clearFilters()">
+      </p-button>
+    </div>
+  </p-card>
+
   <p-tabs [value]="activeTab()">
     <p-tablist>
       @if(isUser()) {
