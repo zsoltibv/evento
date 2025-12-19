@@ -11,6 +11,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
 import { CheckboxModule } from 'primeng/checkbox';
 import { FormsModule } from '@angular/forms';
+import { exportBookingsToExcel } from '../../utils/excel-export.util';
 
 @Component({
   selector: 'app-bookings-component',
@@ -98,5 +99,15 @@ export class BookingsComponent {
     this.venueBookings.set(
       this.venueBookings().map((b) => (b.id === update.id ? { ...b, status: update.status } : b))
     );
+  }
+
+  downloadExcel() {
+    const allBookings = [...this.bookings(), ...this.venueBookings()];
+
+    if (!allBookings.length) {
+      return;
+    }
+
+    exportBookingsToExcel(allBookings, 'Bookings');
   }
 }
