@@ -1,10 +1,17 @@
-<div class="login-container md:px-0 px-4">
+<form class="login-container md:px-0 px-4" (ngSubmit)="onSubmit()">
   <h2 class="font-bold md:text-3xl text-2xl mb-3">Login</h2>
 
   <div class="form-container flex flex-column gap-3">
     <div class="p-field flex flex-column gap-2">
       <label for="email">Email</label>
-      <input id="email" type="text" pInputText [(ngModel)]="email" placeholder="Enter your email" />
+      <input
+        id="email"
+        type="text"
+        pInputText
+        [(ngModel)]="email"
+        name="email"
+        placeholder="Enter your email"
+      />
     </div>
 
     <div class="p-field flex flex-column gap-2">
@@ -12,6 +19,7 @@
       <p-password
         id="password"
         [(ngModel)]="password"
+        name="password"
         placeholder="Enter your password"
         [toggleMask]="false"
         [feedback]="false"
@@ -20,12 +28,5 @@
     </div>
   </div>
 
-  <p-button
-    fluid
-    type="button"
-    label="Login"
-    class="mt-4"
-    [disabled]="!isValid()"
-    (click)="onSubmit()"
-  ></p-button>
-</div>
+  <p-button fluid type="submit" label="Login" class="mt-4" [disabled]="!isValid()"></p-button>
+</form>

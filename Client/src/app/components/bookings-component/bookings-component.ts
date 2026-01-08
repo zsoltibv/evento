@@ -12,6 +12,8 @@ import { SelectModule } from 'primeng/select';
 import { CheckboxModule } from 'primeng/checkbox';
 import { FormsModule } from '@angular/forms';
 import { exportBookingsToExcel } from '../../utils/excel-export.util';
+import { exportBookingsToPdf } from '../../utils/pdf-export.util';
+import { SearchBar } from '../shared/search-bar/search-bar';
 
 @Component({
   selector: 'app-bookings-component',
@@ -24,6 +26,7 @@ import { exportBookingsToExcel } from '../../utils/excel-export.util';
     SelectModule,
     CheckboxModule,
     FormsModule,
+    SearchBar,
   ],
   standalone: true,
   templateUrl: './bookings-component.html',
@@ -39,6 +42,33 @@ export class BookingsComponent {
   isUser = computed(() => this.authService.isUser());
   activeTab = computed(() => {
     return this.authService.isUser() ? '0' : '1';
+  });
+
+  searchTerm = signal('');
+
+  filteredBookings = computed(() => {
+    const term = this.searchTerm().toLowerCase();
+    if (!term) return this.bookings();
+
+    return this.bookings().filter(
+      (b) =>
+        b.venueName.toLowerCase().includes(term) ||
+        b.status.toLowerCase().includes(term) ||
+        b.userId.toLowerCase().includes(term)
+    );
+  });
+
+  // filtered venue bookings
+  filteredVenueBookings = computed(() => {
+    const term = this.searchTerm().toLowerCase();
+    if (!term) return this.venueBookings();
+
+    return this.venueBookings().filter(
+      (b) =>
+        b.venueName.toLowerCase().includes(term) ||
+        b.status.toLowerCase().includes(term) ||
+        b.userId.toLowerCase().includes(term)
+    );
   });
 
   // filters
@@ -109,5 +139,19 @@ export class BookingsComponent {
     }
 
     exportBookingsToExcel(allBookings, 'Bookings');
+  }
+
+  downloadPdf(): void {
+    const allBookings = [...this.bookings(), ...this.venueBookings()];
+
+    if (!allBookings.length) {
+      return;
+    }
+
+    exportBookingsToPdf(allBookings, 'Bookings');
+  }
+
+  onSearch(term: string): void {
+    this.searchTerm.set(term);
   }
 }

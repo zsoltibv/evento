@@ -1,0 +1,12 @@
+<div class="flex items-center gap-2">
+  <input
+    pInputText
+    type="text"
+    placeholder="Search..."
+    [(ngModel)]="query"
+    (input)="emit()"
+    class="w-64"
+  />
+
+  <button pButton icon="pi pi-times" severity="secondary" type="button" (click)="clear()"></button>
+</div>

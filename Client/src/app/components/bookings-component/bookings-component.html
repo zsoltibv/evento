@@ -3,6 +3,7 @@
 
   <p-card class="mb-3">
     <div class="flex flex-wrap gap-3 items-center">
+      <app-search-bar (search)="onSearch($event)"></app-search-bar>
       <!-- From date -->
       <p-datepicker
         [(ngModel)]="filters().fromDate"
@@ -52,6 +53,14 @@
         (onClick)="downloadExcel()"
       >
       </p-button>
+
+      <p-button
+        label="Download PDF"
+        icon="pi pi-file-pdf"
+        severity="danger"
+        (onClick)="downloadPdf()"
+      >
+      </p-button>
     </div>
   </p-card>
 
@@ -68,7 +77,7 @@
       <!-- Tab for My Bookings -->
       <p-tabpanel value="0">
         <div class="flex flex-col gap-3">
-          @for(booking of bookings(); track booking.id){
+          @for(booking of filteredBookings(); track booking.id){
           <app-booking-card [booking]="booking" (onCancel)="onCancelBookings($event)" />
           } @empty {
           <p class="text-gray-500">No bookings available.</p>
@@ -79,7 +88,7 @@
       <!-- Tab for Booking Requests -->
       <p-tabpanel value="1">
         <div class="flex flex-col gap-3">
-          @for(booking of venueBookings(); track booking.id){
+          @for(booking of filteredVenueBookings(); track booking.id){
           <app-booking-card [booking]="booking" (onCancel)="onCancelVenueBookings($event)" />
           } @empty {
           <p class="text-gray-500">No booking requests available.</p>
