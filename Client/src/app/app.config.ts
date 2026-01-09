@@ -12,6 +12,7 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { errorInterceptor } from './interceptors/error-interceptor';
 import { MessageService, ConfirmationService } from 'primeng/api';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,6 +27,7 @@ export const appConfig: ApplicationConfig = {
         preset: Aura,
       },
     }),
+    provideCharts(withDefaultRegisterables()),
     MessageService,
     ConfirmationService,
   ],

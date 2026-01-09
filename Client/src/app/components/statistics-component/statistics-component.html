@@ -1,0 +1,36 @@
+<div class="container mx-auto grid grid-cols-2 gap-4 px-4 mt-4">
+  <!-- Users Chart -->
+  <p-card header="Users">
+    <canvas baseChart [data]="userChartData" [options]="chartOptions" chartType="bar"> </canvas>
+  </p-card>
+
+  <!-- Bookings Chart -->
+  <p-card header="Bookings">
+    <canvas baseChart [data]="bookingChartData" [options]="chartOptions" chartType="bar"> </canvas>
+  </p-card>
+
+  <!-- Venues Chart -->
+  <p-card header="Venues">
+    <canvas baseChart [data]="venueChartData" [options]="chartOptions" chartType="bar"> </canvas>
+  </p-card>
+
+  <!-- Revenue Chart with Month Selector -->
+  <p-card>
+    <div class="flex items-center justify-between">
+      <h1 class="text-xl font-medium">Revenue</h1>
+      <p-select
+        [options]="months"
+        [(ngModel)]="selectedMonth"
+        (ngModelChange)="loadBookings()"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Select Month"
+      ></p-select>
+    </div>
+    <span>Total: {{ totalRevenue() | currency : 'RON' : 'symbol' }}</span>
+
+    <div class="flex justify-between items-center mb-2"></div>
+
+    <canvas baseChart [data]="revenueChartData" [options]="chartOptions" chartType="line"> </canvas>
+  </p-card>
+</div>
