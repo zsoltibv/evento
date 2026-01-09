@@ -1,0 +1,7 @@
+<div #container class="emoji-picker-container">
+  <button (click)="toggled()">😀</button>
+
+  @if(isOpened()){
+  <emoji-mart (emojiSelect)="emojiSelected($event)" [isNative]="true" class="picker"></emoji-mart>
+  }
+</div>

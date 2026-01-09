@@ -66,6 +66,7 @@
           (keydown.enter)="sendMessage(); $event.preventDefault()"
           class="flex-1 border rounded p-2"
         />
+        <app-emoji-picker [emojiSignal]="messageText"></app-emoji-picker>
         <button
           pButton
           icon="pi pi-send"

@@ -1,12 +1,18 @@
-<div class="flex items-center gap-2">
+<div class="relative w-64">
   <input
     pInputText
     type="text"
     placeholder="Search..."
-    [(ngModel)]="query"
-    (input)="emit()"
-    class="w-64"
+    class="w-full pr-10"
+    [value]="query()"
+    (input)="onInput($any($event.target).value)"
   />
 
-  <button pButton icon="pi pi-times" severity="secondary" type="button" (click)="clear()"></button>
+  <!-- Clear icon inside input -->
+  @if (query()) {
+  <i
+    class="pi pi-times absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-gray-600"
+    (click)="clear()"
+  ></i>
+  }
 </div>

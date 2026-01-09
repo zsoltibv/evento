@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { ChatUser } from '../../models/ChatUser';
 import { HourOnlyPipe } from '../../pipe/hour-only-pipe-pipe';
 import { ActivatedRoute } from '@angular/router';
+import { EmojiPicker } from '../emoji-picker/emoji-picker';
 
 @Component({
   selector: 'app-chat-component',
@@ -23,6 +24,7 @@ import { ActivatedRoute } from '@angular/router';
     InputTextModule,
     CommonModule,
     HourOnlyPipe,
+    EmojiPicker,
   ],
   templateUrl: './chat-component.html',
   styleUrl: './chat-component.scss',
@@ -135,5 +137,10 @@ export class ChatComponent {
     if (index === msgs.length - 1) {
       setTimeout(() => this.scrollToBottomOfChatContainer(), 50);
     }
+  }
+
+  openEmojiPicker(event: MouseEvent, picker: HTMLElement) {
+    event.stopPropagation();
+    picker.toggleAttribute('hidden');
   }
 }

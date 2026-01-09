@@ -13,8 +13,9 @@ export class SearchBar {
   query = signal('');
   search = output<string>();
 
-  emit(): void {
-    this.search.emit(this.query().trim());
+  onInput(value: string): void {
+    this.query.set(value);
+    this.search.emit(value.trim());
   }
 
   clear(): void {
