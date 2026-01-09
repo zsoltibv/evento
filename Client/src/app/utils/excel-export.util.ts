@@ -1,6 +1,7 @@
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { BookingWithVenueName } from '../models/BookingWithVenueName';
+import { RoleRequest } from '../models/RoleRequest';
 
 export function exportBookingsToExcel(bookings: BookingWithVenueName[], fileName: string) {
   const worksheetData = bookings.map((b) => ({
@@ -18,6 +19,33 @@ export function exportBookingsToExcel(bookings: BookingWithVenueName[], fileName
   const workbook: XLSX.WorkBook = {
     Sheets: { Bookings: worksheet },
     SheetNames: ['Bookings'],
+  };
+
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array',
+  });
+
+  const blob = new Blob([excelBuffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
+  });
+
+  saveAs(blob, `${fileName}.xlsx`);
+}
+
+export function exportRoleRequestsToExcel(requests: RoleRequest[], fileName: string) {
+  const worksheetData = requests.map((r) => ({
+    ID: r.id,
+    User: r.user?.userName,
+    RequestedRole: r.roleName,
+    Status: r.status,
+    'Requested At': new Date(r.requestDate).toLocaleDateString(),
+  }));
+
+  const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(worksheetData);
+  const workbook: XLSX.WorkBook = {
+    Sheets: { RoleRequests: worksheet },
+    SheetNames: ['RoleRequests'],
   };
 
   const excelBuffer = XLSX.write(workbook, {

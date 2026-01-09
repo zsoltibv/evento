@@ -13,9 +13,8 @@
         </span>
       </div>
 
-      @if(isAdmin()){
       <p><strong>User:</strong> {{ roleRequest()!.user?.userName }}</p>
-      } @if(roleRequest()!.venue){
+      @if(roleRequest()!.venue){
       <p><strong>Venue:</strong> {{ roleRequest()!.venue?.name }}</p>
       }
 

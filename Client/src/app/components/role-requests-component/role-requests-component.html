@@ -1,13 +1,48 @@
 <div class="container mx-auto p-4">
   <h1 class="text-2xl font-bold mb-4">Role Requests</h1>
 
+  <p-card class="mb-3">
+    <div class="flex flex-wrap gap-3 items-center">
+      <app-search-bar (search)="onSearch($event)"></app-search-bar>
+
+      <p-select
+        [options]="statusOptions"
+        [(ngModel)]="statusFilter"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Status"
+      ></p-select>
+
+      <p-button
+        label="Clear"
+        icon="pi pi-times"
+        severity="secondary"
+        (onClick)="clearFilters()"
+      ></p-button>
+
+      <p-button
+        label="Download Excel"
+        icon="pi pi-download"
+        severity="success"
+        (onClick)="downloadExcel()"
+      ></p-button>
+
+      <p-button
+        label="Download PDF"
+        icon="pi pi-file-pdf"
+        severity="danger"
+        (onClick)="downloadPdf()"
+      ></p-button>
+    </div>
+  </p-card>
+
   <div class="flex flex-col gap-3">
-    @for(request of roleRequests(); track request.id){
+    @for(request of filteredRoleRequests(); track request.id){
     <app-role-request-card
       [roleRequest]="request"
       (onReject)="onRequestRejected($event)"
       (onApprove)="onRequestApproved($event)"
-    ></app-role-request-card>
+    />
     } @empty {
     <p class="text-gray-500">No role requests available.</p>
     }
