@@ -83,12 +83,13 @@ export class StatisticsComponent {
     this.venuesCount.set(stats.venuesCount);
     this.revenueData.set(stats.weeklyRevenue);
 
-    this.bookingChartData = signal<ChartData<'doughnut'>>({
+    this.bookingChartData.set({
       labels: ['Bookings'],
       datasets: [
         {
-          data: [0],
-          backgroundColor: ['#10b981'],
+          label: 'Bookings',
+          data: [stats.bookingsCount],
+          backgroundColor: '#10b981',
         },
       ],
     });
