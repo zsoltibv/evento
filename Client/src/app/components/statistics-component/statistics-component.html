@@ -1,36 +1,46 @@
-<div class="container mx-auto grid grid-cols-2 gap-4 px-4 mt-4">
-  <!-- Users Chart -->
-  <p-card header="Users">
-    <canvas baseChart [data]="userChartData" [options]="chartOptions" chartType="bar"> </canvas>
-  </p-card>
-
-  <!-- Bookings Chart -->
-  <p-card header="Bookings">
-    <canvas baseChart [data]="bookingChartData" [options]="chartOptions" chartType="bar"> </canvas>
-  </p-card>
-
-  <!-- Venues Chart -->
-  <p-card header="Venues">
-    <canvas baseChart [data]="venueChartData" [options]="chartOptions" chartType="bar"> </canvas>
-  </p-card>
-
-  <!-- Revenue Chart with Month Selector -->
-  <p-card>
-    <div class="flex items-center justify-between">
-      <h1 class="text-xl font-medium">Revenue</h1>
+<div class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 px-4 my-4">
+  <!-- Revenue (FULL WIDTH) -->
+  <div class="w-full rounded-lg shadow p-4 bg-color max-h-md">
+    <div class="flex items-center justify-between mb-2">
+      <h1 class="text-xl font-medium">Spendings</h1>
       <p-select
         [options]="months"
-        [(ngModel)]="selectedMonth"
-        (ngModelChange)="loadBookings()"
+        [ngModel]="selectedMonth()"
+        (ngModelChange)="selectedMonth.set($event); loadStatistics()"
         optionLabel="name"
         optionValue="id"
         placeholder="Select Month"
       ></p-select>
     </div>
-    <span>Total: {{ totalRevenue() | currency : 'RON' : 'symbol' }}</span>
 
-    <div class="flex justify-between items-center mb-2"></div>
+    <span class="block mb-3 text-gray-600">
+      Total: {{ totalRevenue() | currency : 'RON' : 'symbol' }}
+    </span>
 
-    <canvas baseChart [data]="revenueChartData" [options]="chartOptions" chartType="line"> </canvas>
-  </p-card>
+    <canvas
+      baseChart
+      [data]="revenueChartData()"
+      [options]="chartOptions"
+      chartType="line"
+    ></canvas>
+  </div>
+
+  <div class="flex flex-col md:flex-row gap-3 w-full">
+    <!-- Bookings -->
+    <div class="rounded-lg shadow p-4 bg-color w-1/2">
+      <h2 class="text-lg font-medium mb-3">Bookings</h2>
+      <canvas
+        baseChart
+        [data]="bookingChartData()"
+        [options]="chartOptions"
+        chartType="doughnut"
+      ></canvas>
+    </div>
+
+    <!-- Venues -->
+    <div class="rounded-lg shadow p-4 bg-color w-1/2">
+      <h2 class="text-lg font-medium mb-3">Venues</h2>
+      <canvas baseChart [data]="venueChartData()" [options]="chartOptions" chartType="bar"></canvas>
+    </div>
+  </div>
 </div>

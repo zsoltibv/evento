@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
 import { ChartData, ChartOptions } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { SelectModule } from 'primeng/select';
+import { StatisticsService } from '../../services/statistics-service';
 
 interface MonthOption {
+  id: number;
   name: string;
-  value: number;
 }
 
 @Component({
@@ -18,7 +19,9 @@ interface MonthOption {
   styleUrl: './statistics-component.scss',
 })
 export class StatisticsComponent {
-  months = [
+  private statisticsService = inject(StatisticsService);
+
+  months: MonthOption[] = [
     { id: 1, name: 'January' },
     { id: 2, name: 'February' },
     { id: 3, name: 'March' },
@@ -33,50 +36,85 @@ export class StatisticsComponent {
     { id: 12, name: 'December' },
   ];
 
-  selectedMonth = signal(new Date().getMonth() + 1);
+  selectedMonth = signal<number>(new Date().getMonth() + 1);
 
-  usersCount = signal(120);
-  bookingsCount = signal(45);
-  venuesCount = signal(10);
-  revenueData = signal([5000, 7000, 6000, 8000, 5500, 7500, 9000]);
+  bookingsCount = signal(0);
+  venuesCount = signal(0);
+  revenueData = signal<number[]>([0, 0, 0, 0]);
 
-  public totalRevenue = computed(() => this.revenueData().reduce((a, b) => a + b, 0));
+  totalRevenue = computed(() => this.revenueData().reduce((a, b) => a + b, 0));
 
-  userChartData: ChartData<'bar'> = {
-    labels: ['Users'],
-    datasets: [{ label: 'Users', data: [this.usersCount()], backgroundColor: '#3b82f6' }],
-  };
-
-  bookingChartData: ChartData<'bar'> = {
+  bookingChartData = signal<ChartData<'bar'>>({
     labels: ['Bookings'],
-    datasets: [{ label: 'Bookings', data: [this.bookingsCount()], backgroundColor: '#10b981' }],
-  };
+    datasets: [{ label: 'Bookings', data: [0], backgroundColor: '#10b981' }],
+  });
 
-  venueChartData: ChartData<'bar'> = {
+  venueChartData = signal<ChartData<'bar'>>({
     labels: ['Venues'],
-    datasets: [{ label: 'Venues', data: [this.venuesCount()], backgroundColor: '#f59e0b' }],
-  };
+    datasets: [{ label: 'Venues', data: [0], backgroundColor: '#f59e0b' }],
+  });
 
-  revenueChartData: ChartData<'line'> = {
+  revenueChartData = signal<ChartData<'line'>>({
     labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
     datasets: [
       {
         label: 'Revenue',
-        data: this.revenueData(),
+        data: [],
         borderColor: '#ef4444',
         backgroundColor: 'rgba(239,68,68,0.2)',
         fill: true,
       },
     ],
-  };
+  });
 
   chartOptions: ChartOptions<'bar' | 'line'> = {
     responsive: true,
     plugins: { legend: { display: true } },
   };
 
-  loadBookings() {
-    console.log('Selected month:', this.selectedMonth());
-    //TODO: to call api filter endpoint
+  ngOnInit(): void {
+    this.loadStatistics();
+  }
+
+  async loadStatistics() {
+    const stats = await this.statisticsService.getStatistics(this.selectedMonth());
+
+    this.bookingsCount.set(stats.bookingsCount);
+    this.venuesCount.set(stats.venuesCount);
+    this.revenueData.set(stats.weeklyRevenue);
+
+    this.bookingChartData = signal<ChartData<'doughnut'>>({
+      labels: ['Bookings'],
+      datasets: [
+        {
+          data: [0],
+          backgroundColor: ['#10b981'],
+        },
+      ],
+    });
+
+    this.venueChartData.set({
+      labels: ['Venues'],
+      datasets: [
+        {
+          label: 'Venues',
+          data: [stats.venuesCount],
+          backgroundColor: '#f59e0b',
+        },
+      ],
+    });
+
+    this.revenueChartData.set({
+      labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+      datasets: [
+        {
+          label: 'Spendings',
+          data: stats.weeklyRevenue,
+          borderColor: '#ef4444',
+          backgroundColor: 'rgba(239,68,68,0.2)',
+          fill: true,
+        },
+      ],
+    });
   }
 }
