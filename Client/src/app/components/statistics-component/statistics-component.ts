@@ -1,3 +1,4 @@
+import { AuthService } from './../../services/auth-service';
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +7,8 @@ import { ChartData, ChartOptions } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { SelectModule } from 'primeng/select';
 import { StatisticsService } from '../../services/statistics-service';
+import { UserService } from '../../services/user-service';
+import { StatisticsDto } from '../../models/Statistics';
 
 interface MonthOption {
   id: number;
@@ -20,7 +23,9 @@ interface MonthOption {
 })
 export class StatisticsComponent {
   private statisticsService = inject(StatisticsService);
+  private authService = inject(AuthService);
 
+  isAdmin = computed(() => this.authService.isAdmin());
   months: MonthOption[] = [
     { id: 1, name: 'January' },
     { id: 2, name: 'February' },
@@ -67,6 +72,28 @@ export class StatisticsComponent {
     ],
   });
 
+  adminVenueBookingsChart = signal<ChartData<'bar'>>({
+    labels: [],
+    datasets: [
+      {
+        label: 'Bookings per venue',
+        data: [],
+        backgroundColor: '#3b82f6',
+      },
+    ],
+  });
+
+  adminVenueRevenueChart = signal<ChartData<'bar'>>({
+    labels: [],
+    datasets: [
+      {
+        label: 'Revenue per venue',
+        data: [],
+        backgroundColor: '#22c55e',
+      },
+    ],
+  });
+
   years: number[] = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
   selectedYear = signal<number>(new Date().getFullYear());
 
@@ -80,7 +107,7 @@ export class StatisticsComponent {
   }
 
   async loadStatistics() {
-    const stats = await this.statisticsService.getStatistics(
+    const stats: StatisticsDto = await this.statisticsService.getStatistics(
       this.selectedMonth(),
       this.selectedYear()
     );
@@ -123,5 +150,32 @@ export class StatisticsComponent {
         },
       ],
     });
+
+    // admin graphs
+    if (this.isAdmin() && stats.venueStatistics?.length) {
+      const labels = stats.venueStatistics.map((v) => v.venueName);
+
+      this.adminVenueBookingsChart.set({
+        labels,
+        datasets: [
+          {
+            label: 'Bookings per venue',
+            data: stats.venueStatistics.map((v) => v.bookingsCount),
+            backgroundColor: '#3b82f6',
+          },
+        ],
+      });
+
+      this.adminVenueRevenueChart.set({
+        labels,
+        datasets: [
+          {
+            label: 'Revenue per venue',
+            data: stats.venueStatistics.map((v) => v.totalRevenue),
+            backgroundColor: '#22c55e',
+          },
+        ],
+      });
+    }
   }
 }

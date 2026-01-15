@@ -1,25 +1,26 @@
 <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 px-4 my-4">
+  <div class="filters flex gap-2">
+    <p-select
+      [options]="months"
+      [ngModel]="selectedMonth()"
+      (ngModelChange)="selectedMonth.set($event); loadStatistics()"
+      optionLabel="name"
+      optionValue="id"
+      placeholder="Select Month"
+    ></p-select>
+
+    <p-select
+      [options]="years"
+      [ngModel]="selectedYear()"
+      (ngModelChange)="selectedYear.set($event); loadStatistics()"
+      placeholder="Year"
+    ></p-select>
+  </div>
   <!-- Revenue (FULL WIDTH) -->
+  @if(!isAdmin()){
   <div class="w-full rounded-lg shadow p-4 bg-color max-h-md">
     <div class="flex items-center justify-between mb-2">
       <h1 class="text-xl font-medium">Spendings</h1>
-      <div class="filters flex gap-2">
-        <p-select
-          [options]="months"
-          [ngModel]="selectedMonth()"
-          (ngModelChange)="selectedMonth.set($event); loadStatistics()"
-          optionLabel="name"
-          optionValue="id"
-          placeholder="Select Month"
-        ></p-select>
-
-        <p-select
-          [options]="years"
-          [ngModel]="selectedYear()"
-          (ngModelChange)="selectedYear.set($event); loadStatistics()"
-          placeholder="Year"
-        ></p-select>
-      </div>
     </div>
 
     <span class="block mb-3 text-gray-600">
@@ -33,6 +34,29 @@
       chartType="line"
     ></canvas>
   </div>
+  }@else{
+  <div class="flex flex-col md:flex-row gap-3 w-full">
+    <div class="rounded-lg shadow p-4 bg-color w-1/2">
+      <h2 class="text-lg font-medium mb-3">Top venues by bookings</h2>
+      <canvas
+        baseChart
+        [data]="adminVenueBookingsChart()"
+        [options]="chartOptions"
+        chartType="bar"
+      ></canvas>
+    </div>
+
+    <div class="rounded-lg shadow p-4 bg-color w-1/2">
+      <h2 class="text-lg font-medium mb-3">Top venues by revenue</h2>
+      <canvas
+        baseChart
+        [data]="adminVenueRevenueChart()"
+        [options]="chartOptions"
+        chartType="bar"
+      ></canvas>
+    </div>
+  </div>
+  }
 
   <div class="flex flex-col md:flex-row gap-3 w-full">
     <!-- Bookings -->

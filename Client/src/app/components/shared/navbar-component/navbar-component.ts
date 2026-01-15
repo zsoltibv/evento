@@ -67,6 +67,7 @@ export class NavbarComponent {
       return [
         { label: 'Bookings', routerLink: '/bookings' },
         { label: 'Role Requests', routerLink: '/role-requests' },
+        { label: 'Statistics', routerLink: '/statistics' },
       ];
     }
 
