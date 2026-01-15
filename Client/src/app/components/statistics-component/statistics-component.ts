@@ -67,6 +67,9 @@ export class StatisticsComponent {
     ],
   });
 
+  years: number[] = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
+  selectedYear = signal<number>(new Date().getFullYear());
+
   chartOptions: ChartOptions<'bar' | 'line'> = {
     responsive: true,
     plugins: { legend: { display: true } },
@@ -77,7 +80,10 @@ export class StatisticsComponent {
   }
 
   async loadStatistics() {
-    const stats = await this.statisticsService.getStatistics(this.selectedMonth());
+    const stats = await this.statisticsService.getStatistics(
+      this.selectedMonth(),
+      this.selectedYear()
+    );
 
     this.bookingsCount.set(stats.bookingsCount);
     this.venuesCount.set(stats.venuesCount);

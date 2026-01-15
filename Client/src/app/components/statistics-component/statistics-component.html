@@ -3,14 +3,23 @@
   <div class="w-full rounded-lg shadow p-4 bg-color max-h-md">
     <div class="flex items-center justify-between mb-2">
       <h1 class="text-xl font-medium">Spendings</h1>
-      <p-select
-        [options]="months"
-        [ngModel]="selectedMonth()"
-        (ngModelChange)="selectedMonth.set($event); loadStatistics()"
-        optionLabel="name"
-        optionValue="id"
-        placeholder="Select Month"
-      ></p-select>
+      <div class="filters flex gap-2">
+        <p-select
+          [options]="months"
+          [ngModel]="selectedMonth()"
+          (ngModelChange)="selectedMonth.set($event); loadStatistics()"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Select Month"
+        ></p-select>
+
+        <p-select
+          [options]="years"
+          [ngModel]="selectedYear()"
+          (ngModelChange)="selectedYear.set($event); loadStatistics()"
+          placeholder="Year"
+        ></p-select>
+      </div>
     </div>
 
     <span class="block mb-3 text-gray-600">
