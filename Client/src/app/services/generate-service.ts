@@ -19,4 +19,13 @@ export class GenerateService {
 
     return await this.api.post<GenerateDescriptionResponse>('/api/generate/description', body);
   }
+
+  async generateChatReply(prompt: string): Promise<GenerateDescriptionResponse> {
+    const body: GenerateDescriptionRequest = {
+      prompt,
+      max_tokens: 64,
+    };
+
+    return await this.api.post<GenerateDescriptionResponse>('/api/generate/description', body);
+  }
 }

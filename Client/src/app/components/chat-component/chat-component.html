@@ -69,6 +69,16 @@
         <app-emoji-picker [emojiSignal]="messageText"></app-emoji-picker>
         <button
           pButton
+          icon="pi pi-sparkles"
+          severity="secondary"
+          class="h-10"
+          [loading]="isGeneratingReply()"
+          (click)="generateAiReply()"
+          title="Generate AI reply"
+        ></button>
+
+        <button
+          pButton
           icon="pi pi-send"
           (click)="sendMessage()"
           [disabled]="!messageText()"

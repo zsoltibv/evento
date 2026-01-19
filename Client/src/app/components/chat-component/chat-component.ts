@@ -12,6 +12,7 @@ import { ChatUser } from '../../models/ChatUser';
 import { HourOnlyPipe } from '../../pipe/hour-only-pipe-pipe';
 import { ActivatedRoute } from '@angular/router';
 import { EmojiPicker } from '../emoji-picker/emoji-picker';
+import { GenerateService } from '../../services/generate-service';
 
 @Component({
   selector: 'app-chat-component',
@@ -33,12 +34,14 @@ export class ChatComponent {
   private authService = inject(AuthService);
   private chatService = inject(ChatService);
   private route = inject(ActivatedRoute);
+  private generateService = inject(GenerateService);
 
   messageText = signal('');
   selectedUser = signal<ChatUser | null>(null);
   chatUsers = signal<ChatUser[]>([]);
   showDateIndex: number | null = null;
   senderId?: string;
+  isGeneratingReply = signal(false);
 
   messagesContainer = viewChild<ElementRef<HTMLDivElement>>('messagesContainer');
 
@@ -142,5 +145,36 @@ export class ChatComponent {
   openEmojiPicker(event: MouseEvent, picker: HTMLElement) {
     event.stopPropagation();
     picker.toggleAttribute('hidden');
+  }
+
+  private buildAiPrompt(): string {
+    const msgs = this.messages().slice(-2);
+
+    return `
+      You are a chat assistant.
+      Generate a short, natural reply to the conversation below.
+
+      ${msgs.map((m) => `${m.sender.username}: ${m.messageText}`).join('\n')}
+
+      Reply:
+    `.trim();
+  }
+
+  async generateAiReply() {
+    if (!this.selectedUser() || this.messages().length === 0) return;
+
+    try {
+      this.isGeneratingReply.set(true);
+
+      const prompt = this.buildAiPrompt();
+
+      const result = await this.generateService.generateChatReply(prompt);
+
+      this.messageText.set(result.response.trim());
+    } catch (error) {
+      console.error('Failed to generate AI reply', error);
+    } finally {
+      this.isGeneratingReply.set(false);
+    }
   }
 }
