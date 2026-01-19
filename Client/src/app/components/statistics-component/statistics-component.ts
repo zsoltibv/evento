@@ -42,6 +42,8 @@ export class StatisticsComponent {
   ];
 
   selectedMonth = signal<number>(new Date().getMonth() + 1);
+  years: number[] = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
+  selectedYear = signal<number>(new Date().getFullYear());
 
   bookingsCount = signal(0);
   venuesCount = signal(0);
@@ -94,9 +96,6 @@ export class StatisticsComponent {
     ],
   });
 
-  years: number[] = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
-  selectedYear = signal<number>(new Date().getFullYear());
-
   chartOptions: ChartOptions<'bar' | 'line'> = {
     responsive: true,
     plugins: { legend: { display: true } },
@@ -138,8 +137,9 @@ export class StatisticsComponent {
       ],
     });
 
+    const weekLabels = this.getWeekLabels(this.selectedYear(), this.selectedMonth());
     this.revenueChartData.set({
-      labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+      labels: weekLabels,
       datasets: [
         {
           label: 'Spendings',
@@ -177,5 +177,33 @@ export class StatisticsComponent {
         ],
       });
     }
+  }
+
+  private getWeekLabels(year: number, month: number): string[] {
+    const labels: string[] = [];
+
+    const firstDayOfMonth = new Date(year, month - 1, 1);
+    const lastDayOfMonth = new Date(year, month, 0);
+
+    let current = new Date(firstDayOfMonth);
+
+    while (current <= lastDayOfMonth) {
+      const weekStart = new Date(current);
+      const weekEnd = new Date(current);
+      weekEnd.setDate(weekEnd.getDate() + 6);
+
+      if (weekEnd > lastDayOfMonth) {
+        weekEnd.setTime(lastDayOfMonth.getTime());
+      }
+
+      labels.push(
+        `${weekStart.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}–` +
+          `${weekEnd.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`
+      );
+
+      current.setDate(current.getDate() + 7);
+    }
+
+    return labels;
   }
 }
