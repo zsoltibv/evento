@@ -2,6 +2,7 @@ using Evento.Application;
 using Evento.Email;
 using Evento.Endpoints;
 using Evento.Endpoints.Endpoints;
+using Evento.Endpoints.Helpers;
 using Evento.Endpoints.Hubs;
 using Evento.Infrastructure;
 using Evento.Jobs;
@@ -50,6 +51,8 @@ builder.Services.AddHttpClient("AiGenerator", client =>
 });
 
 var app = builder.Build();
+// Initialize database migrations
+MigrationService.InitMigrations(app);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

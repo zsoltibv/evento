@@ -1,0 +1,29 @@
+version: "1.0"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_DB: evento
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  evento-api:
+    build:
+      context: .
+      dockerfile: Evento.Endpoints/Dockerfile
+    container_name: evento-api
+    depends_on:
+      - postgres
+    ports:
+      - "5164:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+
+volumes:
+  pgdata:

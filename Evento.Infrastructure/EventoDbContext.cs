@@ -31,9 +31,9 @@ public class EventoDbContext(DbContextOptions<EventoDbContext> options) : Identi
     {
         var roles = new List<IdentityRole>
         {
-            new() { Id = "1", Name = "Admin", NormalizedName = "ADMIN" },
-            new() { Id = "2", Name = "User", NormalizedName = "USER" },
-            new() { Id = "3", Name = "VenueAdmin", NormalizedName = "VENUEADMIN" }
+            new() { Id = "1", Name = "Admin", NormalizedName = "ADMIN", ConcurrencyStamp = "ROLE-ADMIN-0001" },
+            new() { Id = "2", Name = "User", NormalizedName = "USER", ConcurrencyStamp = "ROLE-USER-0001" },
+            new() { Id = "3", Name = "VenueAdmin", NormalizedName = "VENUEADMIN", ConcurrencyStamp = "ROLE-VENUEADMIN-0001" }
         };
 
         modelBuilder.Entity<IdentityRole>().HasData(roles);
@@ -50,11 +50,10 @@ public class EventoDbContext(DbContextOptions<EventoDbContext> options) : Identi
             Email = "admin@example.com",
             NormalizedEmail = "ADMIN@EXAMPLE.COM",
             EmailConfirmed = true,
-            SecurityStamp = Guid.NewGuid().ToString("D")
+            SecurityStamp = "STATIC-SECURITY-STAMP-0001",
+            ConcurrencyStamp = "USER-CONCURRENCY-0001",
+            PasswordHash = "AQAAAAIAAYagAAAAEPuK4dmFZTZnbjsUW2N75xH0PrCT6ziECHt0rJUCgLQM7nkJ8rjrZ7NSmIa8PhDIcw=="
         };
-
-        var passwordHasher = new PasswordHasher<AppUser>();
-        adminUser.PasswordHash = passwordHasher.HashPassword(adminUser, "Admin@123");
 
         modelBuilder.Entity<AppUser>().HasData(adminUser);
         modelBuilder.Entity<IdentityUserRole<string>>().HasData(
