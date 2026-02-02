@@ -12,7 +12,7 @@ tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
     device_map="cpu",           # CPU mode
-    torch_dtype=torch.float16   # saves RAM
+    dtype=torch.float32   # saves RAM
 )
 device = next(model.parameters()).device
 print("Model loaded! Server is ready at http://127.0.0.1:8000")
